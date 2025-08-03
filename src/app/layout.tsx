@@ -1,4 +1,4 @@
-import { Vazirmatn } from "next/font/google"; // تغییر نام Geist به Vazirmatn
+import { Vazirmatn } from "next/font/google"; 
 import "./globals.css";
 
 const vazirmatn = Vazirmatn({
@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body className={`${vazirmatn.variable} antialiased`}>{children}</body>
+      <body className={`${vazirmatn.variable} `}>{children}</body>
     </html>
   );
 }

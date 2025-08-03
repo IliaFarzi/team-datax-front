@@ -165,8 +165,8 @@ export default function Chat() {
                   <div className="relative w-full max-w-[832px]">
                     <form className="flex flex-col justify-end relative w-full max-w-full rounded-xl z-50">
                       <div className="flex flex-col relative max-w-full bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <div className="flex items-end w-full px-3 mr-auto ml-auto">
-                          <div className="flex items-center">
+                        <div className="flex items-center w-full px-3 mr-auto ml-auto">
+                          <div className="flex items-center justify-center">
                             <div>
                               <button
                                 type="button"
@@ -183,8 +183,7 @@ export default function Chat() {
                             placeholder="داده‌ها را متصل کنید و چت را شروع کنید!"
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none rounded-md resize-none overflow-auto whitespace-pre-wrap text-right outline-none z-40"
-                            style={{ direction: "rtl" }}
+                            className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none rounded-md resize-none overflow-auto whitespace-pre-wrap text-right outline-none z-40 "
                           />
 
                           <div>
@@ -203,7 +202,7 @@ export default function Chat() {
                         </div>
 
                         {/* Controls Row */}
-                        <div className="flex items-center justify-between flex-wrap w-full pt-4 overflow-hidden">
+                        <div className="flex items-center justify-between flex-wrap w-full pt-4 overflow-hidden mb-2 mr-3">
                           <div className="flex items-center flex-grow gap-2 overflow-x-auto overflow-y-hidden rounded-md">
                             {/* Model Selector */}
                             <button className="flex items-center justify-between gap-1 h-6 px-2 bg-white border border-gray-200 rounded-xl text-xs min-w-fit overflow-hidden">
