@@ -3,6 +3,7 @@
 import { Info, Copy, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from "@/components/Button";
 import Image from "next/image";
+import Link from "next/link";
 
 const connectors = [
   {
@@ -11,8 +12,9 @@ const connectors = [
     nameFA: "گوگل درایو",
     type: "Integration",
     typeFA: "یکپارچه‌سازی",
-    icon: "https://julius.ai/_next/image?url=%2Fg_drive_logo.png&w=32&q=75",
+    icon: "/logo/icons8-google-drive-96.png",
     isNew: true,
+    link: "https://www.google.com/",
   },
   {
     id: "onedrive",
@@ -20,17 +22,19 @@ const connectors = [
     nameFA: "مایکروسافت وان‌درایو",
     type: "Integration",
     typeFA: "یکپارچه‌سازی",
-    icon: "https://julius.ai/onedrive_logo.svg",
+    icon: "/logo/icons8-onedrive-96.png",
     isNew: true,
+    link: "/chat",
   },
   {
     id: "onedrive-business",
     name: "OneDrive for Business",
-    nameFA: "وان‌درایو برای کسب‌وکار",
+    nameFA: "گوگل شیت",
     type: "Integration",
     typeFA: "یکپارچه‌سازی",
-    icon: "https://julius.ai/onedrive_logo.svg",
+    icon: "/logo/sheets.png",
     isNew: true,
+    link: "",
   },
   {
     id: "google-ads",
@@ -38,8 +42,9 @@ const connectors = [
     nameFA: "تبلیغات گوگل",
     type: "Integration",
     typeFA: "یکپارچه‌سازی",
-    icon: "https://julius.ai/_next/image?url=%2Fga_connector.png&w=32&q=75",
+    icon: "/logo/icons8-google-ads-96.png",
     isNew: true,
+    link: "",
   },
   {
     id: "postgres",
@@ -47,8 +52,9 @@ const connectors = [
     nameFA: "پست‌گرس",
     type: "Database",
     typeFA: "پایگاه داده",
-    icon: "https://julius.ai/_next/image?url=https%3A%2F%2Fr2.julius.ai%2Fconnector_logos%2FPostgres_logo.png&w=32&q=75",
+    icon: "/logo/icons8-postgres-96.png",
     isNew: false,
+    link: "",
   },
   {
     id: "bigquery",
@@ -56,8 +62,9 @@ const connectors = [
     nameFA: "بیگ‌کوئری",
     type: "Database",
     typeFA: "پایگاه داده",
-    icon: "https://julius.ai/_next/image?url=https%3A%2F%2Fr2.julius.ai%2Fconnector_logos%2Fbigquery-logo.png&w=32&q=75",
+    icon: "/logo/bigquery-svgrepo-com.svg",
     isNew: false,
+    link: "",
   },
   {
     id: "supabase",
@@ -65,8 +72,9 @@ const connectors = [
     nameFA: "سوپابیس",
     type: "Database",
     typeFA: "پایگاه داده",
-    icon: "https://julius.ai/_next/image?url=https%3A%2F%2Fr2.julius.ai%2Fconnector_logos%2Fsupabase-logo.png&w=32&q=75",
+    icon: "/logo/icons8-supabase-96.png",
     isNew: false,
+    link: "",
   },
   {
     id: "snowflake",
@@ -74,8 +82,9 @@ const connectors = [
     nameFA: "اسنوفلیک",
     type: "Database",
     typeFA: "پایگاه داده",
-    icon: "https://julius.ai/_next/image?url=https%3A%2F%2Fr2.julius.ai%2Fconnector_logos%2Fsnowflake-bug-light.png&w=32&q=75",
+    icon: "/logo/snowflake-color.png",
     isNew: false,
+    link: "",
   },
   {
     id: "mcp",
@@ -83,8 +92,9 @@ const connectors = [
     nameFA: "ام‌سی‌پی",
     type: "Protocol",
     typeFA: "پروتکل",
-    icon: "https://julius.ai/_next/image?url=https%3A%2F%2Fr2.julius.ai%2Fconnector_logos%2Fmcp.png&w=32&q=75",
+    icon: "/logo/mcp.png",
     isNew: false,
+    link: "",
   },
 ];
 
@@ -182,8 +192,8 @@ export default function Connectors() {
                         <Image
                           src={connector.icon}
                           alt={connector.nameFA}
-                          width={32}
-                          height={32}
+                          width={40}
+                          height={40}
                           className="object-contain flex-shrink-0"
                         />
                         <div>
@@ -203,13 +213,15 @@ export default function Connectors() {
                     </div>
                   </div>
                   <div className="bg-slate-50 border-t border-slate-200 px-4 py-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-xs font-medium h-8"
-                    >
-                      اتصال
-                    </Button>
+                    <Link href={connector.link}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs font-medium h-8"
+                      >
+                        اتصال
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               ))}
