@@ -20,15 +20,13 @@ export default function RootLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pathname = usePathname();
 
-  const excludedRoutes = ["/login", "/signup"];
+  const excludedRoutes = ["/login", "/signup", "/not-found"]; //here U can add urls that u want to don not have sidebar
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
   return (
     <html lang="fa" dir="rtl">
       <body className={`${vazirmatn.variable}`}>
         <SessionProvider>
-          {" "}
-          {/* SessionProvider دور کل محتوا */}
           <div className="min-h-screen">
             {shouldShowSidebar && (
               <Sidebar

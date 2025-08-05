@@ -68,7 +68,7 @@ export default function Sidebar({
   }
 
   if (!session) {
-    return <p>لطفاً وارد شوید.</p>;
+    return <p className="fixed">لطفاً وارد شوید.</p>;
   }
 
   if (isCollapsed) {
@@ -107,10 +107,13 @@ export default function Sidebar({
         </div>
 
         {/* New Button */}
-        <button className="flex items-center justify-center mx-3 mb-4 bg-white border border-gray-300 rounded-lg h-9 px-3 gap-2 shadow-sm hover:shadow-md transition-shadow">
-          <Plus className="w-5 h-5 text-gray-600" />
-          <span className="text-sm font-medium">جدید</span>
-        </button>
+        <Link href={"/chat"}>
+          {" "}
+          <button className="flex items-center justify-center mx-3 mb-4 bg-white border border-gray-300 rounded-lg h-9 px-3 gap-2 shadow-sm hover:shadow-md transition-shadow">
+            <Plus className="w-5 h-5 text-gray-600" />
+            <span className="text-sm font-medium">جدید</span>
+          </button>
+        </Link>
 
         {/* Main Navigation */}
         <nav
@@ -245,7 +248,7 @@ export default function Sidebar({
 
                       {/* Navigation Links */}
                       <Link
-                        href="/notebooks"
+                        href="/not-found" // /notebooks
                         className="flex items-center rounded-lg text-gray-600 cursor-pointer text-sm gap-3 py-1.5 px-3"
                       >
                         <Notebook className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -260,7 +263,7 @@ export default function Sidebar({
                       </Link>
 
                       <Link
-                        href="/files"
+                        href="/not-found" // /files
                         className="flex items-center rounded-lg text-gray-600 cursor-pointer text-sm gap-3 py-1.5 px-3"
                       >
                         <Files className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -268,7 +271,7 @@ export default function Sidebar({
                       </Link>
 
                       <Link
-                        href="/data-connectors"
+                        href="/not-found" //  /data-connectors
                         className="flex items-center rounded-lg text-gray-600 cursor-pointer text-sm gap-3 py-1.5 px-3"
                       >
                         <Unplug className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -298,7 +301,7 @@ export default function Sidebar({
               </div>
 
               <Link
-                href="/docs"
+                href="/not-found" // docs
                 className="flex items-center rounded-lg text-gray-600 cursor-pointer text-sm gap-3 py-1.5 px-3"
               >
                 <BookOpen className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -316,7 +319,7 @@ export default function Sidebar({
               </a>
 
               <Link
-                href="/models"
+                href="/not-found" // /models
                 className="flex items-center rounded-lg text-gray-600 cursor-pointer text-sm gap-3 py-1.5 px-3"
               >
                 <FlaskConical className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -324,7 +327,7 @@ export default function Sidebar({
               </Link>
 
               <Link
-                href="/upgrade"
+                href="/not-found" // /upgrade
                 className="flex items-center rounded-lg text-gray-600 cursor-pointer text-sm gap-3 py-1.5 px-3"
               >
                 <Zap className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -365,7 +368,7 @@ export default function Sidebar({
 
               <div className="w-full">
                 <Link
-                  href="/settings/data_connectors"
+                  href="/not-found" //setting/data-connectors
                   className="flex items-center justify-center bg-white border border-gray-300 rounded-lg cursor-pointer text-sm font-medium gap-2 h-8 px-3 relative w-full hover:shadow-md transition-shadow"
                 >
                   <div className="cursor-pointer text-sm font-medium text-center relative overflow-hidden text-ellipsis whitespace-nowrap">
@@ -384,7 +387,7 @@ export default function Sidebar({
           <button className="flex items-center rounded-lg text-gray-600 cursor-pointer text-sm font-medium gap-2 h-7 justify-start px-3 py-0.5 transition-colors hover:bg-gray-100 w-full">
             <Settings className="flex-shrink-0 w-4 h-4" />
             <Link
-              href="/settings"
+              href="/not-found" // /setting
               className="text-gray-600 text-sm font-medium text-left w-full"
             >
               حساب و صورتحساب
@@ -403,11 +406,11 @@ export default function Sidebar({
             <div className="flex flex-col gap-1 px-3 w-full">
               <div className="flex items-center gap-2 w-full">
                 <Image
-                  src="https://lh3.googleusercontent.com/a/ACg8ocI6kYwgBCr8ex4-55e4ykzHAbyXOm08M9Gh3hwi4ufylrVE4eW1=s96-c"
+                  src={session.user?.image || "/images/defaultProfile.png"}
                   className="rounded-full flex-shrink-0 h-6 w-6"
                   alt="پروفایل کاربر"
-                  width={24}
-                  height={24}
+                  width={28}
+                  height={28}
                 />
                 <div className="flex flex-col">
                   <span className="text-black text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap">
@@ -415,8 +418,6 @@ export default function Sidebar({
                   </span>
                   <div className="flex items-center gap-0.5 -mt-1">
                     <span className="flex items-center text-gray-600 text-xs gap-0.5">
-                      <span className="flex-shrink-0">گوگل</span>
-                      <span className="text-lg font-light">•</span>
                       <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                         {session.user?.email}
                       </span>

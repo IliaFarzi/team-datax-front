@@ -1,10 +1,9 @@
 "use client";
-
+import { signIn } from "next-auth/react"; // اضافه کردن signIn
 import { Info, Copy, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from "@/components/Button";
 import Image from "next/image";
 import Link from "next/link";
-import GoogleLogin from "@/components/googleLogIn";
 
 const connectors = [
   {
@@ -15,7 +14,7 @@ const connectors = [
     typeFA: "یکپارچه‌سازی",
     icon: "/logo/icons8-google-drive-96.png",
     isNew: true,
-    link: "https://www.google.com/",
+    link: "/not-found",
   },
   {
     id: "onedrive",
@@ -25,7 +24,7 @@ const connectors = [
     typeFA: "یکپارچه‌سازی",
     icon: "/logo/icons8-onedrive-96.png",
     isNew: true,
-    link: "/chat",
+    link: "/not-found",
   },
   {
     id: "onedrive-business",
@@ -45,7 +44,7 @@ const connectors = [
     typeFA: "یکپارچه‌سازی",
     icon: "/logo/icons8-google-ads-96.png",
     isNew: true,
-    link: "",
+    link: "/not-found",
   },
   {
     id: "postgres",
@@ -55,7 +54,7 @@ const connectors = [
     typeFA: "پایگاه داده",
     icon: "/logo/icons8-postgres-96.png",
     isNew: false,
-    link: "",
+    link: "/not-found",
   },
   {
     id: "bigquery",
@@ -65,7 +64,7 @@ const connectors = [
     typeFA: "پایگاه داده",
     icon: "/logo/bigquery-svgrepo-com.svg",
     isNew: false,
-    link: "",
+    link: "/not-found",
   },
   {
     id: "supabase",
@@ -75,7 +74,7 @@ const connectors = [
     typeFA: "پایگاه داده",
     icon: "/logo/icons8-supabase-96.png",
     isNew: false,
-    link: "",
+    link: "/not-found",
   },
   {
     id: "snowflake",
@@ -85,7 +84,7 @@ const connectors = [
     typeFA: "پایگاه داده",
     icon: "/logo/snowflake-color.png",
     isNew: false,
-    link: "",
+    link: "/not-found",
   },
   {
     id: "mcp",
@@ -95,7 +94,7 @@ const connectors = [
     typeFA: "پروتکل",
     icon: "/logo/mcp.png",
     isNew: false,
-    link: "",
+    link: "/not-found",
   },
 ];
 
@@ -214,22 +213,35 @@ export default function Connectors() {
                     </div>
                   </div>
                   <div className="bg-slate-50 border-t border-slate-200 px-4 py-3">
-                    <Link href={connector.link}>
+                    {connector.nameFA === "گوگل شیت" ? (
                       <Button
                         variant="outline"
                         size="sm"
                         className="w-full text-xs font-medium h-8"
+                        onClick={() =>
+                          signIn("google", { callbackUrl: "/chat" })
+                        }
                       >
                         اتصال
                       </Button>
-                    </Link>
+                    ) : (
+                      <Link href={connector.link}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-xs font-medium h-8"
+                        >
+                          اتصال
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 </div>
               ))}
 
               {/* Request Connector Card */}
               <a
-                href="https://juliusai.typeform.com/to/sNGPR8nP"
+                href="/not-found"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
@@ -253,7 +265,6 @@ export default function Connectors() {
               </a>
             </div>
           </div>
-                  <GoogleLogin />
 
           {/* Footer */}
           <div className="flex items-center gap-4 justify-center pt-8">
