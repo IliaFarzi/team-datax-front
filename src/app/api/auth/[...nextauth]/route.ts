@@ -13,9 +13,7 @@ export const authOptions: NextAuthOptions = {
             "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
         },
       },
-      httpOptions: {
-        timeout: 10000,
-      },
+      httpOptions: { timeout: 10000 },
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
