@@ -4,6 +4,7 @@ import { Info, Copy, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from "@/components/Button";
 import Image from "next/image";
 import Link from "next/link";
+import GoogleLogin from "@/components/googleLogIn";
 
 const connectors = [
   {
@@ -252,6 +253,7 @@ export default function Connectors() {
               </a>
             </div>
           </div>
+                  <GoogleLogin />
 
           {/* Footer */}
           <div className="flex items-center gap-4 justify-center pt-8">
@@ -262,7 +264,7 @@ export default function Connectors() {
               </p>
             </div>
             <a
-              href="https://trust.julius.ai/"
+              href="#"
               className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
             >
               <span className="text-sm">مرکز امنیت و اعتماد</span>

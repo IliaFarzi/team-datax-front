@@ -1,5 +1,5 @@
 "use client";
-
+import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -37,6 +37,7 @@ export default function Sidebar({
   const [isChatThreadsOpen, setIsChatThreadsOpen] = useState(false);
   const [showDataConnector, setShowDataConnector] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: session, status } = useSession();
 
   const chatThreads = [
     { id: "1", title: "درخواست کمک", category: "امروز" },
@@ -62,11 +63,17 @@ export default function Sidebar({
     },
   ];
 
+  if (status === "loading") {
+    return <p>در حال بارگذاری...</p>;
+  }
+
+  if (!session) {
+    return <p>لطفاً وارد شوید.</p>;
+  }
+
   if (isCollapsed) {
     return (
-      <div
-        className="h-full w-full bg-white flex   justify-between py-3 px-3"
-      >
+      <div className="h-full w-full bg-white flex   justify-between py-3 px-3">
         <button
           onClick={onToggleCollapse}
           className="  fixed  disabled:pointer-events-none  rounded-lg active:scale-95 duration-100 active:opacity-80 active:shadow-none border border-gray-300  dark:text-white border-input bg-background hover:dark:bg-accent hover:text-accent-foreground  px-1 "
@@ -404,14 +411,14 @@ export default function Sidebar({
                 />
                 <div className="flex flex-col">
                   <span className="text-black text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap">
-                    امیرعلی گلپرور
+                    {session.user?.name}
                   </span>
                   <div className="flex items-center gap-0.5 -mt-1">
                     <span className="flex items-center text-gray-600 text-xs gap-0.5">
                       <span className="flex-shrink-0">گوگل</span>
                       <span className="text-lg font-light">•</span>
                       <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                        golparvaramirali9@gmail.com
+                        {session.user?.email}
                       </span>
                     </span>
                   </div>
