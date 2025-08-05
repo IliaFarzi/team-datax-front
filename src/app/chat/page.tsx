@@ -296,7 +296,7 @@ export default function Chat() {
               {/* Notebooks Grid */}
               <div className="grid grid-cols-4 gap-2 mt-2">
                 {filteredNotebooks.map((notebook) => (
-                  <button
+                  <div
                     key={notebook.id}
                     className="flex flex-col justify-between w-full h-full p-3 pt-2.5 bg-white border border-slate-200 rounded-xl shadow-sm text-right transition-all duration-200 hover:shadow-md"
                   >
@@ -318,7 +318,7 @@ export default function Chat() {
                         </div>
                       </button>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>

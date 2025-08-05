@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Vazirmatn } from "next/font/google";
 import "./globals.css";
@@ -20,12 +20,27 @@ export default function RootLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pathname = usePathname();
 
-  const excludedRoutes = ["/not-found"]; //here U can add urls that u want to don not have sidebar
+  // تشخیص حالت موبایل
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarCollapsed(true);
+      } else {
+        setIsSidebarCollapsed(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const excludedRoutes = ["/not-found"];
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
   return (
     <html lang="fa" dir="rtl">
-      <body className={`${vazirmatn.variable}`}>
+      <body>
         <SessionProvider>
           <div className="min-h-screen">
             {shouldShowSidebar && (
