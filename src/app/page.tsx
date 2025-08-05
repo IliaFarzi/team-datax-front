@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react"; // اضافه کردن signIn
+import { signIn } from "next-auth/react"; 
 import { Info, Copy, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from "@/components/Button";
 import Image from "next/image";

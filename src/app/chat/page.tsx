@@ -81,7 +81,6 @@ export default function Chat() {
               </button>
             </div>
 
-            {/* Python Selector */}
             <button className="flex items-center justify-between gap-1 h-8 px-3 bg-white border border-gray-200 rounded-lg text-sm font-medium min-w-fit transition-all duration-300">
               <div className="flex pointer-events-none">
                 <svg

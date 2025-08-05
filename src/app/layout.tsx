@@ -20,7 +20,7 @@ export default function RootLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pathname = usePathname();
 
-  const excludedRoutes = ["/login", "/signup", "/not-found"]; //here U can add urls that u want to don not have sidebar
+  const excludedRoutes = ["/not-found"]; //here U can add urls that u want to don not have sidebar
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
   return (

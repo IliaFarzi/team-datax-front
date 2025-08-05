@@ -68,7 +68,7 @@ export default function Sidebar({
   }
 
   if (!session) {
-    return <p className="fixed">لطفاً وارد شوید.</p>;
+    return <p>لطفاً وارد شوید.</p>;
   }
 
   if (isCollapsed) {
@@ -76,7 +76,7 @@ export default function Sidebar({
       <div className="h-full w-full bg-white flex   justify-between py-3 px-3">
         <button
           onClick={onToggleCollapse}
-          className="  fixed  disabled:pointer-events-none  rounded-lg active:scale-95 duration-100 active:opacity-80 active:shadow-none border border-gray-300  dark:text-white border-input bg-background hover:dark:bg-accent hover:text-accent-foreground  px-1 "
+          className="fixed rounded-lg  duration-100 active:opacity-80 active:shadow-none border border-gray-300  dark:text-white border-input  hover:dark:bg-accent hover:text-accent-foreground  px-1 "
         >
           <Menu className="w-6 h-6 text-gray-600" />
         </button>
