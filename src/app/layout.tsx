@@ -12,21 +12,21 @@ const vazirmatn = Vazirmatn({
   subsets: ["arabic"],
 });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+interface RootLayoutProps {
   children: React.ReactNode;
-}>) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pathname = usePathname();
 
-  // تشخیص حالت موبایل
+  // تشخیص حالت موبایل و تنظیم پیش‌فرض سایدبار
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setIsSidebarCollapsed(true);
+        setIsSidebarCollapsed(true); // در موبایل بسته باشد
       } else {
-        setIsSidebarCollapsed(false);
+        setIsSidebarCollapsed(false); // در دسکتاپ باز باشد
       }
     };
 
@@ -40,9 +40,9 @@ export default function RootLayout({
 
   return (
     <html lang="fa" dir="rtl">
-      <body>
+      <body className={`${vazirmatn.variable}`}>
         <SessionProvider>
-          <div className="min-h-screen">
+          <div className="min-h-screen flex">
             {shouldShowSidebar && (
               <Sidebar
                 isCollapsed={isSidebarCollapsed}
@@ -51,15 +51,7 @@ export default function RootLayout({
                 }
               />
             )}
-            <main
-              className={`flex-1 transition-all duration-300 ${
-                shouldShowSidebar
-                  ? isSidebarCollapsed
-                    ? "md:mr-12"
-                    : "md:mr-[265px]"
-                  : ""
-              }`}
-            >
+            <main className="flex-1 transition-all duration-300 overflow-y-auto">
               {children}
             </main>
           </div>

@@ -64,10 +64,10 @@ export default function Chat() {
   );
 
   return (
-    <main className="bg-white min-h-screen w-full relative overflow-hidden">
+    <main className="bg-white min-h-screen w-full relative  ">
       {/* Header */}
       <div className="w-full bg-white border-b border-slate-200">
-        <div className="flex items-center justify-between gap-2 px-3 py-1.5 sticky top-0 z-10 bg-white">
+        <div className="flex items-center justify-between gap-2 px-3 py-1.5 sticky top-0 z-100 bg-white">
           <div className="flex items-center gap-1">
             {/* Connected Status */}
             <div className="flex">
@@ -162,7 +162,7 @@ export default function Chat() {
               <div className="mt-4 -mx-4">
                 <div className="flex flex-col gap-2 self-center max-w-full w-full px-4 rounded-t-6">
                   <div className="relative w-full max-w-[832px]">
-                    <form className="flex flex-col justify-end relative w-full max-w-full rounded-xl z-50">
+                    <form className="flex flex-col justify-end relative w-full max-w-full rounded-xl z-60">
                       <div className="flex flex-col relative max-w-full bg-white border border-slate-200 rounded-2xl shadow-sm">
                         <div className="flex items-center w-full px-3 mr-auto ml-auto">
                           <div className="flex items-center justify-center">
