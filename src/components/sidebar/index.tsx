@@ -368,7 +368,7 @@ export default function Sidebar({
                 <div className="flex flex-col gap-1 px-3 w-full">
                   <div className="flex items-center gap-2 w-full">
                     <Image
-                      src={"/images/defaultProfile.png"}
+                      src={session.user?.image || "/images/defaultProfile.png"}
                       className="rounded-full flex-shrink-0 h-6 w-6"
                       alt="پروفایل کاربر"
                       width={28}
@@ -376,12 +376,12 @@ export default function Sidebar({
                     />
                     <div className="flex flex-col">
                       <span className="text-black text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap">
-                        test
+                        {session.user?.name}
                       </span>
                       <div className="flex items-center gap-0.5 -mt-1">
                         <span className="flex items-center text-gray-600 text-xs gap-0.5">
                           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                            a@email.com
+                            {session.user?.email}
                           </span>
                         </span>
                       </div>
