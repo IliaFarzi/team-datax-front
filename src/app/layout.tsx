@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Vazirmatn } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+// import { AppSidebar } from "@/components/app-sidebar";
 import { SessionProvider } from "next-auth/react";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const vazirmatn = Vazirmatn({
   variable: "--font-vazirmatn",
@@ -35,26 +37,25 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const excludedRoutes = ["/not-found"];
+  const excludedRoutes = ["/not-found","/signup","/login"];
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
   return (
     <html lang="fa" dir="rtl">
       <body className={`${vazirmatn.variable}`}>
         <SessionProvider>
-          <div className="min-h-screen flex">
+          <SidebarProvider defaultOpen={!isSidebarCollapsed}>
             {shouldShowSidebar && (
-              <Sidebar
-                isCollapsed={isSidebarCollapsed}
-                onToggleCollapse={() =>
-                  setIsSidebarCollapsed(!isSidebarCollapsed)
-                }
+              <AppSidebar
+              // open={!isSidebarCollapsed}
+              // onOpenChange={(open) => setIsSidebarCollapsed(!open)}
               />
             )}
             <main className="flex-1 transition-all duration-300 overflow-y-auto">
+              {shouldShowSidebar && <SidebarTrigger />}
               {children}
             </main>
-          </div>
+          </SidebarProvider>
         </SessionProvider>
       </body>
     </html>
