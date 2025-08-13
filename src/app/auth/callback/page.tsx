@@ -9,11 +9,19 @@ export default function AuthCallbackPage() {
     const params = new URLSearchParams(window.location.search);
     const accessToken = params.get("access_token");
     const sessionId = params.get("session_id");
+    const email = params.get("email");
+    const picture = params.get("picture");
     if (accessToken) {
       localStorage.setItem("access_token", accessToken);
     }
     if (sessionId) {
       localStorage.setItem("session_id", sessionId);
+    }
+    if (email) {
+      localStorage.setItem("user_email", email);
+    }
+    if (picture) {
+      localStorage.setItem("user_picture", picture);
     }
 
     router.replace("/chat");

@@ -37,20 +37,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const excludedRoutes = ["/not-found","/signup","/login"];
+  const excludedRoutes = ["/not-found", "/signup", "/login"];
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
   return (
     <html lang="fa" dir="rtl">
-      <body className={`${vazirmatn.variable}`}>
+      <body>
         <SessionProvider>
           <SidebarProvider defaultOpen={!isSidebarCollapsed}>
-            {shouldShowSidebar && (
-              <AppSidebar
-              // open={!isSidebarCollapsed}
-              // onOpenChange={(open) => setIsSidebarCollapsed(!open)}
-              />
-            )}
+            {shouldShowSidebar && <AppSidebar />}
             <main className="flex-1 transition-all duration-300 overflow-y-auto">
               {shouldShowSidebar && <SidebarTrigger />}
               {children}
