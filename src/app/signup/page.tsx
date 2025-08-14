@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -11,29 +10,105 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import Modal from "@/components/Modal";
+
+interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+// تغییر: تعریف تایپ برای ساختار خطاهای بک‌اند (مثلاً FastAPI)
+type ErrorDetailItem = {
+  msg?: string;
+  message?: string;
+  [key: string]: unknown;
+};
+
+// تغییر: تایپ برای آبجکت خطای کلی
+type ApiErrorResponse = {
+  detail?: string | ErrorDetailItem[];
+};
 
 function CardDemo() {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterRequest>();
+
+  const onSubmit = async (data: RegisterRequest) => {
+    console.log("Submitting:", data); // برای دیباگ
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // (اختیاری) می‌تونی ساده‌تر هم بنویسی: body: JSON.stringify(data)
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        let errorDetail = "Registration failed";
+        try {
+          // تغییر: تایپ کردن نتیجهٔ JSON به شکل ApiErrorResponse
+          const result: ApiErrorResponse = await response.json();
+
+          // تغییر: امن‌سازی استخراج پیام خطا و تایپ کردن پارامتر err
+          errorDetail =
+            typeof result.detail === "string"
+              ? result.detail
+              : Array.isArray(result.detail)
+              ? result.detail
+                  .map((err: ErrorDetailItem) => err.msg ?? err.message ?? "")
+                  .filter(Boolean)
+                  .join(", ") || errorDetail
+              : errorDetail;
+        } catch (jsonError) {
+          console.error("JSON parse error:", jsonError);
+        }
+        throw new Error(errorDetail);
+      }
+
+      setErrorMessage("در حال ثبت‌نام...");
+    } catch (error: unknown) {
+      const errorMsg =
+        error instanceof Error ? error.message : "Registration failed";
+      setErrorMessage(errorMsg);
+      console.error("Signup error:", errorMsg);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm border-none">
+      <Card className="w-full max-w-sm shadow-none">
         <CardHeader>
           <div className="flex flex-col items-center justify-center">
-            <Link href={"/"}>
-              <svg
-                width="52"
-                height="52"
-                viewBox="0 0 52 52"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M27.914 8C34.0825 8.84853 38.7328 11.9488 41.8647 17.3005C44.8173 23.2979 44.7078 29.2429 41.5365 35.1356C38.2774 40.3136 33.5907 43.2315 27.4763 43.889C24.9962 43.889 22.5161 43.889 20.0359 43.889C20.0359 39.9499 20.0359 36.0109 20.0359 32.0719C24.0301 32.1082 28.0056 32.0716 31.9624 31.9625C31.9624 27.9504 31.9624 23.9385 31.9624 19.9265C27.9504 19.9265 23.9385 19.9265 19.9265 19.9265C19.8173 23.8834 19.7808 27.8589 19.8171 31.853C15.8781 31.853 11.939 31.853 8 31.853C8 23.902 8 15.951 8 8C14.638 8 21.276 8 27.914 8Z"
-                  fill="#010101"
-                />
-              </svg>
-            </Link>
+            <svg
+              width="52"
+              height="52"
+              viewBox="0 0 52 52"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M27.914 8C34.0825 8.84853 38.7328 11.9488 41.8647 17.3005C44.8173 23.2979 44.7078 29.2429 41.5365 35.1356C38.2774 40.3136 33.5907 43.2315 27.4763 43.889C24.9962 43.889 22.5161 43.889 20.0359 43.889C20.0359 39.9499 20.0359 36.0109 20.0359 32.0719C24.0301 32.1082 28.0056 32.0716 31.9624 31.9625C31.9624 27.9504 31.9624 23.9385 31.9624 19.9265C27.9504 19.9265 23.9385 19.9265 19.9265 19.9265C19.8173 23.8834 19.7808 27.8589 19.8171 31.853C15.8781 31.853 11.939 31.853 8 31.853C8 23.902 8 15.951 8 8C14.638 8 21.276 8 27.914 8Z"
+                fill="#010101"
+              />
+            </svg>
             <CardTitle>ثبت نام در دیتاکس</CardTitle>
             <div className="flex gap-1">
               <span className=""> از قبل حساب دارید؟</span>
@@ -42,7 +117,7 @@ function CardDemo() {
           </div>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="name">نام و نام خانوادگی</Label>
@@ -50,8 +125,15 @@ function CardDemo() {
                   id="name"
                   type="text"
                   placeholder="مثلا مانی جلیلی"
-                  required
+                  {...register("name", {
+                    required: "نام و نام خانوادگی الزامی است",
+                  })}
                 />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">
+                    {errors.name.message}
+                  </span>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">ایمیل</Label>
@@ -59,24 +141,57 @@ function CardDemo() {
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
-                  required
+                  {...register("email", {
+                    required: "ایمیل الزامی است",
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "ایمیل نامعتبر است",
+                    },
+                  })}
                 />
+                {errors.email && (
+                  <span className="text-red-500 text-sm">
+                    {errors.email.message}
+                  </span>
+                )}
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">شماره همراه</Label>
+                  <Label htmlFor="password">رمز عبور</Label>
                 </div>
-                <Input id="password" type="tel" required />
+                <Input
+                  id="password"
+                  type="password"
+                  {...register("password", {
+                    required: "رمز عبور الزامی است",
+                    minLength: {
+                      value: 6,
+                      message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+                    },
+                  })}
+                />
+                {errors.password && (
+                  <span className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </span>
+                )}
               </div>
             </div>
+            <CardFooter className="flex-col gap-2 mt-4">
+              <Button
+                type="submit"
+                className="w-[340px] mt-6 h-10 text-base font-medium"
+              >
+                ثبت‌نام
+              </Button>
+            </CardFooter>
           </form>
         </CardContent>
-        <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
-            ورود
-          </Button>
-        </CardFooter>
       </Card>
+      <Modal
+        errorMessage={errorMessage}
+        onClose={() => setErrorMessage(null)}
+      />
     </div>
   );
 }

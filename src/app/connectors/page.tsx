@@ -1,4 +1,5 @@
 "use client";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useCallback } from "react";
 
@@ -19,8 +20,8 @@ const connectors: Connector[] = [
     name: "Google Sheets",
     nameFA: "گوگل شیت",
     type: "Integration",
-    typeFA: "یکپارچه‌سازی",
-    icon: "/logo/sheets.png",
+    typeFA: "جدول‌های گوگل شیت خود را تحلیل کنید.",
+    icon: "/images/googleSheet.png",
     isNew: true,
   },
 ];
@@ -95,10 +96,10 @@ export default function Connectors() {
                 <button
                   key={connector.id}
                   onClick={() => handleConnect(connector.id)}
-                  className="text-right bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow p-0"
+                  className="text-right bg-white border border-slate-200 rounded-xl overflow-hidden  p-0"
                   type="button"
                 >
-                  <div className="p-4 w-full flex items-start justify-between">
+                  <div className="p-4 w-[312px] h-[108px] border border-[#E4E4E7] flex flex-col items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Image
                         src={connector.icon}
@@ -111,16 +112,15 @@ export default function Connectors() {
                         <h3 className="text-sm font-medium tracking-tight">
                           {connector.nameFA}
                         </h3>
-                        <p className="text-xs text-slate-500 tracking-tight">
+                        <p className="text-xs text-[#09090B] tracking-tight">
                           {connector.typeFA}
                         </p>
                       </div>
                     </div>
-                    {connector.isNew && (
-                      <div className="bg-blue-50 text-blue-600 text-xs font-medium px-2 py-1 rounded">
-                        جدید
-                      </div>
-                    )}
+
+                    <div className="self-end w-10 h-8 bg-black flex justify-center items-center rounded-lg ml-3">
+                      <ArrowLeft color="white" />
+                    </div>
                   </div>
                 </button>
               ))}

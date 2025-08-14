@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import Modal from "@/components/model";
+import Modal from "@/components/Modal";
 import SendSvg from "../../../../public/Svg/send";
 
 interface Message {

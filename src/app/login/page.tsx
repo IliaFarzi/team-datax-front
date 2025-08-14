@@ -1,7 +1,5 @@
 "use client";
-import LoginButton from "@/components/googleLogIn";
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -12,8 +10,81 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import Modal from "@/components/Modal";
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+// تعریف تایپ برای ساختار خطاهای بک‌اند (مثلاً FastAPI)
+type ErrorDetailItem = {
+  msg?: string;
+  message?: string;
+  [key: string]: unknown;
+};
+
+// تایپ برای آبجکت خطای کلی
+type ApiErrorResponse = {
+  detail?: string | ErrorDetailItem[];
+};
 
 function CardDemo() {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginRequest>();
+
+  const onSubmit = async (data: LoginRequest) => {
+    console.log("Submitting:", data); // برای دیباگ
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        let errorDetail = "Login failed";
+        try {
+          // تایپ کردن نتیجه JSON به شکل ApiErrorResponse
+          const result: ApiErrorResponse = await response.json();
+          errorDetail =
+            typeof result.detail === "string"
+              ? result.detail
+              : Array.isArray(result.detail)
+              ? result.detail
+                  .map((err: ErrorDetailItem) => err.msg ?? err.message ?? "")
+                  .filter(Boolean)
+                  .join(", ") || errorDetail
+              : errorDetail;
+        } catch (jsonError) {
+          console.error("JSON parse error:", jsonError);
+        }
+        throw new Error(errorDetail);
+      }
+
+      // بک‌اند ریدایرکت می‌کنه به /auth/callback، پس نیازی به ریدایرکت دستی نیست
+      setErrorMessage("در حال ورود...");
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : "Login failed";
+      setErrorMessage(errorMsg);
+      console.error("Login error:", errorMsg);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-full max-w-sm border-none">
@@ -37,13 +108,13 @@ function CardDemo() {
             </Link>
             <CardTitle>ورود در دیتاکس</CardTitle>
             <div className="flex gap-1">
-              <span className=""> حساب کاربری ندارید؟ </span>
+              <span className="">حساب کاربری ندارید؟</span>
               <Link href={"/signup"}>ثبت‌نام کنید</Link>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">ایمیل</Label>
@@ -51,24 +122,57 @@ function CardDemo() {
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
-                  required
+                  {...register("email", {
+                    required: "ایمیل الزامی است",
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "ایمیل نامعتبر است",
+                    },
+                  })}
                 />
+                {errors.email && (
+                  <span className="text-red-500 text-sm">
+                    {errors.email.message}
+                  </span>
+                )}
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">رمز عبور</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  {...register("password", {
+                    required: "رمز عبور الزامی است",
+                    minLength: {
+                      value: 6,
+                      message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+                    },
+                  })}
+                />
+                {errors.password && (
+                  <span className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </span>
+                )}
               </div>
             </div>
+            <CardFooter className="flex-col gap-2 mt-4">
+              <Button
+                type="submit"
+                className="w-[340px] mt-6 h-10 text-base font-medium "
+              >
+                ورود
+              </Button>
+            </CardFooter>
           </form>
         </CardContent>
-        <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
-            ورود
-          </Button>
-        </CardFooter>
       </Card>
+      <Modal
+        errorMessage={errorMessage}
+        onClose={() => setErrorMessage(null)}
+      />
     </div>
   );
 }

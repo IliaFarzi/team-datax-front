@@ -1,31 +1,28 @@
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get("access_token");
-    const sessionId = params.get("session_id");
-    const email = params.get("email");
-    const picture = params.get("picture");
-    if (accessToken) {
-      localStorage.setItem("access_token", accessToken);
-    }
-    if (sessionId) {
-      localStorage.setItem("session_id", sessionId);
-    }
-    if (email) {
-      localStorage.setItem("user_email", email);
-    }
-    if (picture) {
-      localStorage.setItem("user_picture", picture);
-    }
+    const token = searchParams.get("token");
+    const sessionId = searchParams.get("session_id");
+    const name = searchParams.get("name");
+    const email = searchParams.get("email");
 
-    router.replace("/chat");
-  }, [router]);
+    if (token && sessionId && name && email) {
+      localStorage.setItem("access_token", token);
+      localStorage.setItem("session_id", sessionId);
+      localStorage.setItem("user_name", name);
+      localStorage.setItem("user_email", email);
+      router.replace("/");
+    } else {
+      console.error("Missing query params:", { token, sessionId, name, email });
+      router.replace("/login");
+    }
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
