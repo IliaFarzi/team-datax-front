@@ -31,44 +31,10 @@ export default function Connectors() {
     try {
       const base =
         (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "") || "";
-      const callbackUrl = `${window.location.origin}/auth/callback`; // صفحه callback ما (پایین میفرستم)
-      const loginUrl = `${base}/auth/login?callbackUrl=${encodeURIComponent(
-        callbackUrl
-      )}`;
-
-      // اگر می‌خواهید قبل از redirect بررسی کنید که کاربر قبلاً session داره:
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("access_token")
-          : null;
-      if (token) {
-        // نمونهٔ درخواست اعتبارسنجی توکن (بک‌اند باید endpoint مناسب داشته باشه)
-        // اگر بک‌اند چنین endpoint‌ای نداره می‌تونید این بخش رو حذف کنید و مستقیم redirect کنید.
-        try {
-          const res = await fetch(`${base}/auth/validate`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (res.ok) {
-            // اگر توکن معتبره، مستقیم بفرست به صفحه‌ی چت
-            window.location.href = "/chat";
-            return;
-          }
-        } catch (e) {
-          // در صورتی که validate وجود نداره یا خطا شد، ادامه میدیم به redirect به /auth/login
-          console.warn(
-            "validate failed or not available, continuing to login flow",
-            e
-          );
-        }
-      }
-
-      // هدایت به بک‌اند تا جریان OAuth را شروع کند
-      window.location.href = loginUrl;
+      // هدایت مستقیم به بک‌اند برای شروع جریان اتصال Google Sheets
+      window.location.href = `${base}/auth/connect-google-sheets`;
     } catch (err) {
-      console.error("Failed to start OAuth flow:", err);
+      console.error("Failed to start connection flow:", err);
       alert("خطا در شروع فرایند اتصال. کنسول را بررسی کنید.");
     }
   }, []);
@@ -96,7 +62,7 @@ export default function Connectors() {
                 <button
                   key={connector.id}
                   onClick={() => handleConnect(connector.id)}
-                  className="text-right bg-white border border-slate-200 rounded-xl overflow-hidden  p-0"
+                  className="text-right bg-white border border-slate-200 rounded-xl overflow-hidden p-0"
                   type="button"
                 >
                   <div className="p-4 w-[312px] h-[108px] border border-[#E4E4E7] flex flex-col items-start justify-between">
