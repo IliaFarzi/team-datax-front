@@ -15,6 +15,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [loadingDots, setLoadingDots] = useState(".");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +34,14 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    if (!isLoading) return;
+    const interval = setInterval(() => {
+      setLoadingDots((dots) => (dots.length < 3 ? dots + "." : "."));
+    }, 300);
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedInput = input.trim();
@@ -47,18 +56,44 @@ export default function ChatPage() {
     setMessages(newMessages);
     setInput("");
 
-    setTimeout(() => {
-      const updatedMessages: Message[] = [
-        ...newMessages,
-        { role: "assistant", content: "سلام، من خوبم!" },
-      ];
-      setMessages(updatedMessages);
-      localStorage.setItem(
-        `chat_${sessionId}`,
-        JSON.stringify(updatedMessages)
-      );
-      setIsLoading(false);
-    }, 1000);
+    // پاسخ‌های فیک تصادفی برای حس پویا
+    const fakeResponses = [
+      `
+      دلایل انتخاب بهترین روش خواندن مقالات علمی و ISI مناسب
+شاید این سوال برای‌تان پیش بیاید که چه فرقی می‌کند از کدام روش خواندن مقالات علمی و ISI استفاده شود. در پاسخ باید بگوییم که انتخاب بهترین روش خواندن مقاله ISI و همه مقالات علمی دیگر برای محققان ضروری است، چراکه محققان مجبورند انواع مقالات را مطالعه کند تا مطالب مورد نظرشان را بیابند و بدیهی است نمی‌توان تعداد زیادی مقاله را در زمان محدود انجام دادن یک پروژه تحقیقاتی خواند و این کار منطقی نیست. بر این اساس، به کار بردن یک روش خواندن مقالات علمی و ISI مناسب به سرعت عمل پژوهشگر کمک و از اتلاف زمان و انرژی جلوگیری می‌کند.
+
+اما انتخاب روش خواندن مقاله ISI مناسب علاوه بر این‌که موجب می‌شود دانشجو یا پژوهشگر تعداد بیشتری از مقالات را بخواند و بررسی کند، به مطالعه کاربردی و مفید بسیار کمک می‌کند؛ همان‌طور که می‌دانید، بسیاری از مقالات علمی طولانی و مفصل هستند و ما می‌توانیم با استفاده از روش خواندن مقالات علمی و ISI صحیح و اصولی فقط لب کلام و نکات مهم و اصلی را بخوانیم و دیگر لازم نیست وقت خود را صرف خواندن جملات توضیحی و تکراری کنیم. به طور کلی، انتخاب روش خواندن مقالات علمی و ISI درست در پیشبرد سریع مراحل تحقیق نقش مهمی دارد و یادگیری آن بسیار ضروری است.
+
+
+      
+      `,
+    ];
+    const fakeResponse =
+      fakeResponses[Math.floor(Math.random() * fakeResponses.length)];
+    const words = fakeResponse.split(" ");
+    let currentMessage = "";
+    let wordIndex = 0;
+
+    const streamInterval = setInterval(() => {
+      if (wordIndex < words.length) {
+        currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
+        setMessages([
+          ...newMessages,
+          { role: "assistant", content: currentMessage },
+        ]);
+        wordIndex++;
+      } else {
+        clearInterval(streamInterval);
+        setIsLoading(false);
+        localStorage.setItem(
+          `chat_${sessionId}`,
+          JSON.stringify([
+            ...newMessages,
+            { role: "assistant", content: fakeResponse },
+          ])
+        );
+      }
+    }, 100 + Math.random() * 50); // سرعت متغیر برای حس طبیعی
   };
 
   const handleCopy = async (text: string, index: number) => {
@@ -76,7 +111,6 @@ export default function ChatPage() {
         document.body.removeChild(ta);
       }
 
-      // انیمیشن تیک
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 1500);
     } catch (err) {
@@ -87,15 +121,13 @@ export default function ChatPage() {
   return (
     <main className="min-h-screen w-full flex flex-col items-center justify-between bg-background">
       <div className="max-w-[832px] w-full px-4 py-8 flex flex-col flex-1">
-        {/* کانتینر پیام‌ها */}
         <div className="flex-1 overflow-y-auto space-y-6 px-2">
           {messages.length === 0 && (
             <p className="text-center text-gray-500">هیچ پیامی یافت نشد.</p>
           )}
 
           {messages.map((msg, index) => (
-            <div key={index} className="flex flex-col  text-right">
-              {/* هدر: آواتار و اسم */}
+            <div key={index} className="flex flex-col text-right">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-200 text-xs font-medium">
                   {msg.role === "user" ? "شما" : "هوش"}
@@ -105,12 +137,10 @@ export default function ChatPage() {
                 </span>
               </div>
 
-              {/* متن پیام */}
-              <div className="max-w-[90%] break-words px-3 py-2 text-sm  rounded-lg">
+              <div className="max-w-[90%] break-words px-3 py-2 text-sm rounded-lg">
                 <p className="text-sm leading-6">{msg.content}</p>
               </div>
 
-              {/* آیکن‌ها زیر پیام */}
               <div className="flex items-center gap-4 mt-2 text-xs">
                 <button
                   onClick={() => handleCopy(msg.content, index)}
@@ -122,9 +152,7 @@ export default function ChatPage() {
                   {copiedIndex === index ? (
                     <Check className="w-4 h-4 check-icon text-green-500" />
                   ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                    </>
+                    <Copy className="w-4 h-4" />
                   )}
                 </button>
 
@@ -141,21 +169,20 @@ export default function ChatPage() {
             </div>
           ))}
 
-          {isLoading && (
-            <div className="flex flex-col  text-right">
+          {/* {isLoading && (
+            <div className="flex flex-col text-right">
               <div className="max-w-[90%] px-3 py-2 text-sm rounded-lg">
-                <p className="text-sm leading-6">در حال پردازش...</p>
+                <p className="text-sm leading-6">در حال تایپ{loadingDots}</p>
               </div>
             </div>
-          )}
+          )} */}
 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* فرم ارسال */}
         <form
           onSubmit={handleSubmit}
-          className="mt-4 flex flex-col items-center w-full"
+          className="mt-4 flex flex-col items-center w-full "
         >
           <div className="flex items-center w-full bg-white border border-[#E4E4E7] rounded-2xl px-3">
             <button
