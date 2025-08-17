@@ -1,8 +1,9 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function AuthCallbackPage() {
+function CallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,11 +27,15 @@ export default function AuthCallbackPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div>
-        <p>
-          در حال تکمیل ورود... اگر صفحه متوقف ماند، لطفاً چند لحظه صبر کنید.
-        </p>
-      </div>
+      <p>در حال تکمیل ورود... اگر صفحه متوقف ماند، لطفاً چند لحظه صبر کنید.</p>
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CallbackHandler />
+    </Suspense>
   );
 }
