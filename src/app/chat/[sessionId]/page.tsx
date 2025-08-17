@@ -121,7 +121,7 @@ export default function ChatPage() {
   return (
     <main className="min-h-screen w-full flex flex-col items-center justify-between bg-background">
       <div className="max-w-[832px] w-full px-4 py-8 flex flex-col flex-1">
-        <div className="flex-1 overflow-y-auto space-y-6 px-2">
+        <div className="flex-1 overflow-y-auto space-y-6 px-2 mb-8">
           {messages.length === 0 && (
             <p className="text-center text-gray-500">هیچ پیامی یافت نشد.</p>
           )}
@@ -182,7 +182,7 @@ export default function ChatPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="mt-4 flex flex-col items-center w-full "
+          className=" flex flex-col items-center  fixed bottom-5 w-98 md:w-[800px] h-auto"
         >
           <div className="flex items-center w-full bg-white border border-[#E4E4E7] rounded-2xl px-3">
             <button
