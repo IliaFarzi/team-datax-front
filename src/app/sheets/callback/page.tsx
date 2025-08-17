@@ -1,8 +1,9 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function SheetsCallback() {
+function SheetsCallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -15,7 +16,6 @@ export default function SheetsCallback() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // اگر توکن نیازه، از localStorage بگیر
             Authorization: `Bearer ${
               localStorage.getItem("access_token") || ""
             }`,
@@ -26,7 +26,6 @@ export default function SheetsCallback() {
         .then((res) => {
           if (res.ok) {
             return res.json().then((data) => {
-              // ذخیره توکن یا session_id اگر بک‌اند برگردونه
               if (data.token) {
                 localStorage.setItem("access_token", data.token);
               }
@@ -58,5 +57,13 @@ export default function SheetsCallback() {
     >
       <p>در حال پردازش اتصال به گوگل شیت...</p>
     </div>
+  );
+}
+
+export default function SheetsCallback() {
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <SheetsCallbackHandler />
+    </Suspense>
   );
 }
