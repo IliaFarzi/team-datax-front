@@ -18,6 +18,8 @@ export default function ChatPage() {
   const [loadingDots, setLoadingDots] = useState(".");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   useEffect(() => {
     const storedMessages = localStorage.getItem(`chat_${sessionId}`);
     if (storedMessages) {
@@ -56,44 +58,58 @@ export default function ChatPage() {
     setMessages(newMessages);
     setInput("");
 
-    // پاسخ‌های فیک تصادفی برای حس پویا
-    const fakeResponses = [
-      `
-      دلایل انتخاب بهترین روش خواندن مقالات علمی و ISI مناسب
-شاید این سوال برای‌تان پیش بیاید که چه فرقی می‌کند از کدام روش خواندن مقالات علمی و ISI استفاده شود. در پاسخ باید بگوییم که انتخاب بهترین روش خواندن مقاله ISI و همه مقالات علمی دیگر برای محققان ضروری است، چراکه محققان مجبورند انواع مقالات را مطالعه کند تا مطالب مورد نظرشان را بیابند و بدیهی است نمی‌توان تعداد زیادی مقاله را در زمان محدود انجام دادن یک پروژه تحقیقاتی خواند و این کار منطقی نیست. بر این اساس، به کار بردن یک روش خواندن مقالات علمی و ISI مناسب به سرعت عمل پژوهشگر کمک و از اتلاف زمان و انرژی جلوگیری می‌کند.
+    try {
+      const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          content: trimmedInput,
+        }),
+      });
 
-اما انتخاب روش خواندن مقاله ISI مناسب علاوه بر این‌که موجب می‌شود دانشجو یا پژوهشگر تعداد بیشتری از مقالات را بخواند و بررسی کند، به مطالعه کاربردی و مفید بسیار کمک می‌کند؛ همان‌طور که می‌دانید، بسیاری از مقالات علمی طولانی و مفصل هستند و ما می‌توانیم با استفاده از روش خواندن مقالات علمی و ISI صحیح و اصولی فقط لب کلام و نکات مهم و اصلی را بخوانیم و دیگر لازم نیست وقت خود را صرف خواندن جملات توضیحی و تکراری کنیم. به طور کلی، انتخاب روش خواندن مقالات علمی و ISI درست در پیشبرد سریع مراحل تحقیق نقش مهمی دارد و یادگیری آن بسیار ضروری است.
-
-
-      
-      `,
-    ];
-    const fakeResponse =
-      fakeResponses[Math.floor(Math.random() * fakeResponses.length)];
-    const words = fakeResponse.split(" ");
-    let currentMessage = "";
-    let wordIndex = 0;
-
-    const streamInterval = setInterval(() => {
-      if (wordIndex < words.length) {
-        currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
-        setMessages([
-          ...newMessages,
-          { role: "assistant", content: currentMessage },
-        ]);
-        wordIndex++;
-      } else {
-        clearInterval(streamInterval);
-        setIsLoading(false);
-        localStorage.setItem(
-          `chat_${sessionId}`,
-          JSON.stringify([
-            ...newMessages,
-            { role: "assistant", content: fakeResponse },
-          ])
-        );
+      if (!response.ok) {
+        throw new Error("API request failed");
       }
-    }, 100 + Math.random() * 50); // سرعت متغیر برای حس طبیعی
+
+      const data = await response.json();
+      const assistantContent = data.content; // فرض بر این است که API فیلد content برمی‌گرداند
+
+      // شبیه‌سازی استریم کلمه‌به‌کلمه
+      const words = assistantContent.split(" ");
+      let currentMessage = "";
+      let wordIndex = 0;
+
+      const streamInterval = setInterval(() => {
+        if (wordIndex < words.length) {
+          currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
+          setMessages([
+            ...newMessages,
+            { role: "assistant", content: currentMessage },
+          ]);
+          wordIndex++;
+        } else {
+          clearInterval(streamInterval);
+          setIsLoading(false);
+          localStorage.setItem(
+            `chat_${sessionId}`,
+            JSON.stringify([
+              ...newMessages,
+              { role: "assistant", content: assistantContent },
+            ])
+          );
+        }
+      }, 100 + Math.random() * 50); // سرعت متغیر برای حس طبیعی
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setMessages([
+        ...newMessages,
+        { role: "assistant", content: "خطا در دریافت پاسخ از سرور!" },
+      ]);
+      setIsLoading(false);
+    }
   };
 
   const handleCopy = async (text: string, index: number) => {
@@ -169,20 +185,20 @@ export default function ChatPage() {
             </div>
           ))}
 
-          {/* {isLoading && (
+          {isLoading && (
             <div className="flex flex-col text-right">
               <div className="max-w-[90%] px-3 py-2 text-sm rounded-lg">
                 <p className="text-sm leading-6">در حال تایپ{loadingDots}</p>
               </div>
             </div>
-          )} */}
+          )}
 
           <div ref={messagesEndRef} />
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className=" flex flex-col items-center  fixed bottom-5 w-98 md:w-[800px] h-auto"
+          className="flex flex-col items-center fixed bottom-5 w-98 md:w-[800px] h-auto"
         >
           <div className="flex items-center w-full bg-white border border-[#E4E4E7] rounded-2xl px-3">
             <button

@@ -2,33 +2,47 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Vazirmatn } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 // import { AppSidebar } from "@/components/app-sidebar";
 import { SessionProvider } from "next-auth/react";
 import { AppSidebar } from "@/components/app-sidebar";
 
-const vazirmatn = Vazirmatn({
-  variable: "--font-vazirmatn",
-  subsets: ["arabic"],
-});
-
 interface RootLayoutProps {
   children: React.ReactNode;
 }
 
+const yekanFont = localFont({
+  src: [
+    {
+      path: "../../public/fonts/IRANYekanX-Regular.woff2",
+      weight: "400",
+    },
+    {
+      path: "../../public/fonts/IRANYekanX-Medium.woff2",
+      weight: "500",
+    },
+    {
+      path: "../../public/fonts/IRANYekanX-DemiBold.woff2",
+      weight: "600",
+    },
+    {
+      path: "../../public/fonts/IRANYekanX-Bold.woff2",
+      weight: "700",
+    },
+  ],
+});
 export default function RootLayout({ children }: RootLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pathname = usePathname();
 
-  // تشخیص حالت موبایل و تنظیم پیش‌فرض سایدبار
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setIsSidebarCollapsed(true); // در موبایل بسته باشد
+        setIsSidebarCollapsed(true);
       } else {
-        setIsSidebarCollapsed(false); // در دسکتاپ باز باشد
+        setIsSidebarCollapsed(false);
       }
     };
 
@@ -37,11 +51,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const excludedRoutes = ["/not-found", "/signup", "/login"];
+  const excludedRoutes = ["/not-found", "/signup", "/login", "/resetPassword"];
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
   return (
-    <html lang="fa" dir="rtl">
+    <html lang="fa" dir="rtl" className={yekanFont.className}>
       <body>
         <SessionProvider>
           <SidebarProvider defaultOpen={!isSidebarCollapsed}>

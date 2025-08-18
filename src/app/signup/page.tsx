@@ -13,35 +13,40 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import Modal from "@/components/Modal";
+import { Eye, EyeOff } from "lucide-react";
 
 interface RegisterRequest {
   name: string;
   email: string;
   password: string;
+  number: number;
+  confirmPassword: string;
 }
 
-// تغییر: تعریف تایپ برای ساختار خطاهای بک‌اند (مثلاً FastAPI)
 type ErrorDetailItem = {
   msg?: string;
   message?: string;
   [key: string]: unknown;
 };
 
-// تغییر: تایپ برای آبجکت خطای کلی
 type ApiErrorResponse = {
   detail?: string | ErrorDetailItem[];
 };
 
 function CardDemo() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterRequest>();
 
   const onSubmit = async (data: RegisterRequest) => {
-    console.log("Submitting:", data); // برای دیباگ
+    console.log("Submitting:", data);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`,
@@ -50,10 +55,10 @@ function CardDemo() {
           headers: {
             "Content-Type": "application/json",
           },
-          // (اختیاری) می‌تونی ساده‌تر هم بنویسی: body: JSON.stringify(data)
           body: JSON.stringify({
             name: data.name,
             email: data.email,
+            number: data.number,
             password: data.password,
           }),
         }
@@ -62,10 +67,7 @@ function CardDemo() {
       if (!response.ok) {
         let errorDetail = "Registration failed";
         try {
-          // تغییر: تایپ کردن نتیجهٔ JSON به شکل ApiErrorResponse
           const result: ApiErrorResponse = await response.json();
-
-          // تغییر: امن‌سازی استخراج پیام خطا و تایپ کردن پارامتر err
           errorDetail =
             typeof result.detail === "string"
               ? result.detail
@@ -109,9 +111,11 @@ function CardDemo() {
                 fill="#010101"
               />
             </svg>
-            <CardTitle>ثبت نام در دیتاکس</CardTitle>
-            <div className="flex gap-1">
-              <span className=""> از قبل حساب دارید؟</span>
+            <CardTitle className="font-semibold text-[20px]">
+              ثبت نام در دیتاکس
+            </CardTitle>
+            <div className="flex gap-1 text-[14px]">
+              <span>از قبل حساب دارید؟</span>
               <Link href={"/login"}>وارد شوید</Link>
             </div>
           </div>
@@ -119,8 +123,11 @@ function CardDemo() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
+              {/* name */}
               <div className="grid gap-2">
-                <Label htmlFor="name">نام و نام خانوادگی</Label>
+                <Label htmlFor="name" className="text-[14px]">
+                  نام و نام خانوادگی <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="name"
                   type="text"
@@ -135,8 +142,12 @@ function CardDemo() {
                   </span>
                 )}
               </div>
+
+              {/* email */}
               <div className="grid gap-2">
-                <Label htmlFor="email">ایمیل</Label>
+                <Label htmlFor="email">
+                  ایمیل <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -155,28 +166,95 @@ function CardDemo() {
                   </span>
                 )}
               </div>
+
+              {/* number */}
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">رمز عبور</Label>
-                </div>
+                <Label htmlFor="number">
+                  شماره همراه <span className="text-red-500">*</span>
+                </Label>
                 <Input
-                  id="password"
-                  type="password"
-                  {...register("password", {
-                    required: "رمز عبور الزامی است",
-                    minLength: {
-                      value: 6,
-                      message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+                  id="number"
+                  type="tel"
+                  placeholder="مثلا ۰۹۱۲۳۴۵۶۷۸۹"
+                  {...register("number", {
+                    required: "شماره همراه الزامی است",
+                    pattern: {
+                      value: /^(?:\+98|0)?9\d{9}$/,
+                      message: "شماره همراه نامعتبر است",
                     },
                   })}
                 />
+                {errors.number && (
+                  <span className="text-red-500 text-sm">
+                    {errors.number.message}
+                  </span>
+                )}
+              </div>
+
+              {/* password */}
+              <div className="grid gap-2">
+                <Label htmlFor="password">
+                  رمز عبور <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    {...register("password", {
+                      required: "رمز عبور الزامی است",
+                      minLength: {
+                        value: 6,
+                        message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+                      },
+                    })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 left-2 flex items-center text-gray-500"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.password && (
                   <span className="text-red-500 text-sm">
                     {errors.password.message}
                   </span>
                 )}
               </div>
+
+              {/* confirm password */}
+              <div className="grid gap-2">
+                <Label htmlFor="confirmPassword">
+                  تکرار رمز عبور <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirm ? "text" : "password"}
+                    {...register("confirmPassword", {
+                      required: "تکرار رمز عبور الزامی است",
+                      validate: (value) =>
+                        value === watch("password") ||
+                        "رمز عبور و تکرار آن یکسان نیستند",
+                    })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute inset-y-0 left-2 flex items-center text-gray-500"
+                  >
+                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <span className="text-red-500 text-sm">
+                    {errors.confirmPassword.message}
+                  </span>
+                )}
+              </div>
             </div>
+
             <CardFooter className="flex-col gap-2 mt-4">
               <Button
                 type="submit"
@@ -187,6 +265,9 @@ function CardDemo() {
             </CardFooter>
           </form>
         </CardContent>
+        <span className="text-[11px] text-center text-[#71717A] font-medium mt-15">
+          ثبت نام شما در دیتاکس به معنی پذیرش تمامی قوانین و مقررات آن می‌باشد.
+        </span>
       </Card>
       <Modal
         errorMessage={errorMessage}
