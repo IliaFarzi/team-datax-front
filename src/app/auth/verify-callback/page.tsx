@@ -1,7 +1,11 @@
 "use client";
+
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+
+// این خط مهمه: جلوی prerender گرفتن Next.js رو می‌گیره
+export const dynamic = "force-dynamic";
 
 export default function VerifyCallbackPage() {
   const searchParams = useSearchParams();
@@ -10,13 +14,10 @@ export default function VerifyCallbackPage() {
   const email = searchParams.get("email");
 
   useEffect(() => {
-    // اگر موفقیت بوده، کاربر رو مستقیم یا بعد از 1s به صفحه اصلی بفرست
     if (status === "success") {
-      // کوتاه صبر می‌کنیم تا کاربر پیام موفقیت رو ببینه، بعد replace می‌کنیم
       const t = setTimeout(() => {
-        router.replace("/"); // replace بهتره تا تاریخچه رو شلوغ نکنه
+        router.replace("/");
       }, 800);
-
       return () => clearTimeout(t);
     }
   }, [status, router]);
