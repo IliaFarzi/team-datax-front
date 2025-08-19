@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
-// این خط مهمه: جلوی prerender گرفتن Next.js رو می‌گیره
 export const dynamic = "force-dynamic";
 
-export default function VerifyCallbackPage() {
+function VerifyCallbackInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const status = searchParams.get("status");
@@ -62,5 +62,13 @@ export default function VerifyCallbackPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function VerifyCallbackPage() {
+  return (
+    <Suspense fallback={<div className="p-6">در حال بارگذاری...</div>}>
+      <VerifyCallbackInner />
+    </Suspense>
   );
 }
