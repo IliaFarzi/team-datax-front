@@ -14,7 +14,7 @@ function CallbackHandler() {
     const email = searchParams.get("email");
 
     if (token && sessionId && name && email) {
-      localStorage.setItem("access_token", token);
+      localStorage.setItem("access_to ken", token);
       localStorage.setItem("session_id", sessionId);
       localStorage.setItem("user_name", name);
       localStorage.setItem("user_email", email);

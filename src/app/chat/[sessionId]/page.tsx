@@ -3,6 +3,9 @@
 import { useParams } from "next/navigation";
 import { ArrowUp, CirclePlus, Copy, RefreshCw, Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 interface Message {
   role: "user" | "assistant";
@@ -75,9 +78,8 @@ export default function ChatPage() {
       }
 
       const data = await response.json();
-      const assistantContent = data.content; // فرض بر این است که API فیلد content برمی‌گرداند
+      const assistantContent = data.content;
 
-      // شبیه‌سازی استریم کلمه‌به‌کلمه
       const words = assistantContent.split(" ");
       let currentMessage = "";
       let wordIndex = 0;
@@ -101,7 +103,7 @@ export default function ChatPage() {
             ])
           );
         }
-      }, 100 + Math.random() * 50); // سرعت متغیر برای حس طبیعی
+      }, 100 + Math.random() * 50);
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages([
@@ -154,7 +156,33 @@ export default function ChatPage() {
               </div>
 
               <div className="max-w-[90%] break-words px-3 py-2 text-sm rounded-lg">
-                <p className="text-sm leading-6">{msg.content}</p>
+                <ReactMarkdown
+                  rehypePlugins={[rehypeHighlight]}
+                  components={{
+                    p: ({ children }) => (
+                      <p className="text-sm leading-6">{children}</p>
+                    ),
+                    code: ({ className, children, ...props }) => {
+                      const match = /language-(\w+)/.exec(className || "");
+                      return match ? (
+                        <pre className="bg-gray-800 p-2 rounded-md">
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        </pre>
+                      ) : (
+                        <code
+                          className="bg-gray-200 px-1 rounded-sm"
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {msg.content}
+                </ReactMarkdown>
               </div>
 
               <div className="flex items-center gap-4 mt-2 text-xs">

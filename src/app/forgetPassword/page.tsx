@@ -9,15 +9,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import Modal from "@/components/Modal";
-import { Eye, EyeOff } from "lucide-react";
 
 interface LoginRequest {
   email: string;
-  password: string;
 }
 
 // تعریف تایپ برای ساختار خطاهای بک‌اند
@@ -27,14 +24,12 @@ type ErrorDetailItem = {
   [key: string]: unknown;
 };
 
-// تایپ برای آبجکت خطای کلی
 type ApiErrorResponse = {
   detail?: string | ErrorDetailItem[];
 };
 
 function CardDemo() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false); // مدیریت چشم پسورد
 
   const {
     register,
@@ -46,7 +41,7 @@ function CardDemo() {
     console.log("Submitting:", data);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`,
         {
           method: "POST",
           headers: {
@@ -54,7 +49,6 @@ function CardDemo() {
           },
           body: JSON.stringify({
             email: data.email,
-            password: data.password,
           }),
         }
       );
@@ -106,18 +100,17 @@ function CardDemo() {
               />
             </svg>
             <CardTitle className="font-semibold text-[20px]">
-              ورود به دیتاکس
+              فراموشی رمز عبور{" "}
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
-              <span className="">حساب کاربری ندارید؟</span>
-              <Link href={"/signup"}>ثبت‌نام کنید</Link>
+              <span className="">ایمیل خود را وارد کنید</span>
             </div>
           </div>
         </CardHeader>
 
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               {/* ایمیل */}
               <div className="grid gap-2 relative">
                 <Label htmlFor="email">
@@ -141,45 +134,6 @@ function CardDemo() {
                   </span>
                 )}
               </div>
-
-              {/* رمز عبور */}
-              <div className="grid gap-1 relative">
-                <div className="flex  justify-between">
-                  <Label htmlFor="password">
-                    رمز عبور <span className="text-red-500">*</span>
-                  </Label>
-                  <Link href={"/forgetPassword"}>
-                    <span className="text-[14px] text-[#09090B]">
-                      رمز عبورتان را فراموش کردید؟
-                    </span>
-                  </Link>
-                </div>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    {...register("password", {
-                      required: "رمز عبور الزامی است",
-                      minLength: {
-                        value: 6,
-                        message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
-                      },
-                    })}
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 left-2 flex items-center text-gray-500"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <span className="text-red-500 text-sm">
-                    {errors.password.message}
-                  </span>
-                )}
-              </div>
             </div>
 
             <CardFooter className="flex-col gap-1 ">
@@ -187,15 +141,11 @@ function CardDemo() {
                 type="submit"
                 className="w-[340px] mt-6 h-10 text-base font-medium"
               >
-                ورود
+                دریافت لینک تغییر رمز
               </Button>
             </CardFooter>
           </form>
         </CardContent>
-
-        <span className="text-[11.5px] text-center text-[#71717A] font-medium mt-16">
-          ورود شما به دیتاکس به معنی پذیرش تمامی قوانین و مقررات آن می‌باشد.
-        </span>
       </Card>
 
       <Modal

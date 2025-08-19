@@ -43,9 +43,7 @@ export default function Connectors() {
     <div className="min-h-screen bg-white" dir="rtl">
       <div className="max-w-6xl mx-auto px-6 py-6">
         <div className="border-b border-slate-200 pb-6 mb-6">
-          <h1 className="text-2xl font-semibold mb-2">
-            اتصال‌دهنده‌های داده و MCPها
-          </h1>
+          <h1 className="text-2xl font-semibold mb-2">اتصالات داده </h1>
           <p className="text-slate-500">
             دیتاکس را به نرم‌افزارها و اطلاعات‌تان متصل کنید
           </p>

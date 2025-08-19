@@ -51,7 +51,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const excludedRoutes = ["/not-found", "/signup", "/login", "/resetPassword"];
+  const excludedRoutes = [
+    "/not-found",
+    "/signup",
+    "/login",
+    "/resetPassword",
+    "/checkEmail",
+    "/forgetPassword",
+  ];
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
   return (

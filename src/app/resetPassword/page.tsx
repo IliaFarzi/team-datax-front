@@ -16,10 +16,7 @@ import Modal from "@/components/Modal";
 import { Eye, EyeOff } from "lucide-react";
 
 interface RegisterRequest {
-  name: string;
-  email: string;
   password: string;
-  number: string;
   confirmPassword: string;
 }
 
@@ -33,13 +30,6 @@ type ApiErrorResponse = {
   detail?: string | ErrorDetailItem[];
 };
 
-type ApiSuccessResponse = {
-  token: string;
-  session_id: string;
-  name: string;
-  email: string;
-};
-
 function CardDemo() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -49,35 +39,27 @@ function CardDemo() {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<RegisterRequest>();
 
   const onSubmit = async (data: RegisterRequest) => {
-    setErrorMessage(null);
+    console.log("Submitting:", data);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            full_name: data.name,
-            email: data.email,
-            phone: data.number,
             password: data.password,
           }),
-          redirect: "manual",
         }
       );
-      if (response.redirected) {
-        window.location.href = response.url;
-        return;
-      }
 
       if (!response.ok) {
-        let errorDetail = "ثبت‌نام ناموفق بود";
+        let errorDetail = "Registration failed";
         try {
           const result: ApiErrorResponse = await response.json();
           errorDetail =
@@ -95,16 +77,10 @@ function CardDemo() {
         throw new Error(errorDetail);
       }
 
-      const result: ApiSuccessResponse = await response.json();
-      const { token, session_id, name, email } = result;
-      window.location.href = `/auth/callback?token=${encodeURIComponent(
-        token
-      )}&session_id=${encodeURIComponent(session_id)}&name=${encodeURIComponent(
-        name
-      )}&email=${encodeURIComponent(email)}`;
+      setErrorMessage("در حال ثبت‌نام...");
     } catch (error: unknown) {
       const errorMsg =
-        error instanceof Error ? error.message : "ثبت‌نام ناموفق بود";
+        error instanceof Error ? error.message : "Registration failed";
       setErrorMessage(errorMsg);
       console.error("Signup error:", errorMsg);
     }
@@ -130,85 +106,16 @@ function CardDemo() {
               />
             </svg>
             <CardTitle className="font-semibold text-[20px]">
-              ثبت نام در دیتاکس
+              تغییر رمز عبور
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
-              <span>از قبل حساب دارید؟</span>
-              <Link href={"/login"}>وارد شوید</Link>
+              <span>رمز عبور جدید خود را وارد کنید</span>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
-              {/* name */}
-              <div className="grid gap-2">
-                <Label htmlFor="name" className="text-[14px]">
-                  نام و نام خانوادگی <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="مثلا مانی جلیلی"
-                  {...register("name", {
-                    required: "نام و نام خانوادگی الزامی است",
-                  })}
-                />
-                {errors.name && (
-                  <span className="text-red-500 text-sm">
-                    {errors.name.message}
-                  </span>
-                )}
-              </div>
-
-              {/* email */}
-              <div className="grid gap-2">
-                <Label htmlFor="email">
-                  ایمیل <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="example@domain.com"
-                  {...register("email", {
-                    required: "ایمیل الزامی است",
-                    pattern: {
-                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                      message: "ایمیل نامعتبر است",
-                    },
-                  })}
-                />
-                {errors.email && (
-                  <span className="text-red-500 text-sm">
-                    {errors.email.message}
-                  </span>
-                )}
-              </div>
-
-              {/* number */}
-              <div className="grid gap-2">
-                <Label htmlFor="number">
-                  شماره همراه <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="number"
-                  type="tel"
-                  placeholder="مثلا ۰۹۱۲۳۴۵۶۷۸۹"
-                  {...register("number", {
-                    required: "شماره همراه الزامی است",
-                    pattern: {
-                      value: /^(?:\+98|0)?9\d{9}$/,
-                      message: "شماره همراه نامعتبر است",
-                    },
-                  })}
-                />
-                {errors.number && (
-                  <span className="text-red-500 text-sm">
-                    {errors.number.message}
-                  </span>
-                )}
-              </div>
-
               {/* password */}
               <div className="grid gap-2">
                 <Label htmlFor="password">
@@ -277,22 +184,16 @@ function CardDemo() {
               <Button
                 type="submit"
                 className="w-[340px] mt-6 h-10 text-base font-medium"
-                disabled={isSubmitting}
               >
-                {isSubmitting ? "در حال ثبت..." : "ثبت‌نام"}
+                ثبت‌نام
               </Button>
             </CardFooter>
           </form>
         </CardContent>
-        <span className="text-[11px] text-center text-[#71717A] font-medium mt-15">
-          ثبت نام شما در دیتاکس به معنی پذیرش تمامی قوانین و مقررات آن می‌باشد.
-        </span>
       </Card>
       <Modal
         errorMessage={errorMessage}
-        onClose={() => {
-          setErrorMessage(null);
-        }}
+        onClose={() => setErrorMessage(null)}
       />
     </div>
   );

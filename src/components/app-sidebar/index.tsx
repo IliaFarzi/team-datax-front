@@ -5,6 +5,7 @@ import {
   Settings,
   Unplug,
   Trash,
+  Plus,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -16,6 +17,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useState, useEffect } from "react";
+import { Button } from "../Button";
+import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function AppSidebar() {
   const chatSubjects = ["شروع مکالمه", "سلام وقت بخیر", "تحلیل دیتای مالی"];
@@ -60,6 +75,15 @@ export function AppSidebar() {
             </div>
             <Accordion type="single" collapsible>
               <AccordionItem value="item-1" className="m-2">
+                <Link href={"/"}>
+                  <Button
+                    variant={"outline"}
+                    className="bg-transparent w-full h-9 "
+                  >
+                    <span className="text-[14px]">گفتگو جدید</span>
+                    <Plus />
+                  </Button>
+                </Link>
                 <AccordionTrigger>
                   {/* <Link href={"/chat"}> */}
                   <span className="flex items-center gap-2 text-[#71717A] ">
@@ -75,7 +99,35 @@ export function AppSidebar() {
                         <span className="text-[#71717A]">{item}</span>
                         <div className="flex gap-2">
                           <FilePenIcon height={18} color="#71717A" />
-                          <Trash height={18} color="#71717A" />
+                          <Dialog>
+                            <form>
+                              <DialogTrigger asChild>
+                                <Trash height={18} color="#71717A" />
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>حذف گفتگو</DialogTitle>
+                                  <DialogDescription>
+                                    آیا مطمئن هستید که می‌خواهید گفتگو فلان را
+                                    حذف کنید؟
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                  <DialogClose asChild>
+                                    <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
+                                      انصراف
+                                    </Button>
+                                  </DialogClose>
+                                  <Button
+                                    type="submit"
+                                    className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
+                                  >
+                                    خروج
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </form>
+                          </Dialog>
                         </div>
                       </div>
                     ))}
@@ -89,16 +141,57 @@ export function AppSidebar() {
             <div className="flex  h-px w-full" />
             <div className=" w-full text-[#71717A] flex items-center rounded-lg gap-3 h-9.5">
               <Unplug height={18} />
-              <span> اتصالات داده</span>
+              <Link href={"/connectors"}>
+                <span> اتصالات داده</span>
+              </Link>
             </div>
 
             <div className="flex items-center rounded-lg text-[#71717A] cursor-pointer  gap-2 h-9.5 justify-start w-full">
               <Settings height={19} />
-              <span className=" text-sm font-medium">تنظیمات و اعتبار</span>
+              <Dialog>
+                <DialogTrigger>تنظیمات و اعتبار</DialogTrigger>
+                <DialogContent height="128px">
+                  <DialogHeader>
+                    <DialogTitle>اعتبار فعلی</DialogTitle>
+                    <DialogDescription>
+                      <p>اعتبار فعلی شما 12,000,000 تومان می باشد</p>
+                      <p>برای افزایش اعتبار با 09105860050 تماس بگیرید</p>
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
             </div>
             <div className="flex items-center rounded-lg text-[#71717A] cursor-pointer  gap-2 h-9.5 justify-start w-full">
               <LogOut color="red" height={19} />
-              <span className=" text-sm font-medium">خروج از حساب</span>
+              <Dialog>
+                <form>
+                  <DialogTrigger asChild>
+                    <span>خروج از حساب</span>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>خروج از حساب</DialogTitle>
+                      <DialogDescription>
+                        آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج
+                        شوید؟
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
+                          انصراف
+                        </Button>
+                      </DialogClose>
+                      <Button
+                        type="submit"
+                        className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
+                      >
+                        خروج
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </form>
+              </Dialog>
             </div>
 
             <div className="flex flex-col h-9 items-center gap-2 mt-[14px] w-full">
