@@ -226,7 +226,7 @@ export default function ChatPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col items-center fixed bottom-5 w-98 md:w-[800px] h-auto"
+          className="flex flex-col items-center fixed bottom-5 w-[92%] md:w-[800px] h-auto"
         >
           <div className="flex items-center w-full bg-white border border-[#E4E4E7] rounded-2xl px-3">
             <button

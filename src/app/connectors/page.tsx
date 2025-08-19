@@ -42,11 +42,10 @@ export default function Connectors() {
   return (
     <div className="min-h-screen bg-white" dir="rtl">
       <div className="max-w-6xl mx-auto px-6 py-6">
-        <div className="border-b border-slate-200 pb-6 mb-6">
-          <h1 className="text-2xl font-semibold mb-2">اتصالات داده </h1>
-          <p className="text-slate-500">
-            دیتاکس را به نرم‌افزارها و اطلاعات‌تان متصل کنید
-          </p>
+        <div className="border-b border-slate-200 pb-1 mb-6">
+          <h1 className="text-[20px] flex justify-end font-semibold ">
+            اتصالات داده
+          </h1>
         </div>
 
         <div className="max-w-4xl mx-auto">
@@ -63,7 +62,7 @@ export default function Connectors() {
                   className="text-right bg-white border border-slate-200 rounded-xl overflow-hidden p-0"
                   type="button"
                 >
-                  <div className="p-4 w-[312px] h-[108px] border border-[#E4E4E7] flex flex-col items-start justify-between">
+                  <div className="pr-3 pb-3 justify-between h-[108px] flex ">
                     <div className="flex items-center gap-3">
                       <Image
                         src={connector.icon}
@@ -73,7 +72,7 @@ export default function Connectors() {
                         className="object-contain flex-shrink-0"
                       />
                       <div>
-                        <h3 className="text-sm font-medium tracking-tight">
+                        <h3 className=" font-medium tracking-tight">
                           {connector.nameFA}
                         </h3>
                         <p className="text-xs text-[#09090B] tracking-tight">
