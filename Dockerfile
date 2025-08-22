@@ -1,5 +1,5 @@
 
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json ./
