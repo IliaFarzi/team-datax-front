@@ -62,24 +62,24 @@ export default function ChatPage() {
     setInput("");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
+      const response = await fetch(`${apiBaseUrl}/agent/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           session_id: sessionId,
-          content: trimmedInput,
+          message: trimmedInput,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("API request failed");
+        throw new Error(`API request failed with status ${response.status}`);
       }
 
       const data = await response.json();
-      const assistantContent = data.content;
-
+      const assistantContent =
+        data.content || data.message || "پاسخ دریافت شد!";
       const words = assistantContent.split(" ");
       let currentMessage = "";
       let wordIndex = 0;
@@ -160,25 +160,63 @@ export default function ChatPage() {
                   rehypePlugins={[rehypeHighlight]}
                   components={{
                     p: ({ children }) => (
-                      <p className="text-sm leading-6">{children}</p>
+                      <p className="text-sm leading-6 text-gray-800">
+                        {children}
+                      </p>
                     ),
                     code: ({ className, children, ...props }) => {
                       const match = /language-(\w+)/.exec(className || "");
                       return match ? (
-                        <pre className="bg-gray-800 p-2 rounded-md">
+                        <pre className="bg-[#2F2F2F] p-4 rounded-xl text-sm font-mono leading-relaxed text-white shadow-sm border border-[#3A3A3A]">
                           <code className={className} {...props}>
                             {children}
                           </code>
                         </pre>
                       ) : (
                         <code
-                          className="bg-gray-200 px-1 rounded-sm"
+                          className="bg-[#E5E7EB] px-1.5 py-0.5 rounded-md text-sm font-mono text-gray-800"
                           {...props}
                         >
                           {children}
                         </code>
                       );
                     },
+                    h1: ({ children }) => (
+                      <h1 className="text-xl font-bold mt-4 mb-2 text-gray-900">
+                        {children}
+                      </h1>
+                    ),
+                    h2: ({ children }) => (
+                      <h2 className="text-lg font-semibold mt-3 mb-2 text-gray-900">
+                        {children}
+                      </h2>
+                    ),
+                    h3: ({ children }) => (
+                      <h3 className="text-base font-semibold mt-2 mb-1 text-gray-900">
+                        {children}
+                      </h3>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="list-disc list-inside text-sm text-gray-800 my-2">
+                        {children}
+                      </ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal list-inside text-sm text-gray-800 my-2">
+                        {children}
+                      </ol>
+                    ),
+                    li: ({ children }) => <li className="my-1">{children}</li>,
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        className="text-blue-600 hover:underline hover:text-blue-800"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {children}
+                      </a>
+                    ),
                   }}
                 >
                   {msg.content}

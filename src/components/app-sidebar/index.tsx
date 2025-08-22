@@ -1,3 +1,4 @@
+"use client";
 import {
   FilePenIcon,
   LogOut,
@@ -8,6 +9,7 @@ import {
   Plus,
 } from "lucide-react";
 import Image from "next/image";
+import Cookies from "js-cookie";
 
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import {
@@ -30,17 +32,15 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-
 export function AppSidebar() {
   const chatSubjects = ["شروع مکالمه", "سلام وقت بخیر", "تحلیل دیتای مالی"];
   // const [userEmail, setUserEmail] = useState("");
   const [userPicture, setUserPicture] = useState("/images/defaultProfile.png");
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const email = localStorage.getItem("user_email");
-    const picture =
-      localStorage.getItem("user_picture") || "/images/defaultProfile.png";
+    const token = Cookies.get("access_token");
+    const email = Cookies.get("user_email");
+    const picture = Cookies.get("user_picture") || "/images/defaultProfile.png";
     if (token && email) {
       // setUserEmail(email);
       setUserPicture(picture);
@@ -50,7 +50,7 @@ export function AppSidebar() {
   return (
     <Sidebar side="right">
       <SidebarContent>
-        <div className="flex flex-col justify-between h-full  ">
+        <div className="flex flex-col justify-between h-full">
           <div className="">
             <div className="flex mt-5.5 mx-4">
               <svg
@@ -77,19 +77,17 @@ export function AppSidebar() {
                 <Link href={"/"}>
                   <Button
                     variant={"outline"}
-                    className="bg-transparent w-full h-9 "
+                    className="bg-transparent w-full h-9"
                   >
                     <span className="text-[14px]">گفتگو جدید</span>
                     <Plus />
                   </Button>
                 </Link>
                 <AccordionTrigger>
-                  {/* <Link href={"/chat"}> */}
-                  <span className="flex items-center gap-2 text-[#71717A] ">
+                  <span className="flex items-center gap-2 text-[#71717A]">
                     <MessageSquare height={18} color="#71717A" />
                     گفتگوها
                   </span>
-                  {/* </Link> */}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col mr-2 gap-3 border-r border-[#E4E4E7] pr-5.5">
@@ -137,15 +135,15 @@ export function AppSidebar() {
           </div>
 
           <div className="flex flex-col items-center px-3 w-full">
-            <div className="flex  h-px w-full" />
-            <div className=" w-full text-[#71717A] flex items-center rounded-lg gap-3 h-9.5">
+            <div className="flex h-px w-full" />
+            <div className="w-full text-[#71717A] flex items-center rounded-lg gap-3 h-9.5">
               <Unplug height={18} />
               <Link href={"/connectors"}>
-                <span> اتصالات داده</span>
+                <span>اتصالات داده</span>
               </Link>
             </div>
 
-            <div className="flex items-center rounded-lg text-[#71717A] cursor-pointer  gap-2 h-9.5 justify-start w-full">
+            <div className="flex items-center rounded-lg text-[#71717A] cursor-pointer gap-2 h-9.5 justify-start w-full">
               <Settings height={19} />
               <Dialog>
                 <DialogTrigger>تنظیمات و اعتبار</DialogTrigger>
@@ -153,14 +151,14 @@ export function AppSidebar() {
                   <DialogHeader>
                     <DialogTitle>اعتبار فعلی</DialogTitle>
                     <DialogDescription>
-                      <p>اعتبار فعلی شما 12,000,000 تومان می باشد</p>
-                      <p>برای افزایش اعتبار با 09105860050 تماس بگیرید</p>
+                      <p>اعتبار فعلی شما ۱۲,۰۰۰,۰۰۰ تومان می‌باشد</p>
+                      <p>برای افزایش اعتبار با ۰۹۱۰۵۸۶۰۰۵۰ تماس بگیرید</p>
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
             </div>
-            <div className="flex items-center rounded-lg text-[#71717A] cursor-pointer  gap-2 h-9.5 justify-start w-full">
+            <div className="flex items-center rounded-lg text-[#71717A] cursor-pointer gap-2 h-9.5 justify-start w-full">
               <LogOut color="red" height={19} />
               <Dialog>
                 <form>
@@ -194,7 +192,7 @@ export function AppSidebar() {
             </div>
 
             <div className="flex flex-col h-9 items-center gap-2 mt-[14px] w-full">
-              <div className="flex flex-col gap-1  w-full">
+              <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center gap-2 w-full">
                   <Image
                     src={userPicture}
@@ -205,9 +203,10 @@ export function AppSidebar() {
                   />
                   <div className="flex flex-col">
                     <div className="flex items-center gap-0.5 mt-1">
-                      <span className="flex items-center  text-xs gap-0.5">
+                      <span className="flex items-center text-xs gap-0.5">
                         <span className="text-[#3F3F46] font-medium">
-                          t.hosseinpour2347@gmail.com
+                          {Cookies.get("user_email") ||
+                            "t.hosseinpour2347@gmail.com"}
                         </span>
                       </span>
                     </div>
@@ -216,7 +215,7 @@ export function AppSidebar() {
               </div>
             </div>
 
-            <div className="flex  mt-3 w-full" />
+            <div className="flex mt-3 w-full" />
           </div>
         </div>
       </SidebarContent>

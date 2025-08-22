@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  datax-frontend:
+    image: amigolli/datax-frontend:latest
+    container_name: datax-frontend
+    restart: always
+    ports:
+      - "8050:8050"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8040
+    networks:
+      - shared-net
+    depends_on:
+      - datax-backend
+
+  datax-backend:
+    image: heidarym78/datax-backend:latest
+    container_name: datax-backend
+    restart: always
+    ports:
+      - "8040:8040"
+    environment:
+      - OPENROUTER_API_BASE=${OPENROUTER_API_BASE}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATAX_MONGO_URI=${DATAX_MONGO_URI}
+      - DATAX_MONGO_COLLECTION_NAME=${DATAX_MONGO_COLLECTION_NAME}
+      - DATAX_MONGO_DB_NAME=${DATAX_MONGO_DB_NAME}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
+      - DATAX_MINIO_ACCESS_KEY=${DATAX_MINIO_ACCESS_KEY}
+      - DATAX_MINIO_SECRET_KEY=${DATAX_MINIO_SECRET_KEY}
+      - DATAX_MINIO_ENDPOINT=${DATAX_MINIO_ENDPOINT}
+      - DATAX_MINIO_BUCKET_SHEETS=${DATAX_MINIO_BUCKET_SHEETS}
+      - DATAX_MINIO_BUCKET_UPLOADS=${DATAX_MINIO_BUCKET_UPLOADS}
+    networks:
+      - shared-net
+
+networks:
+  shared-net:
+    name: multi-team-dev-deployment_shared-net
+    external: true

@@ -2,12 +2,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
+import Cookies from "js-cookie";
 
 type Sheet = {
   id: string;
   name: string;
   csvLink: string;
-  csvData?: Record<string, string>[]; // نوع دقیق‌تر به‌جای any
+  csvData?: Record<string, string>[];
 };
 
 export default function Spreadsheet() {
@@ -25,9 +26,7 @@ export default function Spreadsheet() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
+              Authorization: `Bearer ${Cookies.get("access_token") || ""}`,
             },
           }
         );

@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import Cookies from "js-cookie";
 
 function CallbackHandler() {
   const router = useRouter();
@@ -14,10 +15,26 @@ function CallbackHandler() {
     const email = searchParams.get("email");
 
     if (token && sessionId && name && email) {
-      localStorage.setItem("access_to ken", token);
-      localStorage.setItem("session_id", sessionId);
-      localStorage.setItem("user_name", name);
-      localStorage.setItem("user_email", email);
+      Cookies.set("access_token", token, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("session_id", sessionId, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("user_name", name, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+      Cookies.set("user_email", email, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
       router.replace("/");
     } else {
       console.error("Missing query params:", { token, sessionId, name, email });

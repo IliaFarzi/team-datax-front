@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import Cookies from "js-cookie";
 
 function SheetsCallbackHandler() {
   const router = useRouter();
@@ -16,9 +17,7 @@ function SheetsCallbackHandler() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              localStorage.getItem("access_token") || ""
-            }`,
+            Authorization: `Bearer ${Cookies.get("access_token") || ""}`,
           },
           body: JSON.stringify({ code }),
         }
@@ -27,10 +26,18 @@ function SheetsCallbackHandler() {
           if (res.ok) {
             return res.json().then((data) => {
               if (data.token) {
-                localStorage.setItem("access_token", data.token);
+                Cookies.set("access_token", data.token, {
+                  expires: 7,
+                  secure: true,
+                  sameSite: "Strict",
+                });
               }
               if (data.session_id) {
-                localStorage.setItem("session_id", data.session_id);
+                Cookies.set("session_id", data.session_id, {
+                  expires: 7,
+                  secure: true,
+                  sameSite: "Strict",
+                });
               }
               router.push("/sheets/list");
             });

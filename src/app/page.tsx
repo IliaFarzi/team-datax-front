@@ -24,7 +24,7 @@ export default function Home() {
 
     try {
       const sessionId = uuidv4();
-      console.log("Generated sessionId:", sessionId); // برای دیباگ
+      console.log("Generated sessionId:", sessionId);
 
       localStorage.setItem(
         `chat_${sessionId}`,
@@ -34,7 +34,7 @@ export default function Home() {
       router.push(`/chat/${sessionId}`);
     } catch (err) {
       setError("خطایی رخ داد: " + (err as Error).message);
-      console.error("Error in handleSubmit:", err); // برای دیباگ
+      console.error("Error in handleSubmit:", err);
     } finally {
       setIsLoading(false);
     }

@@ -27,7 +27,7 @@ const connectors: Connector[] = [
 ];
 
 export default function Connectors() {
-  const handleConnect = useCallback(async (connectorId: string) => {
+  const handleConnect = useCallback(async () => {
     try {
       const base =
         (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "") || "";
@@ -43,7 +43,7 @@ export default function Connectors() {
     <div className="min-h-screen bg-white" dir="rtl">
       <div className="max-w-6xl mx-auto px-6 py-6">
         <div className="border-b border-slate-200 pb-1 mb-6">
-          <h1 className="text-[20px] flex justify-end font-semibold ">
+          <h1 className="text-[20px] flex justify-end font-semibold text-[main-color] ">
             اتصالات داده
           </h1>
         </div>
@@ -58,7 +58,7 @@ export default function Connectors() {
               {connectors.map((connector) => (
                 <button
                   key={connector.id}
-                  onClick={() => handleConnect(connector.id)}
+                  onClick={() => handleConnect()}
                   className="text-right bg-white border border-slate-200 rounded-xl overflow-hidden p-0"
                   type="button"
                 >

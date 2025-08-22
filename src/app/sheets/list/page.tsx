@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 type Sheet = {
   id: string;
@@ -23,9 +24,7 @@ export default function SheetsList() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
+              Authorization: `Bearer ${Cookies.get("access_token") || ""}`,
             },
           }
         );
