@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 RUN npm ci  # نصب تمام وابستگی‌ها (شامل devDependencies)
 COPY . .
 ENV NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8040
-RUN npm run build
+RUN npm run build || cat /app/.next/build.log
 
 # مرحله اجرا
 FROM node:20-alpine
