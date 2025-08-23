@@ -108,7 +108,7 @@ export default function ChatPage() {
       console.error("Error sending message:", error);
       setMessages([
         ...newMessages,
-        { role: "assistant", content: "خطا در دریافت پاسخ از سرور!" },
+        { role: "assistant", content: " خطا در دریافت پاسخ از سرور!" },
       ]);
       setIsLoading(false);
     }
