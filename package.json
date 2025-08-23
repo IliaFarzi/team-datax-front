@@ -40,7 +40,8 @@
     "typescript": "^5.0.0",
     "uuid": "^11.1.0",
     "vazirmatn": "^33.0.3",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "autoprefixer": "^10.4.21"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -50,7 +51,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
-    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
     "postcss": "^8.5.6",
