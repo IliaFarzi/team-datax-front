@@ -31,9 +31,6 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/datax-frontend:latest
           build-args: |
             PORT=8050
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/datax-frontend:cache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/datax-frontend:cache,mode=max
-
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
