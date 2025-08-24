@@ -1,9 +1,13 @@
-name: Build and Deploy datax Frontend
+name: datax-deploy-frontend
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "src/**"
+      - "public/**"
+      - '.github\workflows\datax-deploy-frontend.yml'
 
 jobs:
   build_and_push:
@@ -12,6 +16,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          port: 32222
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/datax-frontend"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -44,17 +58,7 @@ jobs:
           port: 32222
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           script: |
-            cd /home/overall/vsp/multi
-
-            # Create shared network if it doesn't exist
-            docker network ls | grep -w multi-team-dev-deployment_shared-net || docker network create multi-team-dev-deployment_shared-net
-
-            if [ ! -d "datax" ]; then
-              git clone https://github.com/Amirgolli/team-datax-front datax
-            fi
-
-            cd datax
-            git pull origin main
+            cd /home/datax-frontend
 
             # Create .env.datax file with environment variables
             echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" > .env.datax-front
@@ -71,7 +75,12 @@ jobs:
             echo "DATAX_MINIO_BUCKET_SHEETS=${{ secrets.DATAX_MINIO_BUCKET_SHEETS }}" >> .env.datax-front
             echo "DATAX_MINIO_BUCKET_UPLOADS=${{ secrets.DATAX_MINIO_BUCKET_UPLOADS }}" >> .env.datax-front
 
+            # Stop and remove old container if exists
+            docker rm -f datax-frontend || true
+
+            # Recreate services
             docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml up -d --no-build
+            docker compose -f docker-compose.yml up -d
+
 
             echo "✅ Deployment successful! Visit: http://62.60.198.4:8050"

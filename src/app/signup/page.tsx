@@ -68,8 +68,10 @@ function CardDemo() {
             phone: data.number,
             password: data.password,
           }),
+          
           redirect: "manual",
         }
+        
       );
       if (response.redirected) {
         window.location.href = response.url;

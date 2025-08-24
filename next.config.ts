@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",  
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://62.60.198.4:8040/:path*",
+      },
+    ];
   },
 };
 

@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { SessionProvider } from "next-auth/react";
 import { AppSidebar } from "@/components/app-sidebar";
 
 interface RootLayoutProps {
@@ -63,7 +62,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="fa" dir="rtl" className={yekanFont.className}>
       <body>
-        <SessionProvider>
           <SidebarProvider defaultOpen={!isSidebarCollapsed}>
             {shouldShowSidebar && <AppSidebar />}
             <main className="flex-1 transition-all duration-300 overflow-y-auto">
@@ -71,7 +69,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
               {children}
             </main>
           </SidebarProvider>
-        </SessionProvider>
       </body>
     </html>
   );

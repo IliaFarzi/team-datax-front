@@ -10,12 +10,20 @@ export default function Home() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedMessage = message.trim();
     if (!trimmedMessage) {
       setError("پیام نمی‌تواند خالی باشد!");
+      return;
+    }
+
+    if (!apiBaseUrl) {
+      setError("متغیر محیطی API_BASE_URL تنظیم نشده است!");
+      console.error("Environment variable NEXT_PUBLIC_API_BASE_URL is not set");
+      setIsLoading(false);
       return;
     }
 
@@ -26,14 +34,53 @@ export default function Home() {
       const sessionId = uuidv4();
       console.log("Generated sessionId:", sessionId);
 
+      const requestBody = {
+        session_id: sessionId,
+        content: trimmedMessage,
+      };
+      console.log("Request to API:", {
+        url: `${apiBaseUrl}/agent/chat`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: requestBody,
+      });
+
+      const response = await fetch(`${apiBaseUrl}/agent/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log("API Response:", {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("API Response Data:", data);
+
+      const assistantContent = data.content || "پاسخ دریافت شد!";
+
       localStorage.setItem(
         `chat_${sessionId}`,
-        JSON.stringify([{ role: "user", content: trimmedMessage }])
+        JSON.stringify([
+          { role: "user", content: trimmedMessage },
+          { role: "assistant", content: assistantContent },
+        ])
       );
 
       router.push(`/chat/${sessionId}`);
     } catch (err) {
-      setError("خطایی رخ داد: " + (err as Error).message);
+      setError("خطا در ارتباط با سرور: " + (err as Error).message);
       console.error("Error in handleSubmit:", err);
     } finally {
       setIsLoading(false);
