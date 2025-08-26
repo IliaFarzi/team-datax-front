@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import Modal from "@/components/Modal";
 import { Eye, EyeOff } from "lucide-react";
+import Cookies from "js-cookie";
 
 interface RegisterRequest {
   name: string;
@@ -31,13 +32,6 @@ type ErrorDetailItem = {
 
 type ApiErrorResponse = {
   detail?: string | ErrorDetailItem[];
-};
-
-type ApiSuccessResponse = {
-  token: string;
-  session_id: string;
-  name: string;
-  email: string;
 };
 
 function CardDemo() {
@@ -59,24 +53,15 @@ function CardDemo() {
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             full_name: data.name,
             email: data.email,
             phone: data.number,
             password: data.password,
           }),
-          
-          redirect: "manual",
         }
-        
       );
-      if (response.redirected) {
-        window.location.href = response.url;
-        return;
-      }
 
       if (!response.ok) {
         let errorDetail = "ثبت‌نام ناموفق بود";
@@ -87,23 +72,40 @@ function CardDemo() {
               ? result.detail
               : Array.isArray(result.detail)
               ? result.detail
-                  .map((err: ErrorDetailItem) => err.msg ?? err.message ?? "")
-                  .filter(Boolean)
-                  .join(", ") || errorDetail
+                  .map((err) => err.msg ?? err.message ?? "")
+                  .join(", ")
               : errorDetail;
-        } catch (jsonError) {
-          console.error("JSON parse error:", jsonError);
-        }
+        } catch {}
         throw new Error(errorDetail);
       }
 
-      const result: ApiSuccessResponse = await response.json();
-      const { token, session_id, name, email } = result;
-      window.location.href = `/auth/callback?token=${encodeURIComponent(
-        token
-      )}&session_id=${encodeURIComponent(session_id)}&name=${encodeURIComponent(
-        name
-      )}&email=${encodeURIComponent(email)}`;
+      const result = await response.json();
+      console.log("Signup response full:", result);
+
+      // ذخیره user_id اگر وجود داشت
+      if (result.user_id) {
+        Cookies.set("user_id", result.user_id, { expires: 1 });
+      } else {
+        console.warn("No user_id in signup response");
+      }
+
+      // ذخیره token فقط اگر معتبر باشد
+      const token = result.token || result.access_token || result.session_id;
+      if (token && typeof token === "string" && token !== "undefined") {
+        Cookies.set("access_token", token, { expires: 1 });
+      } else {
+        console.warn("No valid token in signup response:", token);
+      }
+
+      // ذخیره ایمیل برای نمایش در CheckEmail
+      Cookies.set("signup_email", data.email, { expires: 1 });
+
+      // ذخیره نام کاربر اگر وجود داشت
+      if (result.name) {
+        Cookies.set("user_name", result.name, { expires: 1 });
+      }
+
+      window.location.href = "/checkEmail";
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ثبت‌نام ناموفق بود";

@@ -74,6 +74,22 @@ jobs:
             echo "DATAX_MINIO_ENDPOINT=${{ secrets.DATAX_MINIO_ENDPOINT }}" >> .env.datax-front
             echo "DATAX_MINIO_BUCKET_SHEETS=${{ secrets.DATAX_MINIO_BUCKET_SHEETS }}" >> .env.datax-front
             echo "DATAX_MINIO_BUCKET_UPLOADS=${{ secrets.DATAX_MINIO_BUCKET_UPLOADS }}" >> .env.datax-front
+            echo "DATAX_MINIO_SECURE=${{secrets.DATAX_MINIO_SECURE}}" >> .env.datax-front
+            echo "GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}" >> .env.datax-front
+            echo "GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}" >> .env.datax-front
+            echo "GOOGLE_TOKEN_URI=${{secrets.GOOGLE_TOKEN_URI}}" >> .env.datax-front
+            echo "GOOGLE_AUTH_URI=${{secrets.GOOGLE_AUTH_URI}}" >> .env.datax-front
+            echo "GOOGLE_AUTH_PROVIDER_X509_CERT_URL=${{secrets.GOOGLE_AUTH_PROVIDER_X509_CERT_URL}}" >> .env.datax-front
+            echo "GOOGLE_PROJECT_ID=${{secrets.GOOGLE_PROJECT_ID}}" >> .env.datax-front
+            # New Mail Config
+            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env.datax-front
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env.datax-front
+            echo "MAIL_FROM=${{ secrets.MAIL_FROM }}" >> .env.datax-front
+            echo "MAIL_PORT=${{ secrets.MAIL_PORT }}" >> .env.datax-front
+            echo "MAIL_SERVER=${{ secrets.MAIL_SERVER }}" >> .env.datax-front
+            echo "MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}" >> .env.datax-front
+            echo "MAIL_TLS=${{ secrets.MAIL_TLS }}" >> .env.datax-front
+            echo "MAIL_SSL=${{ secrets.MAIL_SSL }}" >> .env.datax-front
 
             # Stop and remove old container if exists
             docker rm -f datax-frontend || true
