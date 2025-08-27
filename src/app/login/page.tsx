@@ -83,11 +83,10 @@ function CardDemo() {
       const result = await response.json();
       console.log("Login response full:", result);
 
-      // بررسی وجود user_id در شیء user یا مستقیماً در پاسخ
       const userId = result.user?.id || result.user_id;
       if (userId) {
         Cookies.set("user_id", userId, { expires: 7 });
-        Cookies.set("access_token", result.token || userId, { expires: 7 }); // استفاده از توکن اگر وجود داشت
+        Cookies.set("access_token", result.token || userId, { expires: 7 }); 
       } else {
         throw new Error("شناسه کاربر در پاسخ سرور یافت نشد");
       }
@@ -104,7 +103,6 @@ function CardDemo() {
         });
       }
 
-      // ذخیره توکن و session_id اگر وجود داشت
       if (result.token) {
         Cookies.set("access_token", result.token, { expires: 7 });
       }
@@ -112,7 +110,6 @@ function CardDemo() {
         Cookies.set("session_id", result.session_id, { expires: 7 });
       }
 
-      // ریدایرکت به صفحه اصلی
       router.push("/");
     } catch (error: unknown) {
       const errorMsg =

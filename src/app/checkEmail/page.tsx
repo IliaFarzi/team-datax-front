@@ -42,7 +42,7 @@ const CheckEmail = () => {
         return;
       }
 
-      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL); // لاگ پورت
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL); 
       console.log("Token:", token); // لاگ توکن
 
       const response = await fetch(
@@ -54,11 +54,11 @@ const CheckEmail = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ code }),
-          credentials: "include", // برای کوکی‌ها اگر نیاز باشه
+          credentials: "include", 
         }
       );
 
-      console.log("Response status:", response.status); // لاگ وضعیت
+      console.log("Response status:", response.status); 
 
       const result = await response.json();
       console.log("Verify response full:", result);
@@ -76,10 +76,15 @@ const CheckEmail = () => {
       if (result.email) Cookies.set("user_email", result.email, { expires: 7 });
       if (result.name) Cookies.set("user_name", result.name, { expires: 7 });
 
-      router.push("/"); // ریدایرکت به صفحه اصلی
-    } catch (err: any) {
-      console.error("Verify error:", err);
-      setErrorMessage(err.message || "خطا در اعتبارسنجی کد");
+      router.push("/"); 
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Verify error:", err);
+        setErrorMessage(err.message);
+      } else {
+        console.error("Verify error:", err);
+        setErrorMessage("خطای ناشناخته در اعتبارسنجی کد");
+      }
     }
   };
 

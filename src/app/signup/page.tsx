@@ -83,24 +83,20 @@ function CardDemo() {
       const result = await response.json();
       console.log("Signup response full:", result);
 
-      // ذخیره user_id
       if (result.user_id) {
         Cookies.set("user_id", result.user_id, { expires: 1 });
       } else {
         throw new Error("شناسه کاربر در پاسخ سرور یافت نشد");
       }
 
-      // ذخیره token به عنوان access_token (حالا JWT برمی‌گرده)
       if (result.token) {
         Cookies.set("access_token", result.token, { expires: 1 });
       } else {
         throw new Error("توکن در پاسخ سرور یافت نشد");
       }
 
-      // ذخیره ایمیل
       Cookies.set("signup_email", data.email, { expires: 1 });
 
-      // ذخیره نام کاربر اگر وجود داشت
       if (result.name) {
         Cookies.set("user_name", result.name, { expires: 1 });
       }

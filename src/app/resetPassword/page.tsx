@@ -11,10 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import Modal from "@/components/Modal";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
-interface RegisterRequest {
+interface ResetPasswordRequest {
   password: string;
   confirmPassword: string;
 }
@@ -33,55 +34,71 @@ function CardDemo() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const router = useRouter();
 
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm<RegisterRequest>();
+    formState: { errors, isSubmitting },
+  } = useForm<ResetPasswordRequest>();
 
-  const onSubmit = async (data: RegisterRequest) => {
-    console.log("Submitting:", data);
+  const onSubmit = async (data: ResetPasswordRequest) => {
+    setErrorMessage(null);
+
     try {
+      const resetToken = Cookies.get("reset_token");
+      if (!resetToken) {
+        throw new Error("توکن بازنشانی رمز یافت نشد");
+      }
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/reset-password`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${resetToken}`,
           },
           body: JSON.stringify({
-            password: data.password,
+            new_password: data.password,
           }),
         }
       );
 
       if (!response.ok) {
-        let errorDetail = "Registration failed";
-        try {
-          const result: ApiErrorResponse = await response.json();
-          errorDetail =
-            typeof result.detail === "string"
-              ? result.detail
-              : Array.isArray(result.detail)
-              ? result.detail
-                  .map((err: ErrorDetailItem) => err.msg ?? err.message ?? "")
-                  .filter(Boolean)
-                  .join(", ") || errorDetail
-              : errorDetail;
-        } catch (jsonError) {
-          console.error("JSON parse error:", jsonError);
+        let errorDetail = "بازنشانی رمز ناموفق بود";
+        if (response.status === 401) {
+          errorDetail = "توکن نامعتبر است یا منقضی شده است";
+        } else {
+          try {
+            const result: ApiErrorResponse = await response.json();
+            errorDetail =
+              typeof result.detail === "string"
+                ? result.detail
+                : Array.isArray(result.detail)
+                ? result.detail
+                    .map((err) => err.msg ?? err.message ?? "")
+                    .filter(Boolean)
+                    .join(", ")
+                : errorDetail;
+          } catch (jsonError) {
+            console.error("JSON parse error:", jsonError);
+          }
         }
         throw new Error(errorDetail);
       }
 
-      setErrorMessage("در حال ثبت‌نام...");
+      const result = await response.json();
+      console.log("Reset password response:", result);
+
+
+      router.push("/");
     } catch (error: unknown) {
       const errorMsg =
-        error instanceof Error ? error.message : "Registration failed";
+        error instanceof Error ? error.message : "بازنشانی رمز ناموفق بود";
       setErrorMessage(errorMsg);
-      console.error("Signup error:", errorMsg);
+      console.error("Reset password error:", errorMsg);
     }
   };
 
@@ -183,17 +200,20 @@ function CardDemo() {
               <Button
                 type="submit"
                 className="w-[340px] mt-6 h-10 text-base font-medium"
+                disabled={isSubmitting}
               >
-                ثبت‌نام
+                {isSubmitting ? "در حال پردازش..." : "تغییر رمز عبور"}
               </Button>
             </CardFooter>
           </form>
         </CardContent>
+
+        {errorMessage && (
+          <div className="text-red-500 text-sm mt-4 text-center">
+            {errorMessage}
+          </div>
+        )}
       </Card>
-      <Modal
-        errorMessage={errorMessage}
-        onClose={() => setErrorMessage(null)}
-      />
     </div>
   );
 }

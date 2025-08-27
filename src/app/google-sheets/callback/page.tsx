@@ -13,9 +13,8 @@ function SheetsCallbackHandler() {
     const state = searchParams.get("state");
 
     if (code) {
-      // ذخیره code یا state اگه نیازه (اختیاری)
       Cookies.set("google_sheets_code", code, {
-        expires: 1, // 1 روز اعتبار
+        expires: 7,
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
       });
@@ -27,15 +26,13 @@ function SheetsCallbackHandler() {
         });
       }
 
-      // ذخیره وضعیت اتصال در کوکی
       Cookies.set("google_sheets_connected", "true", {
-        expires: 7, // 7 روز اعتبار (یا هر مدت که مناسب می‌دونی)
+        expires: 7,
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
       });
 
-      // ریدایرکت به صفحه connectors با پارامتر success
-      router.push("/connectors?success=true");
+      router.push("/google-sheets/list");
     } else {
       console.error("No code provided in URL");
       alert("کد احراز هویت یافت نشد.");

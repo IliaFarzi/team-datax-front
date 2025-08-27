@@ -15,34 +15,84 @@ export default function SheetsList() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const refreshToken = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ session_id: Cookies.get("session_id") }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to refresh token");
+      }
+      const data = await response.json();
+      Cookies.set("access_token", data.access_token, {
+        expires: 7,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+      });
+      return data.access_token;
+    } catch (err) {
+      console.error("Error refreshing token:", err);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const fetchSheets = async () => {
+      let token = Cookies.get("access_token");
+      console.log("Access token:", token);
+      if (!token) {
+        token = await refreshToken();
+        if (!token) {
+          setError("لطفاً دوباره لاگین کنید.");
+          router.push("/login");
+          return;
+        }
+      }
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/sheets`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/sheets`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${Cookies.get("access_token") || ""}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
+        console.log("Response status:", response.status, response.statusText);
         if (!response.ok) {
-          throw new Error("Failed to fetch sheets");
+          if (response.status === 401) {
+            setError("لطفاً دوباره لاگین کنید.");
+            router.push("/login");
+            return;
+          }
+          const errorData = await response.json();
+          throw new Error(
+            `Failed to fetch sheets: ${response.statusText} - ${
+              errorData.detail || ""
+            }`
+          );
         }
         const data = await response.json();
-        setSheets(data);
+        console.log("API response:", data); // لاگ برای داده‌های پاسخ
+        setSheets(data.sheets || []);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching sheets:", err);
-        setError("خطا در دریافت لیست شیت‌ها. لطفاً دوباره تلاش کنید.");
+        setError(`خطا در دریافت لیست شیت‌ها: ${err.message}`);
         setLoading(false);
       }
     };
 
     fetchSheets();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (

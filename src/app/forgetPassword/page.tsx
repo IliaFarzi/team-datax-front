@@ -11,13 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import Modal from "@/components/Modal";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface LoginRequest {
   email: string;
 }
 
-// تعریف تایپ برای ساختار خطاهای بک‌اند
 type ErrorDetailItem = {
   msg?: string;
   message?: string;
@@ -28,18 +28,28 @@ type ApiErrorResponse = {
   detail?: string | ErrorDetailItem[];
 };
 
+type ApiSuccessResponse = {
+  message: string;
+  email: string;
+  user_id: string;
+  reset_link: string;
+};
+
 function CardDemo() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginRequest>();
 
   const onSubmit = async (data: LoginRequest) => {
-    console.log("Submitting:", data);
+    setErrorMessage(null);
+
     try {
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`,
         {
@@ -54,7 +64,7 @@ function CardDemo() {
       );
 
       if (!response.ok) {
-        let errorDetail = "Login failed";
+        let errorDetail = "درخواست ناموفق بود";
         try {
           const result: ApiErrorResponse = await response.json();
           errorDetail =
@@ -62,9 +72,9 @@ function CardDemo() {
               ? result.detail
               : Array.isArray(result.detail)
               ? result.detail
-                  .map((err: ErrorDetailItem) => err.msg ?? err.message ?? "")
+                  .map((err) => err.msg ?? err.message ?? "")
                   .filter(Boolean)
-                  .join(", ") || errorDetail
+                  .join(", ")
               : errorDetail;
         } catch (jsonError) {
           console.error("JSON parse error:", jsonError);
@@ -72,11 +82,28 @@ function CardDemo() {
         throw new Error(errorDetail);
       }
 
-      setErrorMessage("در حال ورود...");
+      const result: ApiSuccessResponse = await response.json();
+      console.log("Forgot password response:", result);
+
+      // Extract token from reset_link
+      const url = new URL(result.reset_link);
+      const resetToken = url.searchParams.get("token");
+      if (resetToken) {
+        // Store token, user_id, and email in cookies with 1-day expiry
+        Cookies.set("reset_token", resetToken, { expires: 1 });
+        Cookies.set("user_id", result.user_id, { expires: 1 });
+        Cookies.set("user_email", result.email, { expires: 1 });
+      } else {
+        throw new Error("توکن بازنشانی رمز در لینک یافت نشد");
+      }
+
+      // Redirect to resetPassword page
+      router.push("/resetPassword");
     } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : "Login failed";
+      const errorMsg =
+        error instanceof Error ? error.message : "درخواست ناموفق بود";
       setErrorMessage(errorMsg);
-      console.error("Login error:", errorMsg);
+      console.error("Forgot password error:", errorMsg);
     }
   };
 
@@ -100,7 +127,7 @@ function CardDemo() {
               />
             </svg>
             <CardTitle className="font-semibold text-[20px]">
-              فراموشی رمز عبور{" "}
+              فراموشی رمز عبور
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
               <span className="">ایمیل خود را وارد کنید</span>
@@ -136,22 +163,24 @@ function CardDemo() {
               </div>
             </div>
 
-            <CardFooter className="flex-col gap-1 ">
+            <CardFooter className="flex-col gap-1">
               <Button
                 type="submit"
                 className="w-[340px] mt-6 h-10 text-base font-medium"
+                disabled={isSubmitting}
               >
-                دریافت لینک تغییر رمز
+                {isSubmitting ? "در حال پردازش..." : "دریافت لینک تغییر رمز"}
               </Button>
             </CardFooter>
           </form>
         </CardContent>
-      </Card>
 
-      <Modal
-        errorMessage={errorMessage}
-        onClose={() => setErrorMessage(null)}
-      />
+        {errorMessage && (
+          <div className="text-red-500 text-sm mt-4 text-center">
+            {errorMessage}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
