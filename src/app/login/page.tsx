@@ -12,39 +12,41 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import Modal from "@/components/Modal";
 import { Eye, EyeOff } from "lucide-react";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface LoginRequest {
   email: string;
   password: string;
 }
 
-// تعریف تایپ برای ساختار خطاهای بک‌اند
 type ErrorDetailItem = {
   msg?: string;
   message?: string;
   [key: string]: unknown;
 };
 
-// تایپ برای آبجکت خطای کلی
 type ApiErrorResponse = {
   detail?: string | ErrorDetailItem[];
 };
 
 function CardDemo() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false); // مدیریت چشم پسورد
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginRequest>();
 
   const onSubmit = async (data: LoginRequest) => {
-    console.log("Submitting:", data);
+    setErrorMessage(null);
+
     try {
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
         {
@@ -60,7 +62,7 @@ function CardDemo() {
       );
 
       if (!response.ok) {
-        let errorDetail = "Login failed";
+        let errorDetail = "ورود ناموفق بود";
         try {
           const result: ApiErrorResponse = await response.json();
           errorDetail =
@@ -68,9 +70,9 @@ function CardDemo() {
               ? result.detail
               : Array.isArray(result.detail)
               ? result.detail
-                  .map((err: ErrorDetailItem) => err.msg ?? err.message ?? "")
+                  .map((err) => err.msg ?? err.message ?? "")
                   .filter(Boolean)
-                  .join(", ") || errorDetail
+                  .join(", ")
               : errorDetail;
         } catch (jsonError) {
           console.error("JSON parse error:", jsonError);
@@ -78,9 +80,43 @@ function CardDemo() {
         throw new Error(errorDetail);
       }
 
-      setErrorMessage("در حال ورود...");
+      const result = await response.json();
+      console.log("Login response full:", result);
+
+      // بررسی وجود user_id در شیء user یا مستقیماً در پاسخ
+      const userId = result.user?.id || result.user_id;
+      if (userId) {
+        Cookies.set("user_id", userId, { expires: 7 });
+        Cookies.set("access_token", result.token || userId, { expires: 7 }); // استفاده از توکن اگر وجود داشت
+      } else {
+        throw new Error("شناسه کاربر در پاسخ سرور یافت نشد");
+      }
+
+      // ذخیره ایمیل و نام کاربر اگر وجود داشت
+      if (result.user?.email || result.email) {
+        Cookies.set("user_email", result.user?.email || result.email, {
+          expires: 7,
+        });
+      }
+      if (result.user?.name || result.name) {
+        Cookies.set("user_name", result.user?.name || result.name, {
+          expires: 7,
+        });
+      }
+
+      // ذخیره توکن و session_id اگر وجود داشت
+      if (result.token) {
+        Cookies.set("access_token", result.token, { expires: 7 });
+      }
+      if (result.session_id) {
+        Cookies.set("session_id", result.session_id, { expires: 7 });
+      }
+
+      // ریدایرکت به صفحه اصلی
+      router.push("/");
     } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : "Login failed";
+      const errorMsg =
+        error instanceof Error ? error.message : "ورود ناموفق بود";
       setErrorMessage(errorMsg);
       console.error("Login error:", errorMsg);
     }
@@ -109,7 +145,7 @@ function CardDemo() {
               ورود به دیتاکس
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
-              <span className="">حساب کاربری ندارید؟</span>
+              <span>حساب کاربری ندارید؟</span>
               <Link href={"/signup"}>ثبت‌نام کنید</Link>
             </div>
           </div>
@@ -144,7 +180,7 @@ function CardDemo() {
 
               {/* رمز عبور */}
               <div className="grid gap-1 relative">
-                <div className="flex  justify-between">
+                <div className="flex justify-between">
                   <Label htmlFor="password">
                     رمز عبور <span className="text-red-500">*</span>
                   </Label>
@@ -182,12 +218,13 @@ function CardDemo() {
               </div>
             </div>
 
-            <CardFooter className="flex-col gap-1 ">
+            <CardFooter className="flex-col gap-1 mt-4">
               <Button
                 type="submit"
-                className="w-[340px] mt-6 h-10 text-base font-medium"
+                className="w-[340px] h-10 text-base font-medium"
+                disabled={isSubmitting}
               >
-                ورود
+                {isSubmitting ? "در حال ورود..." : "ورود"}
               </Button>
             </CardFooter>
           </form>
@@ -196,12 +233,13 @@ function CardDemo() {
         <span className="text-[11.5px] text-center text-[#71717A] font-medium mt-16">
           ورود شما به دیتاکس به معنی پذیرش تمامی قوانین و مقررات آن می‌باشد.
         </span>
-      </Card>
 
-      <Modal
-        errorMessage={errorMessage}
-        onClose={() => setErrorMessage(null)}
-      />
+        {errorMessage && (
+          <div className="text-red-500 text-sm mt-4 text-center">
+            {errorMessage}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

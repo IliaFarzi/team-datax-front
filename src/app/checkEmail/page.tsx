@@ -42,6 +42,9 @@ const CheckEmail = () => {
         return;
       }
 
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL); // لاگ پورت
+      console.log("Token:", token); // لاگ توکن
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify`,
         {
@@ -51,28 +54,29 @@ const CheckEmail = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ code }),
+          credentials: "include", // برای کوکی‌ها اگر نیاز باشه
         }
       );
 
+      console.log("Response status:", response.status); // لاگ وضعیت
+
+      const result = await response.json();
+      console.log("Verify response full:", result);
+
       if (!response.ok) {
-        const errorData = await response.json();
         throw new Error(
-          errorData.detail || errorData.message || "خطا در تأیید"
+          result.detail || result.message || `خطای سرور: ${response.status}`
         );
       }
 
-      const result = await response.json();
-      console.log("Verify response:", result);
-
-      // ذخیره توکن جدید اگر برگشت
-      const newToken = result.token || result.access_token || result.session_id;
+      // ذخیره اطلاعات کاربر
+      const newToken = result.token || result.access_token;
       if (newToken) Cookies.set("access_token", newToken, { expires: 7 });
 
-      // ذخیره اطلاعات کاربر
       if (result.email) Cookies.set("user_email", result.email, { expires: 7 });
       if (result.name) Cookies.set("user_name", result.name, { expires: 7 });
 
-      router.push("/");
+      router.push("/"); // ریدایرکت به صفحه اصلی
     } catch (err: any) {
       console.error("Verify error:", err);
       setErrorMessage(err.message || "خطا در اعتبارسنجی کد");
@@ -116,14 +120,14 @@ const CheckEmail = () => {
             className="mx-auto"
           >
             <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
+              <InputOTPSlot index={5} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={3} />
             </InputOTPGroup>
             <InputOTPGroup>
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
+              <InputOTPSlot index={2} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={0} />
             </InputOTPGroup>
           </InputOTP>
 

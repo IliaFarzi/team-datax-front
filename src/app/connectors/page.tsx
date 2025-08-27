@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
 
 type Connector = {
   id: string;
@@ -35,6 +36,16 @@ export default function Connectors() {
     const success = searchParams.get("success");
     if (success) {
       setIsConnected(true);
+      Cookies.set("google_sheets_connected", "true", {
+        expires: 7, // 7 روز اعتبار
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+      });
+    } else {
+      const connected = Cookies.get("google_sheets_connected");
+      if (connected === "true") {
+        setIsConnected(true);
+      }
     }
   }, [searchParams]);
 
@@ -51,18 +62,18 @@ export default function Connectors() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className=" mx-auto px-6 py-6">
+      <div className="mx-auto px-6 py-6">
         <div className="border-b border-slate-200 pb-1 mb-6">
           <h1 className="text-[24px] flex justify-end md:justify-start font-semibold">
             اتصالات داده
           </h1>
-          <h2 className="hidden md:block text-[#71717A] text-[14px] ">
+          <h2 className="hidden md:block text-[#71717A] text-[14px]">
             دیتاکس را به نرم‌افزارها و اطلاعات‌تان متصل کنید
           </h2>
         </div>
 
         <div className="w-auto mx-auto">
-          <div className="space-y-4  md:mr-26">
+          <div className="space-y-4 md:mr-26">
             <h2 className="text-xl font-semibold tracking-tight">
               افزودن اتصالات
             </h2>
@@ -72,10 +83,10 @@ export default function Connectors() {
                 <button
                   key={connector.id}
                   onClick={() => handleConnect()}
-                  className="text-right bg-white max-w-[312px] border  border-slate-200 rounded-xl overflow-hidden p-0"
+                  className="text-right bg-white max-w-[312px] border border-slate-200 rounded-xl overflow-hidden p-0"
                   type="button"
                 >
-                  <div className="pr-3 pb-3  justify-between h-[108px] flex">
+                  <div className="pr-3 pb-3 justify-between h-[108px] flex">
                     <div className="flex items-center gap-3">
                       <Image
                         src={connector.icon}

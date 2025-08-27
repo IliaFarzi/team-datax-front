@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import Modal from "@/components/Modal";
 import { Eye, EyeOff } from "lucide-react";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface RegisterRequest {
   name: string;
@@ -38,6 +38,7 @@ function CardDemo() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -82,22 +83,21 @@ function CardDemo() {
       const result = await response.json();
       console.log("Signup response full:", result);
 
-      // ذخیره user_id اگر وجود داشت
+      // ذخیره user_id
       if (result.user_id) {
         Cookies.set("user_id", result.user_id, { expires: 1 });
       } else {
-        console.warn("No user_id in signup response");
+        throw new Error("شناسه کاربر در پاسخ سرور یافت نشد");
       }
 
-      // ذخیره token فقط اگر معتبر باشد
-      const token = result.token || result.access_token || result.session_id;
-      if (token && typeof token === "string" && token !== "undefined") {
-        Cookies.set("access_token", token, { expires: 1 });
+      // ذخیره token به عنوان access_token (حالا JWT برمی‌گرده)
+      if (result.token) {
+        Cookies.set("access_token", result.token, { expires: 1 });
       } else {
-        console.warn("No valid token in signup response:", token);
+        throw new Error("توکن در پاسخ سرور یافت نشد");
       }
 
-      // ذخیره ایمیل برای نمایش در CheckEmail
+      // ذخیره ایمیل
       Cookies.set("signup_email", data.email, { expires: 1 });
 
       // ذخیره نام کاربر اگر وجود داشت
@@ -105,7 +105,7 @@ function CardDemo() {
         Cookies.set("user_name", result.name, { expires: 1 });
       }
 
-      window.location.href = "/checkEmail";
+      router.push("/checkEmail");
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ثبت‌نام ناموفق بود";
@@ -291,13 +291,12 @@ function CardDemo() {
         <span className="text-[11px] text-center text-[#71717A] font-medium mt-15">
           ثبت نام شما در دیتاکس به معنی پذیرش تمامی قوانین و مقررات آن می‌باشد.
         </span>
+        {errorMessage && (
+          <div className="text-red-500 text-sm mt-4 text-center">
+            {errorMessage}
+          </div>
+        )}
       </Card>
-      <Modal
-        errorMessage={errorMessage}
-        onClose={() => {
-          setErrorMessage(null);
-        }}
-      />
     </div>
   );
 }

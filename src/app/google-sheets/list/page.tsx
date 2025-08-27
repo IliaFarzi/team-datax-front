@@ -19,7 +19,7 @@ export default function SheetsList() {
     const fetchSheets = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/sheets/list`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/sheets`,
           {
             method: "GET",
             headers: {
