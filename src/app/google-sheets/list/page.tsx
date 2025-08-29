@@ -1,92 +1,80 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-type Sheet = {
-  id: string;
-  name: string;
-  csvLink: string;
-};
+interface Sheet {
+  sheet_id: string;
+  sheet_name: string;
+  file_url: string;
+}
 
 export default function SheetsList() {
   const [sheets, setSheets] = useState<Sheet[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
-  const refreshToken = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ session_id: Cookies.get("session_id") }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to refresh token");
-      }
-      const data = await response.json();
-      Cookies.set("access_token", data.access_token, {
-        expires: 7,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-      });
-      return data.access_token;
-    } catch (err) {
-      console.error("Error refreshing token:", err);
-      return null;
-    }
-  };
 
   useEffect(() => {
     const fetchSheets = async () => {
-      let token = Cookies.get("access_token");
-      console.log("Access token:", token);
-      if (!token) {
-        token = await refreshToken();
+      try {
+        const token = Cookies.get("access_token");
+        console.log("Access token for sheets:", token); // لاگ برای دیباگ
         if (!token) {
-          setError("لطفاً دوباره لاگین کنید.");
+          setErrorMessage(
+            "برای مشاهده شیت‌ها، ابتدا وارد حساب کاربری خود شوید."
+          );
           router.push("/login");
           return;
         }
-      }
-      try {
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/sheets`,
           {
             method: "GET",
             headers: {
-              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log("Response status:", response.status, response.statusText);
+
         if (!response.ok) {
+          let errorDetail = "خطا در دریافت لیست شیت‌ها";
           if (response.status === 401) {
-            setError("لطفاً دوباره لاگین کنید.");
+            errorDetail = "توکن نامعتبر است. لطفاً دوباره وارد شوید.";
+            Cookies.remove("access_token");
             router.push("/login");
-            return;
+          } else if (response.status === 500) {
+            errorDetail =
+              "خطای سرور رخ داده است. لطفاً بعداً دوباره امتحان کنید.";
+            try {
+              const result = await response.json();
+              errorDetail = result.detail || errorDetail;
+              console.error("Server error details:", result); // لاگ جزئیات خطا
+            } catch (jsonError) {
+              console.error("JSON parse error:", jsonError);
+            }
+          } else {
+            try {
+              const result = await response.json();
+              errorDetail = result.detail || errorDetail;
+            } catch (jsonError) {
+              console.error("JSON parse error:", jsonError);
+            }
           }
-          const errorData = await response.json();
-          throw new Error(
-            `Failed to fetch sheets: ${response.statusText} - ${
-              errorData.detail || ""
-            }`
-          );
+          throw new Error(errorDetail);
         }
-        const data = await response.json();
-        console.log("API response:", data); // لاگ برای داده‌های پاسخ
-        setSheets(data.sheets || []);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching sheets:", err);
-        setError(`خطا در دریافت لیست شیت‌ها: ${err.message}`);
+
+        const result = await response.json();
+        console.log("Sheets response:", result); // لاگ برای دیباگ
+        setSheets(result.uploaded || []);
+      } catch (error: unknown) {
+        const errorMsg =
+          error instanceof Error ? error.message : "خطا در دریافت لیست شیت‌ها";
+        setErrorMessage(errorMsg);
+        console.error("Fetch sheets error:", errorMsg);
+      } finally {
         setLoading(false);
       }
     };
@@ -94,74 +82,56 @@ export default function SheetsList() {
     fetchSheets();
   }, [router]);
 
-  if (loading) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-white"
-        dir="rtl"
-      >
-        <p>در حال بارگذاری...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-white"
-        dir="rtl"
-      >
-        <div className="text-center">
-          <p className="text-red-500">{error}</p>
-          <button
-            onClick={() => router.push("/connectors")}
-            className="mt-4 px-4 py-2 bg-black text-white rounded-lg"
-          >
-            بازگشت به اتصال‌ها
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
-      <div className="max-w-6xl mx-auto px-6 py-6">
-        <div className="border-b border-slate-200 pb-6 mb-6">
-          <h1 className="text-2xl font-semibold mb-2">لیست گوگل شیت‌ها</h1>
-          <p className="text-slate-500">لیست شیت‌های متصل‌شده و لینک‌های CSV</p>
+    <div className="min-h-screen bg-white">
+      <div className="mx-auto px-6 py-6">
+        <div className="border-b border-slate-200 pb-1 mb-6">
+          <h1 className="text-[24px] flex justify-end md:justify-start font-semibold">
+            لیست شیت‌ها
+          </h1>
+          <h2 className="hidden md:block text-[#71717A] text-[14px]">
+            شیت‌های ذخیره‌شده گوگل شما
+          </h2>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          {sheets.length === 0 ? (
-            <p className="text-slate-500">هیچ شیتی یافت نشد.</p>
-          ) : (
-            <ul className="space-y-4">
-              {sheets.map((sheet) => (
-                <li
-                  key={sheet.id}
-                  className="flex items-center justify-between p-4 border border-slate-200 rounded-lg"
-                >
-                  <span>{sheet.name}</span>
-                  <a
-                    href={sheet.csvLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    دانلود CSV
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-          <button
-            onClick={() => router.push("/connectors")}
-            className="mt-6 px-4 py-2 bg-black text-white rounded-lg"
-          >
-            بازگشت به اتصال‌ها
-          </button>
-        </div>
+        {loading ? (
+          <div className="text-center">در حال بارگذاری...</div>
+        ) : errorMessage ? (
+          <div className="text-red-500 text-center">{errorMessage}</div>
+        ) : sheets.length === 0 ? (
+          <div className="text-center">هیچ شیتی یافت نشد</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {sheets.map((sheet) => (
+              <div
+                key={sheet.sheet_id}
+                className="bg-white max-w-[312px] border border-slate-200 rounded-xl p-3"
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/images/googleSheet.png"
+                    alt="Google Sheet"
+                    width={40}
+                    height={40}
+                  />
+                  <div>
+                    <h3 className="font-medium tracking-tight">
+                      {sheet.sheet_name}
+                    </h3>
+                    <a
+                      href={sheet.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-500"
+                    >
+                      مشاهده فایل
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -84,30 +84,49 @@ function CardDemo() {
       console.log("Login response full:", result);
 
       const userId = result.user?.id || result.user_id;
-      if (userId) {
-        Cookies.set("user_id", userId, { expires: 7 });
-        Cookies.set("access_token", result.token || userId, { expires: 7 }); 
-      } else {
+      if (!userId) {
         throw new Error("شناسه کاربر در پاسخ سرور یافت نشد");
       }
 
-      // ذخیره ایمیل و نام کاربر اگر وجود داشت
-      if (result.user?.email || result.email) {
-        Cookies.set("user_email", result.user?.email || result.email, {
+      // ذخیره توکن و اطلاعات کاربر در کوکی‌ها
+      Cookies.set("user_id", userId, {
+        expires: 7,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+      });
+
+      if (result.token) {
+        Cookies.set("access_token", result.token, {
           expires: 7,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
         });
+      } else {
+        throw new Error("توکن در پاسخ سرور یافت نشد");
       }
-      if (result.user?.name || result.name) {
-        Cookies.set("user_name", result.user?.name || result.name, {
+
+      if (result.session_id) {
+        Cookies.set("session_id", result.session_id, {
           expires: 7,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
         });
       }
 
-      if (result.token) {
-        Cookies.set("access_token", result.token, { expires: 7 });
+      if (result.user?.email || result.email) {
+        Cookies.set("user_email", result.user?.email || result.email, {
+          expires: 7,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+        });
       }
-      if (result.session_id) {
-        Cookies.set("session_id", result.session_id, { expires: 7 });
+
+      if (result.user?.name || result.name) {
+        Cookies.set("user_name", result.user?.name || result.name, {
+          expires: 7,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+        });
       }
 
       router.push("/");
@@ -163,7 +182,7 @@ function CardDemo() {
                   {...register("email", {
                     required: "ایمیل الزامی است",
                     pattern: {
-                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA.Z]{2,}$/,
                       message: "ایمیل نامعتبر است",
                     },
                   })}

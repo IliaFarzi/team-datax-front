@@ -2,7 +2,7 @@
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 type Connector = {
@@ -13,7 +13,6 @@ type Connector = {
   typeFA: string;
   icon: string;
   isNew?: boolean;
-  link?: string;
 };
 
 const connectors: Connector[] = [
@@ -30,14 +29,25 @@ const connectors: Connector[] = [
 
 export default function Connectors() {
   const [isConnected, setIsConnected] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     const success = searchParams.get("success");
+    const token = Cookies.get("access_token"); // تغییر از auth_token به access_token
+
+    console.log("Checking access_token in cookies:", token); // لاگ برای دیباگ
+
+    if (token) {
+      setIsLoggedIn(true);
+    }
+
     if (success) {
       setIsConnected(true);
       Cookies.set("google_sheets_connected", "true", {
-        expires: 7, // 7 روز اعتبار
+        expires: 7,
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
       });
@@ -51,14 +61,69 @@ export default function Connectors() {
 
   const handleConnect = useCallback(async () => {
     try {
-      const base =
-        (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "") || "";
-      window.location.href = `${base}/auth/connect-google-sheets`;
-    } catch (err) {
+      const token = Cookies.get("access_token"); // تغییر از auth_token به access_token
+      console.log("Access token for request:", token); // لاگ برای دیباگ
+
+      if (!token) {
+        setErrorMessage("برای اتصال، ابتدا وارد حساب کاربری خود شوید.");
+        router.push("/login");
+        return;
+      }
+
+      const base = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(
+        /\/$/,
+        ""
+      );
+      const response = await fetch(`${base}/auth/connect-google-sheets`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        let errorDetail = "خطا در دریافت آدرس اتصال گوگل";
+        if (response.status === 401) {
+          errorDetail = "توکن نامعتبر است. لطفاً دوباره وارد شوید.";
+          Cookies.remove("access_token"); // پاک کردن توکن نامعتبر
+          router.push("/login");
+        } else {
+          try {
+            const result = await response.json();
+            errorDetail = result.detail || errorDetail;
+          } catch (jsonError) {
+            console.error("JSON parse error:", jsonError);
+          }
+        }
+        throw new Error(errorDetail);
+      }
+
+      const { auth_url } = await response.json();
+      if (!auth_url) {
+        throw new Error("آدرس تأیید گوگل دریافت نشد");
+      }
+
+      console.log("Redirecting to auth_url:", auth_url); // لاگ برای دیباگ
+      window.location.href = auth_url;
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error ? err.message : "خطا در شروع فرایند اتصال";
+      setErrorMessage(errorMsg);
       console.error("Failed to start connection flow:", err);
-      alert("خطا در شروع فرایند اتصال. کنسول رو بررسی کن.");
     }
-  }, []);
+  }, [router]);
+
+  const handleLoginCheck = () => {
+    const token = Cookies.get("access_token"); // تغییر از auth_token به access_token
+    console.log("Manual login check - access_token:", token); // لاگ برای دیباگ
+    if (token) {
+      setIsLoggedIn(true);
+      setErrorMessage(null);
+    } else {
+      setErrorMessage("لطفاً وارد حساب کاربری خود شوید.");
+      router.push("/login");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -71,6 +136,20 @@ export default function Connectors() {
             دیتاکس را به نرم‌افزارها و اطلاعات‌تان متصل کنید
           </h2>
         </div>
+
+        {errorMessage && (
+          <div className="text-red-500 text-center mb-4">
+            {errorMessage}
+            {!isLoggedIn && (
+              <button
+                onClick={handleLoginCheck}
+                className="ml-2 text-blue-500 underline"
+              >
+                بررسی دوباره وضعیت ورود
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="w-auto mx-auto">
           <div className="space-y-4 md:mr-26">
