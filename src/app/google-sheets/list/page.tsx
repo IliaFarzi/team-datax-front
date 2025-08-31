@@ -8,6 +8,13 @@ interface Sheet {
   sheet_id: string;
   sheet_name: string;
   file_url: string;
+  rows_saved: number;
+  columns: number;
+  headers: string[];
+  bucket: string;
+  object_name: string;
+  updated_at: string;
+  owner_id?: string;
 }
 
 export default function SheetsList() {
@@ -20,7 +27,7 @@ export default function SheetsList() {
     const fetchSheets = async () => {
       try {
         const token = Cookies.get("access_token");
-        console.log("Access token for sheets:", token); // لاگ برای دیباگ
+        console.log("Access token for sheets:", token);
         if (!token) {
           setErrorMessage(
             "برای مشاهده شیت‌ها، ابتدا وارد حساب کاربری خود شوید."
@@ -51,7 +58,7 @@ export default function SheetsList() {
             try {
               const result = await response.json();
               errorDetail = result.detail || errorDetail;
-              console.error("Server error details:", result); // لاگ جزئیات خطا
+              console.error("Server error details:", result);
             } catch (jsonError) {
               console.error("JSON parse error:", jsonError);
             }
@@ -67,8 +74,8 @@ export default function SheetsList() {
         }
 
         const result = await response.json();
-        console.log("Sheets response:", result); // لاگ برای دیباگ
-        setSheets(result.uploaded || []);
+        console.log("Sheets response:", result);
+        setSheets(result.sheets || []);
       } catch (error: unknown) {
         const errorMsg =
           error instanceof Error ? error.message : "خطا در دریافت لیست شیت‌ها";
@@ -118,14 +125,22 @@ export default function SheetsList() {
                     <h3 className="font-medium tracking-tight">
                       {sheet.sheet_name}
                     </h3>
+                    <p className="text-xs text-gray-500">
+                      تعداد ردیف‌ها: {sheet.rows_saved} | تعداد ستون‌ها:{" "}
+                      {sheet.columns}
+                    </p>
                     <a
                       href={sheet.file_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-blue-500"
                     >
-                      مشاهده فایل
+                      دانلود فایل (CSV)
                     </a>
+                    <p className="text-xs text-gray-500 mt-1">
+                      به‌روزرسانی:{" "}
+                      {new Date(sheet.updated_at).toLocaleDateString("fa-IR")}
+                    </p>
                   </div>
                 </div>
               </div>

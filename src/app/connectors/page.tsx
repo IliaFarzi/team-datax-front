@@ -36,9 +36,9 @@ export default function Connectors() {
 
   useEffect(() => {
     const success = searchParams.get("success");
-    const token = Cookies.get("access_token"); // تغییر از auth_token به access_token
+    const token = Cookies.get("access_token");
 
-    console.log("Checking access_token in cookies:", token); // لاگ برای دیباگ
+    console.log("Checking access_token in cookies:", token);
 
     if (token) {
       setIsLoggedIn(true);
@@ -61,8 +61,8 @@ export default function Connectors() {
 
   const handleConnect = useCallback(async () => {
     try {
-      const token = Cookies.get("access_token"); // تغییر از auth_token به access_token
-      console.log("Access token for request:", token); // لاگ برای دیباگ
+      const token = Cookies.get("access_token");
+      console.log("Access token for request:", token);
 
       if (!token) {
         setErrorMessage("برای اتصال، ابتدا وارد حساب کاربری خود شوید.");
@@ -85,7 +85,7 @@ export default function Connectors() {
         let errorDetail = "خطا در دریافت آدرس اتصال گوگل";
         if (response.status === 401) {
           errorDetail = "توکن نامعتبر است. لطفاً دوباره وارد شوید.";
-          Cookies.remove("access_token"); // پاک کردن توکن نامعتبر
+          Cookies.remove("access_token");
           router.push("/login");
         } else {
           try {
@@ -103,7 +103,7 @@ export default function Connectors() {
         throw new Error("آدرس تأیید گوگل دریافت نشد");
       }
 
-      console.log("Redirecting to auth_url:", auth_url); // لاگ برای دیباگ
+      console.log("Redirecting to auth_url:", auth_url);
       window.location.href = auth_url;
     } catch (err: unknown) {
       const errorMsg =
@@ -114,8 +114,8 @@ export default function Connectors() {
   }, [router]);
 
   const handleLoginCheck = () => {
-    const token = Cookies.get("access_token"); // تغییر از auth_token به access_token
-    console.log("Manual login check - access_token:", token); // لاگ برای دیباگ
+    const token = Cookies.get("access_token");
+    console.log("Manual login check - access_token:", token);
     if (token) {
       setIsLoggedIn(true);
       setErrorMessage(null);
@@ -161,7 +161,7 @@ export default function Connectors() {
               {connectors.map((connector) => (
                 <button
                   key={connector.id}
-                  onClick={() => handleConnect()}
+                  onClick={handleConnect}
                   className="text-right bg-white max-w-[312px] border border-slate-200 rounded-xl overflow-hidden p-0"
                   type="button"
                 >

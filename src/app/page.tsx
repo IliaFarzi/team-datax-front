@@ -39,7 +39,7 @@ export default function Home() {
         content: trimmedMessage,
       };
       console.log("Request to API:", {
-        url: `${apiBaseUrl}/agent/chat`,
+        url: `${apiBaseUrl}/Chat/send_message`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export default function Home() {
         body: requestBody,
       });
 
-      const response = await fetch(`${apiBaseUrl}/agent/chat`, {
+      const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +68,7 @@ export default function Home() {
       const data = await response.json();
       console.log("API Response Data:", data);
 
-      const assistantContent = data.content || "پاسخ دریافت شد!";
+      const assistantContent = data.content || "جوابی از سمت ایجنت نیومد!";
 
       localStorage.setItem(
         `chat_${sessionId}`,

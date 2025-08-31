@@ -62,14 +62,14 @@ export default function ChatPage() {
     setInput("");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/agent/chat`, {
+      const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           session_id: sessionId,
-          message: trimmedInput,
+          content: trimmedInput,
         }),
       });
 
@@ -79,7 +79,7 @@ export default function ChatPage() {
 
       const data = await response.json();
       const assistantContent =
-        data.content || data.message || "پاسخ دریافت شد!";
+        data.content || data.message || "جوابی از سمت ایجنت نیومد!";
       const words = assistantContent.split(" ");
       let currentMessage = "";
       let wordIndex = 0;

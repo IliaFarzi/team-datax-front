@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Cookies from "js-cookie";
-
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import {
   Accordion,
@@ -18,7 +17,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "../Button";
 import Link from "next/link";
 import {
@@ -31,20 +30,56 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export function AppSidebar() {
-  const chatSubjects = ["شروع مکالمه", "سلام وقت بخیر", "تحلیل دیتای مالی"];
-  // const [userEmail, setUserEmail] = useState("");
-  const [userPicture, setUserPicture] = useState("/images/defaultProfile.png");
+  const [chatSubjects, setChatSubjects] = useState<string[]>([
+    "شروع مکالمه",
+    "سلام وقت بخیر",
+    "تحلیل دیتای مالی",
+  ]);
+  const [userPicture, setUserPicture] = useState<string>(
+    "/images/defaultProfile.png"
+  );
+  const [editChatIndex, setEditChatIndex] = useState<number | null>(null);
+  const [editChatTitle, setEditChatTitle] = useState<string>("");
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
     const token = Cookies.get("access_token");
     const email = Cookies.get("user_email");
+    setUserEmail(email || "t.hosseinpour2347@gmail.com");
     const picture = Cookies.get("user_picture") || "/images/defaultProfile.png";
     if (token && email) {
-      // setUserEmail(email);
       setUserPicture(picture);
     }
+  }, []);
+
+  const handleDeleteChat = useCallback((index: number) => {
+    setChatSubjects((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleEditChat = useCallback((index: number, title: string) => {
+    setEditChatIndex(index);
+    setEditChatTitle(title);
+  }, []);
+
+  const handleSaveEdit = useCallback(
+    (index: number) => {
+      if (editChatTitle.trim()) {
+        setChatSubjects((prev) =>
+          prev.map((item, i) => (i === index ? editChatTitle : item))
+        );
+      }
+      setEditChatIndex(null);
+      setEditChatTitle("");
+    },
+    [editChatTitle]
+  );
+
+  const handleCancelEdit = useCallback(() => {
+    setEditChatIndex(null);
+    setEditChatTitle("");
   }, []);
 
   return (
@@ -74,9 +109,9 @@ export function AppSidebar() {
             </div>
             <Accordion type="single" collapsible>
               <AccordionItem value="item-1" className="m-2">
-                <Link href={"/"}>
+                <Link href="/">
                   <Button
-                    variant={"outline"}
+                    variant="outline"
                     className="bg-transparent w-full h-9"
                   >
                     <span className="text-[14px]">گفتگو جدید</span>
@@ -92,40 +127,87 @@ export function AppSidebar() {
                 <AccordionContent>
                   <div className="flex flex-col mr-2 gap-3 border-r border-[#E4E4E7] pr-5.5">
                     {chatSubjects.map((item, index) => (
-                      <div className="flex justify-between" key={index}>
-                        <span className="text-[#71717A]">{item}</span>
-                        <div className="flex gap-2">
-                          <FilePenIcon height={18} color="#71717A" />
-                          <Dialog>
-                            <form>
-                              <DialogTrigger asChild>
-                                <Trash height={18} color="#71717A" />
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>حذف گفتگو</DialogTitle>
-                                  <DialogDescription>
-                                    آیا مطمئن هستید که می‌خواهید گفتگو فلان را
-                                    حذف کنید؟
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
-                                      انصراف
-                                    </Button>
-                                  </DialogClose>
-                                  <Button
-                                    type="submit"
-                                    className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
-                                  >
-                                    خروج
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </form>
-                          </Dialog>
-                        </div>
+                      <div
+                        className="flex justify-between items-center"
+                        key={index}
+                      >
+                        {editChatIndex === index ? (
+                          <div className="flex items-center gap-2 w-full">
+                            <Input
+                              value={editChatTitle}
+                              onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                              ) => setEditChatTitle(e.target.value)}
+                              onKeyDown={(
+                                e: React.KeyboardEvent<HTMLInputElement>
+                              ) => e.key === "Enter" && handleSaveEdit(index)}
+                              placeholder="عنوان گفتگو"
+                              className="text-[#71717A]"
+                              autoFocus
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleSaveEdit(index)}
+                            >
+                              ذخیره
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleCancelEdit}
+                            >
+                              انصراف
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
+                            <span className="text-[#71717A]">{item}</span>
+                            <div className="flex gap-2">
+                              <FilePenIcon
+                                height={18}
+                                color="#71717A"
+                                onClick={() => handleEditChat(index, item)}
+                                className="cursor-pointer"
+                                aria-label="ویرایش گفتگو"
+                              />
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Trash
+                                    height={18}
+                                    color="#71717A"
+                                    className="cursor-pointer"
+                                    aria-label="حذف گفتگو"
+                                  />
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                  <DialogHeader>
+                                    <DialogTitle>حذف گفتگو</DialogTitle>
+                                    <DialogDescription>
+                                      آیا مطمئن هستید که می‌خواهید گفتگو {item}
+                                      را حذف کنید؟
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button className="bg-[#FAFAFA] text-[#18181B] w-[30%] hover:bg-gray-100">
+                                        انصراف
+                                      </Button>
+                                    </DialogClose>
+                                    <DialogClose asChild>
+                                      <Button
+                                        onClick={() => handleDeleteChat(index)}
+                                        className="bg-[#DC2626] hover:bg-[#DC2626] w-[30%]"
+                                      >
+                                        حذف
+                                      </Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -138,7 +220,7 @@ export function AppSidebar() {
             <div className="flex h-px w-full" />
             <div className="w-full text-[#71717A] flex items-center rounded-lg gap-3 h-9.5">
               <Unplug height={18} />
-              <Link href={"/connectors"}>
+              <Link href="/connectors">
                 <span>اتصالات داده</span>
               </Link>
             </div>
@@ -147,12 +229,12 @@ export function AppSidebar() {
               <Settings height={19} />
               <Dialog>
                 <DialogTrigger>تنظیمات و اعتبار</DialogTrigger>
-                <DialogContent height="128px">
+                <DialogContent>
                   <DialogHeader>
                     <DialogTitle>اعتبار فعلی</DialogTitle>
                     <DialogDescription>
-                      <p>اعتبار فعلی شما ۱۲,۰۰۰,۰۰۰ تومان می‌باشد</p>
-                      <p>برای افزایش اعتبار با ۰۹۱۰۵۸۶۰۰۵۰ تماس بگیرید</p>
+                      <div>اعتبار فعلی شما ۱۲,۰۰۰,۰۰۰ تومان می‌باشد</div>
+                      <div>برای افزایش اعتبار با ۰۹۱۰۵۸۶۰۰۵۰ تماس بگیرید</div>
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
@@ -161,33 +243,30 @@ export function AppSidebar() {
             <div className="flex items-center rounded-lg text-[#71717A] cursor-pointer gap-2 h-9.5 justify-start w-full">
               <LogOut color="red" height={19} />
               <Dialog>
-                <form>
-                  <DialogTrigger asChild>
-                    <span>خروج از حساب</span>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>خروج از حساب</DialogTitle>
-                      <DialogDescription>
-                        آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج
-                        شوید؟
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
-                          انصراف
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        type="submit"
-                        className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
-                      >
-                        خروج
+                <DialogTrigger asChild>
+                  <span>خروج از حساب</span>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>خروج از حساب</DialogTitle>
+                    <DialogDescription>
+                      آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
+                        انصراف
                       </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </form>
+                    </DialogClose>
+                    <Button
+                      type="submit"
+                      className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
+                    >
+                      خروج
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
               </Dialog>
             </div>
 
@@ -203,12 +282,11 @@ export function AppSidebar() {
                   />
                   <div className="flex flex-col">
                     <div className="flex items-center gap-0.5 mt-1">
-                      <span className="flex items-center text-xs gap-0.5">
-                        <span className="text-[#3F3F46] font-medium">
-                          {Cookies.get("user_email") ||
-                            "t.hosseinpour2347@gmail.com"}
-                        </span>
-                      </span>
+                      <div className="flex items-center text-xs gap-0.5">
+                        <div className="text-[#3F3F46] font-medium">
+                          {userEmail}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

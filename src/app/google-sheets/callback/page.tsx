@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -7,9 +7,14 @@ export default function Callback() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const exchanged = useRef(false);
 
   useEffect(() => {
+    if (exchanged.current) return;
+
     const exchangeCode = async () => {
+      exchanged.current = true;
+
       const code = searchParams.get("code");
       const state = searchParams.get("state");
       console.log("Google callback params:", { code, state });
@@ -21,7 +26,7 @@ export default function Callback() {
 
       try {
         const token = Cookies.get("access_token");
-        console.log("Access token for exchange:", token); // لاگ برای دیباگ
+        console.log("Access token for exchange:", token);
         if (!token) {
           setErrorMessage("برای ادامه، ابتدا وارد حساب کاربری خود شوید.");
           router.push("/login");
@@ -36,7 +41,7 @@ export default function Callback() {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ code }), 
+            body: JSON.stringify({ code, state }),
           }
         );
 
@@ -70,7 +75,7 @@ export default function Callback() {
         const result = await response.json();
         console.log("Exchange response:", result);
 
-        router.push("/connectors?success=true");
+        router.push("/google-sheets/list");
       } catch (error: unknown) {
         const errorMsg =
           error instanceof Error ? error.message : "خطا در تبادل کد گوگل";
