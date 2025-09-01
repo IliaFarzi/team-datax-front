@@ -126,7 +126,7 @@ export default function SheetsList() {
                       {sheet.sheet_name}
                     </h3>
                     <p className="text-xs text-gray-500">
-                      تعداد ردیف‌ها: {sheet.rows_saved} | تعداد ستون‌ها:{" "}
+                      تعداد ردیف‌ها: {sheet.rows_saved} | تعداد ستون‌ها:
                       {sheet.columns}
                     </p>
                     <a

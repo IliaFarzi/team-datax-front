@@ -1,7 +1,14 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ArrowUp, CirclePlus, Copy, RefreshCw, Check } from "lucide-react";
+import {
+  ArrowUp,
+  CirclePlus,
+  Copy,
+  Pencil,
+  RefreshCw,
+  Check,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -18,6 +25,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [loadingDots, setLoadingDots] = useState(".");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -47,19 +55,32 @@ export default function ChatPage() {
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, refreshIndex?: number) => {
     e.preventDefault();
-    const trimmedInput = input.trim();
+    const trimmedInput =
+      refreshIndex !== undefined
+        ? messages[refreshIndex - 1].content
+        : input.trim();
     if (!trimmedInput) return;
 
     setIsLoading(true);
 
-    const newMessages: Message[] = [
-      ...messages,
-      { role: "user", content: trimmedInput },
-    ];
+    let newMessages: Message[];
+    if (editingIndex !== null) {
+      newMessages = [...messages.slice(0, editingIndex)];
+      newMessages.push({ role: "user", content: trimmedInput });
+      setEditingIndex(null);
+    } else if (refreshIndex !== undefined) {
+      newMessages = [...messages.slice(0, refreshIndex)];
+    } else {
+      newMessages = [
+        ...messages,
+        { role: "user", content: trimmedInput } as Message,
+      ];
+    }
+
     setMessages(newMessages);
-    setInput("");
+    if (refreshIndex === undefined) setInput("");
 
     try {
       const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
@@ -89,18 +110,20 @@ export default function ChatPage() {
           currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
           setMessages([
             ...newMessages,
-            { role: "assistant", content: currentMessage },
+            { role: "assistant", content: currentMessage } as Message,
           ]);
           wordIndex++;
         } else {
           clearInterval(streamInterval);
           setIsLoading(false);
+          const finalMessages: Message[] = [
+            ...newMessages,
+            { role: "assistant", content: assistantContent } as Message,
+          ];
+          setMessages(finalMessages);
           localStorage.setItem(
             `chat_${sessionId}`,
-            JSON.stringify([
-              ...newMessages,
-              { role: "assistant", content: assistantContent },
-            ])
+            JSON.stringify(finalMessages)
           );
         }
       }, 100 + Math.random() * 50);
@@ -108,7 +131,10 @@ export default function ChatPage() {
       console.error("Error sending message:", error);
       setMessages([
         ...newMessages,
-        { role: "assistant", content: " خطا در دریافت پاسخ از سرور!" },
+        {
+          role: "assistant",
+          content: "خطا در دریافت پاسخ از سرور!",
+        } as Message,
       ]);
       setIsLoading(false);
     }
@@ -133,6 +159,18 @@ export default function ChatPage() {
       setTimeout(() => setCopiedIndex(null), 1500);
     } catch (err) {
       console.error("Copy failed", err);
+    }
+  };
+
+  const handleEdit = (index: number, content: string) => {
+    setInput(content);
+    setEditingIndex(index);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleRefresh = (index: number, e: React.MouseEvent) => {
+    if (index > 0 && messages[index - 1].role === "user") {
+      handleSubmit(e as unknown as React.FormEvent, index);
     }
   };
 
@@ -238,15 +276,25 @@ export default function ChatPage() {
                   )}
                 </button>
 
-                <button
-                  onClick={() => {
-                    console.log("refresh clicked for message:", index);
-                  }}
-                  className="inline-flex items-center gap-1 opacity-90 hover:opacity-100 transition-all duration-200"
-                  aria-label="رفرش پیام"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
+                {msg.role === "user" && (
+                  <button
+                    onClick={() => handleEdit(index, msg.content)}
+                    className="inline-flex items-center gap-1 opacity-90 hover:opacity-100 transition-all duration-200"
+                    aria-label="ویرایش پیام"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                )}
+
+                {msg.role === "assistant" && (
+                  <button
+                    onClick={(e) => handleRefresh(index, e)}
+                    className="inline-flex items-center gap-1 opacity-90 hover:opacity-100 transition-all duration-200"
+                    aria-label="رفرش پیام"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -276,7 +324,11 @@ export default function ChatPage() {
 
             <textarea
               rows={1}
-              placeholder="پیام خود را بنویسید..."
+              placeholder={
+                editingIndex !== null
+                  ? "پیام خود را ویرایش کنید..."
+                  : "پیام خود را بنویسید..."
+              }
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {

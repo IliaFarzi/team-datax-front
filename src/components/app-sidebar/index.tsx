@@ -148,6 +148,7 @@ export function AppSidebar() {
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="w-[20%]"
                               onClick={() => handleSaveEdit(index)}
                             >
                               ذخیره
@@ -155,6 +156,7 @@ export function AppSidebar() {
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="w-[20%] text-[12px]"
                               onClick={handleCancelEdit}
                             >
                               انصراف
