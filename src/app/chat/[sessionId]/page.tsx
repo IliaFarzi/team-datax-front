@@ -46,7 +46,39 @@ export default function ChatPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  useEffect(() => {
+    const loadMessages = async () => {
+      const storedMessages = localStorage.getItem(`chat_${sessionId}`);
+      if (storedMessages) {
+        try {
+          const parsed = JSON.parse(storedMessages) as Message[];
+          setMessages(parsed);
+          return; 
+        } catch (error) {
+          console.error("Error parsing messages:", error);
+        }
+      }
 
+      try {
+        const response = await fetch(
+          `${apiBaseUrl}/Chat/get_history/${sessionId}`
+        );
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        const data = await response.json();
+        // فرض: data.messages یک آرایه از {role, content} است
+        const history = data.messages || [];
+        setMessages(history);
+        localStorage.setItem(`chat_${sessionId}`, JSON.stringify(history));
+      } catch (error) {
+        console.error("Error fetching history:", error);
+        setMessages([]); // یا پیام خطا
+      }
+    };
+
+    loadMessages();
+  }, [sessionId, apiBaseUrl]);
   useEffect(() => {
     if (!isLoading) return;
     const interval = setInterval(() => {
@@ -100,7 +132,10 @@ export default function ChatPage() {
 
       const data = await response.json();
       const assistantContent =
-        data.content || data.message || "جوابی از سمت ایجنت نیومد!";
+        data.content ||
+        data.response ||
+        data.message ||
+        "جوابی از سمت ایجنت نیومد!";
       const words = assistantContent.split(" ");
       let currentMessage = "";
       let wordIndex = 0;

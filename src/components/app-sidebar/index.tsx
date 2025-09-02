@@ -32,12 +32,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
+interface ChatItem {
+  title: string;
+  sessionId: string;
+}
+
 export function AppSidebar() {
-  const [chatSubjects, setChatSubjects] = useState<string[]>([
-    "شروع مکالمه",
-    "سلام وقت بخیر",
-    "تحلیل دیتای مالی",
-  ]);
+  const [chatList, setChatList] = useState<ChatItem[]>([]);
   const [userPicture, setUserPicture] = useState<string>(
     "/images/defaultProfile.png"
   );
@@ -53,11 +54,23 @@ export function AppSidebar() {
     if (token && email) {
       setUserPicture(picture);
     }
+
+    const storedChatList = JSON.parse(localStorage.getItem("chatList") || "[]");
+    setChatList(storedChatList);
   }, []);
 
-  const handleDeleteChat = useCallback((index: number) => {
-    setChatSubjects((prev) => prev.filter((_, i) => i !== index));
-  }, []);
+  const handleDeleteChat = useCallback(
+    (index: number) => {
+      const sessionId = chatList[index].sessionId;
+      setChatList((prev) => prev.filter((_, i) => i !== index));
+      localStorage.removeItem(`chat_${sessionId}`); // پاک کردن تاریخچه چت
+      localStorage.setItem(
+        "chatList",
+        JSON.stringify(chatList.filter((_, i) => i !== index))
+      );
+    },
+    [chatList]
+  );
 
   const handleEditChat = useCallback((index: number, title: string) => {
     setEditChatIndex(index);
@@ -67,14 +80,16 @@ export function AppSidebar() {
   const handleSaveEdit = useCallback(
     (index: number) => {
       if (editChatTitle.trim()) {
-        setChatSubjects((prev) =>
-          prev.map((item, i) => (i === index ? editChatTitle : item))
+        const updatedList = chatList.map((item, i) =>
+          i === index ? { ...item, title: editChatTitle } : item
         );
+        setChatList(updatedList);
+        localStorage.setItem("chatList", JSON.stringify(updatedList));
       }
       setEditChatIndex(null);
       setEditChatTitle("");
     },
-    [editChatTitle]
+    [editChatTitle, chatList]
   );
 
   const handleCancelEdit = useCallback(() => {
@@ -126,7 +141,12 @@ export function AppSidebar() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col mr-2 gap-3 border-r border-[#E4E4E7] pr-5.5">
-                    {chatSubjects.map((item, index) => (
+                    {chatList.length === 0 && (
+                      <p className="text-[#71717A] text-center">
+                        هیچ گفتگویی موجود نیست.
+                      </p>
+                    )}
+                    {chatList.map((item, index) => (
                       <div
                         className="flex justify-between items-center"
                         key={index}
@@ -164,12 +184,19 @@ export function AppSidebar() {
                           </div>
                         ) : (
                           <>
-                            <span className="text-[#71717A]">{item}</span>
+                            <Link
+                              href={`/chat/${item.sessionId}`}
+                              className="text-[#71717A]"
+                            >
+                              {item.title}
+                            </Link>
                             <div className="flex gap-2">
                               <FilePenIcon
                                 height={18}
                                 color="#71717A"
-                                onClick={() => handleEditChat(index, item)}
+                                onClick={() =>
+                                  handleEditChat(index, item.title)
+                                }
                                 className="cursor-pointer"
                                 aria-label="ویرایش گفتگو"
                               />
@@ -186,7 +213,8 @@ export function AppSidebar() {
                                   <DialogHeader>
                                     <DialogTitle>حذف گفتگو</DialogTitle>
                                     <DialogDescription>
-                                      آیا مطمئن هستید که می‌خواهید گفتگو {item}
+                                      آیا مطمئن هستید که می‌خواهید گفتگو{" "}
+                                      {item.title}
                                       را حذف کنید؟
                                     </DialogDescription>
                                   </DialogHeader>

@@ -34,6 +34,12 @@ export default function Home() {
       const sessionId = uuidv4();
       console.log("Generated sessionId:", sessionId);
 
+      const title = trimmedMessage.split(" ")[0] || "بدون عنوان";
+
+      let chatList = JSON.parse(localStorage.getItem("chatList") || "[]");
+      chatList = [{ title, sessionId }, ...chatList]; 
+      localStorage.setItem("chatList", JSON.stringify(chatList));
+
       const requestBody = {
         session_id: sessionId,
         content: trimmedMessage,
@@ -68,7 +74,8 @@ export default function Home() {
       const data = await response.json();
       console.log("API Response Data:", data);
 
-      const assistantContent = data.content || "جوابی از سمت ایجنت نیومد!";
+      const assistantContent =
+        data.content || data.response || "جوابی از سمت ایجنت نیومد!";
 
       localStorage.setItem(
         `chat_${sessionId}`,
