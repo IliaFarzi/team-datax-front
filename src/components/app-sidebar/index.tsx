@@ -81,7 +81,7 @@ export function AppSidebar() {
       const updatedList = chatList.filter((_, i) => i !== index);
       localStorage.removeItem(`chat_${sessionId}`);
       localStorage.setItem("chatList", JSON.stringify(updatedList));
-      setChatList(updatedList); // مستقیماً آپدیت می‌کنیم
+      setChatList(updatedList);
       window.dispatchEvent(new Event("chatListUpdated"));
     },
     [chatList]
