@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { CirclePlus, ArrowUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
@@ -16,6 +16,17 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${Math.min(
+        inputRef.current.scrollHeight,
+        150
+      )}px`;
+    }
+  }, [message]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,20 +50,17 @@ export default function Home() {
     console.log("Generated sessionId:", sessionId);
 
     try {
-      // ایجاد تایتل شماره‌دار
       const chatCounter =
         parseInt(localStorage.getItem("chatCounter") || "0") + 1;
       const title = `گفتگو ${chatCounter}`;
       localStorage.setItem("chatCounter", chatCounter.toString());
 
-      // آپدیت لیست چت‌ها
       const chatList: ChatItem[] = JSON.parse(
         localStorage.getItem("chatList") || "[]"
       );
       chatList.unshift({ title, sessionId });
       localStorage.setItem("chatList", JSON.stringify(chatList));
 
-      // ارسال event برای آپدیت سایدبار
       window.dispatchEvent(new Event("chatListUpdated"));
 
       const requestBody = {
@@ -140,6 +148,7 @@ export default function Home() {
               </button>
 
               <textarea
+                ref={inputRef}
                 rows={1}
                 placeholder="داده‌ها را متصل کنید و چت را شروع کنید!"
                 value={message}
@@ -150,7 +159,7 @@ export default function Home() {
                     handleSubmit(e as unknown as React.FormEvent);
                   }
                 }}
-                className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none"
+                className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none overflow-auto max-h-[200px]"
               />
 
               <button
