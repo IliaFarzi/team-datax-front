@@ -5,6 +5,11 @@ import { CirclePlus, ArrowUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
+interface ChatItem {
+  title: string;
+  sessionId: string;
+}
+
 export default function Home() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -30,15 +35,25 @@ export default function Home() {
     setError("");
     setIsLoading(true);
 
+    const sessionId = uuidv4();
+    console.log("Generated sessionId:", sessionId);
+
     try {
-      const sessionId = uuidv4();
-      console.log("Generated sessionId:", sessionId);
+      // ایجاد تایتل شماره‌دار
+      const chatCounter =
+        parseInt(localStorage.getItem("chatCounter") || "0") + 1;
+      const title = `گفتگو ${chatCounter}`;
+      localStorage.setItem("chatCounter", chatCounter.toString());
 
-      const title = trimmedMessage.split(" ")[0] || "بدون عنوان";
-
-      let chatList = JSON.parse(localStorage.getItem("chatList") || "[]");
-      chatList = [{ title, sessionId }, ...chatList]; 
+      // آپدیت لیست چت‌ها
+      const chatList: ChatItem[] = JSON.parse(
+        localStorage.getItem("chatList") || "[]"
+      );
+      chatList.unshift({ title, sessionId });
       localStorage.setItem("chatList", JSON.stringify(chatList));
+
+      // ارسال event برای آپدیت سایدبار
+      window.dispatchEvent(new Event("chatListUpdated"));
 
       const requestBody = {
         session_id: sessionId,
@@ -89,6 +104,16 @@ export default function Home() {
     } catch (err) {
       setError("خطا در ارتباط با سرور: " + (err as Error).message);
       console.error("Error in handleSubmit:", err);
+
+      // در صورت خطا، چت را از لیست حذف کن
+      const chatList: ChatItem[] = JSON.parse(
+        localStorage.getItem("chatList") || "[]"
+      );
+      const updatedChatList = chatList.filter(
+        (chat) => chat.sessionId !== sessionId
+      );
+      localStorage.setItem("chatList", JSON.stringify(updatedChatList));
+      window.dispatchEvent(new Event("chatListUpdated"));
     } finally {
       setIsLoading(false);
     }

@@ -98,7 +98,7 @@ function CardDemo() {
       Cookies.set("signup_email", data.email, { expires: 1 });
 
       if (result.name) {
-        Cookies.set("user_name", result.name, { expires: 1 });
+        Cookies.set("user_name", result.name, { expires: 100 });
       }
 
       router.push("/checkEmail");

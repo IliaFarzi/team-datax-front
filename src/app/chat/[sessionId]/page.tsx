@@ -13,6 +13,8 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
+import Cookies from "js-cookie";
+import Image from "next/image";
 
 interface Message {
   role: "user" | "assistant";
@@ -27,25 +29,15 @@ export default function ChatPage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [loadingDots, setLoadingDots] = useState(".");
+  const [user, setUser] = useState("شما");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
-    const storedMessages = localStorage.getItem(`chat_${sessionId}`);
-    if (storedMessages) {
-      try {
-        const parsed = JSON.parse(storedMessages) as Message[];
-        setMessages(parsed);
-      } catch (error) {
-        console.error("Error parsing messages:", error);
-      }
-    }
-  }, [sessionId]);
+    setUser(Cookies.get("user_name") || "شما");
+  }, []);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
   useEffect(() => {
     const loadMessages = async () => {
       const storedMessages = localStorage.getItem(`chat_${sessionId}`);
@@ -53,7 +45,7 @@ export default function ChatPage() {
         try {
           const parsed = JSON.parse(storedMessages) as Message[];
           setMessages(parsed);
-          return; 
+          return;
         } catch (error) {
           console.error("Error parsing messages:", error);
         }
@@ -67,18 +59,22 @@ export default function ChatPage() {
           throw new Error(`API request failed with status ${response.status}`);
         }
         const data = await response.json();
-        // فرض: data.messages یک آرایه از {role, content} است
         const history = data.messages || [];
         setMessages(history);
         localStorage.setItem(`chat_${sessionId}`, JSON.stringify(history));
       } catch (error) {
         console.error("Error fetching history:", error);
-        setMessages([]); // یا پیام خطا
+        setMessages([]);
       }
     };
 
     loadMessages();
   }, [sessionId, apiBaseUrl]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   useEffect(() => {
     if (!isLoading) return;
     const interval = setInterval(() => {
@@ -221,10 +217,26 @@ export default function ChatPage() {
             <div key={index} className="flex flex-col text-right">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-200 text-xs font-medium">
-                  {msg.role === "user" ? "شما" : "هوش"}
+                  {msg.role === "user" ? (
+                    <Image
+                      src="/images/user.png"
+                      height={36}
+                      width={36}
+                      alt="userImage"
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <Image
+                      src="/images/datax.png"
+                      height={36}
+                      width={36}
+                      alt="dataxImage"
+                      className="rounded-full"
+                    />
+                  )}
                 </div>
                 <span className="text-sm font-semibold">
-                  {msg.role === "user" ? "کاربر" : "هوش مصنوعی"}
+                  {msg.role === "user" ? user : "دیتاکس"}
                 </span>
               </div>
 

@@ -46,6 +46,18 @@ export function AppSidebar() {
   const [editChatTitle, setEditChatTitle] = useState<string>("");
   const [userEmail, setUserEmail] = useState("");
 
+  const loadChatList = useCallback(() => {
+    const storedChatList: ChatItem[] = JSON.parse(
+      localStorage.getItem("chatList") || "[]"
+    );
+    setChatList((prev) => {
+      if (JSON.stringify(prev) !== JSON.stringify(storedChatList)) {
+        return storedChatList;
+      }
+      return prev;
+    });
+  }, []);
+
   useEffect(() => {
     const token = Cookies.get("access_token");
     const email = Cookies.get("user_email");
@@ -55,19 +67,22 @@ export function AppSidebar() {
       setUserPicture(picture);
     }
 
-    const storedChatList = JSON.parse(localStorage.getItem("chatList") || "[]");
-    setChatList(storedChatList);
-  }, []);
+    loadChatList();
+
+    window.addEventListener("chatListUpdated", loadChatList);
+    return () => {
+      window.removeEventListener("chatListUpdated", loadChatList);
+    };
+  }, [loadChatList]);
 
   const handleDeleteChat = useCallback(
     (index: number) => {
       const sessionId = chatList[index].sessionId;
-      setChatList((prev) => prev.filter((_, i) => i !== index));
-      localStorage.removeItem(`chat_${sessionId}`); // پاک کردن تاریخچه چت
-      localStorage.setItem(
-        "chatList",
-        JSON.stringify(chatList.filter((_, i) => i !== index))
-      );
+      const updatedList = chatList.filter((_, i) => i !== index);
+      localStorage.removeItem(`chat_${sessionId}`);
+      localStorage.setItem("chatList", JSON.stringify(updatedList));
+      setChatList(updatedList); // مستقیماً آپدیت می‌کنیم
+      window.dispatchEvent(new Event("chatListUpdated"));
     },
     [chatList]
   );
@@ -83,8 +98,9 @@ export function AppSidebar() {
         const updatedList = chatList.map((item, i) =>
           i === index ? { ...item, title: editChatTitle } : item
         );
-        setChatList(updatedList);
         localStorage.setItem("chatList", JSON.stringify(updatedList));
+        setChatList(updatedList);
+        window.dispatchEvent(new Event("chatListUpdated"));
       }
       setEditChatIndex(null);
       setEditChatTitle("");
@@ -152,7 +168,7 @@ export function AppSidebar() {
                         key={index}
                       >
                         {editChatIndex === index ? (
-                          <div className="flex items-center gap-2 w-full">
+                          <div className="relative w-full">
                             <Input
                               value={editChatTitle}
                               onChange={(
@@ -160,27 +176,32 @@ export function AppSidebar() {
                               ) => setEditChatTitle(e.target.value)}
                               onKeyDown={(
                                 e: React.KeyboardEvent<HTMLInputElement>
-                              ) => e.key === "Enter" && handleSaveEdit(index)}
+                              ) => {
+                                if (e.key === "Enter") handleSaveEdit(index);
+                                if (e.key === "Escape") handleCancelEdit();
+                              }}
                               placeholder="عنوان گفتگو"
-                              className="text-[#71717A]"
+                              className="text-[#71717A] mb-2"
                               autoFocus
                             />
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="w-[20%]"
-                              onClick={() => handleSaveEdit(index)}
-                            >
-                              ذخیره
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="w-[20%] text-[12px]"
-                              onClick={handleCancelEdit}
-                            >
-                              انصراف
-                            </Button>
+                            <div className="absolute left-[5px] top-[0px] flex gap-1">
+                              <Button
+                                variant="link"
+                                size="sm"
+                                onClick={() => handleSaveEdit(index)}
+                                className="text-[11px]"
+                              >
+                                تایید
+                              </Button>
+                              <Button
+                                variant="link"
+                                size="sm"
+                                onClick={handleCancelEdit}
+                                className="text-[11px]"
+                              >
+                                انصراف
+                              </Button>
+                            </div>
                           </div>
                         ) : (
                           <>
