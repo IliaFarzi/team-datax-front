@@ -26,7 +26,6 @@ jobs:
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           source: "docker-compose.yml"
           target: "/home/datax-frontend"
-          protocol: scp
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
