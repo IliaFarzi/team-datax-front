@@ -90,7 +90,7 @@ function CardDemo() {
       if (resetToken) {
         Cookies.set("reset_token", resetToken, { expires: 1 });
         Cookies.set("user_id", result.user_id, { expires: 1 });
-        Cookies.set("user_email", result.email, { expires: 1 });
+        Cookies.set("user_email", result.email, { expires: 2 });
       } else {
         throw new Error("توکن بازنشانی رمز در لینک یافت نشد");
       }
