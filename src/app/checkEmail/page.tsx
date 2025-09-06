@@ -69,7 +69,6 @@ const CheckEmail = () => {
         );
       }
 
-      // ذخیره اطلاعات کاربر
       const newToken = result.token || result.access_token;
       if (newToken) Cookies.set("access_token", newToken, { expires: 7 });
 
