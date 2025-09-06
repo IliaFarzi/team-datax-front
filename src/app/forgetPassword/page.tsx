@@ -89,7 +89,6 @@ function CardDemo() {
       const url = new URL(result.reset_link);
       const resetToken = url.searchParams.get("token");
       if (resetToken) {
-        // Store token, user_id, and email in cookies with 1-day expiry
         Cookies.set("reset_token", resetToken, { expires: 1 });
         Cookies.set("user_id", result.user_id, { expires: 1 });
         Cookies.set("user_email", result.email, { expires: 1 });
