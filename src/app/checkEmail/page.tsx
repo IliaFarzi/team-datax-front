@@ -43,7 +43,7 @@ const CheckEmail = () => {
       }
 
       console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL); 
-      console.log("Token:", token); // لاگ توکن
+      console.log("Token:", token); 
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify`,
