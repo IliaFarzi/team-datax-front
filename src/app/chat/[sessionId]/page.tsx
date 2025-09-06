@@ -8,9 +8,6 @@ import {
   Pencil,
   RefreshCw,
   Check,
-  ContainerIcon,
-  BluetoothConnectedIcon,
-  CornerDownLeftIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
