@@ -85,7 +85,6 @@ function CardDemo() {
       const result: ApiSuccessResponse = await response.json();
       console.log("Forgot password response:", result);
 
-      // Extract token from reset_link
       const url = new URL(result.reset_link);
       const resetToken = url.searchParams.get("token");
       if (resetToken) {
