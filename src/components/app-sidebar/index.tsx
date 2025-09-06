@@ -20,6 +20,7 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "../Button";
 import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +46,8 @@ export function AppSidebar() {
   const [editChatIndex, setEditChatIndex] = useState<number | null>(null);
   const [editChatTitle, setEditChatTitle] = useState<string>("");
   const [userEmail, setUserEmail] = useState("");
+  const router = useRouter();
+  const { sessionId } = useParams();
 
   const loadChatList = useCallback(() => {
     const storedChatList: ChatItem[] = JSON.parse(
@@ -77,14 +80,18 @@ export function AppSidebar() {
 
   const handleDeleteChat = useCallback(
     (index: number) => {
-      const sessionId = chatList[index].sessionId;
+      const sessionIdToDelete = chatList[index].sessionId;
       const updatedList = chatList.filter((_, i) => i !== index);
-      localStorage.removeItem(`chat_${sessionId}`);
+      localStorage.removeItem(`chat_${sessionIdToDelete}`);
       localStorage.setItem("chatList", JSON.stringify(updatedList));
       setChatList(updatedList);
       window.dispatchEvent(new Event("chatListUpdated"));
+
+      if (sessionIdToDelete === sessionId) {
+        router.push("/");
+      }
     },
-    [chatList]
+    [chatList, sessionId, router]
   );
 
   const handleEditChat = useCallback((index: number, title: string) => {
