@@ -40,7 +40,6 @@ export default function Spreadsheet() {
           return;
         }
 
-        // برای هر شیت، محتوای CSV رو بگیر و پارس کن
         const sheetsWithData = await Promise.all(
           data.map(async (sheet: Sheet) => {
             try {
@@ -56,7 +55,7 @@ export default function Spreadsheet() {
               return { ...sheet, csvData: parsed.data };
             } catch (err) {
               console.error(`Error parsing CSV for ${sheet.name}:`, err);
-              return sheet; // اگه پارس کردن شکست، شیت بدون csvData برگردونده می‌شه
+              return sheet; 
             }
           })
         );
