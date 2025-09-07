@@ -94,6 +94,9 @@ jobs:
             # Stop and remove old container if exists
             docker rm -f datax-frontend || true
 
+            # Remove old unused images
+            docker image  prune -af || true
+
             # Recreate services
             docker compose -f docker-compose.yml pull
             docker compose -f docker-compose.yml up -d

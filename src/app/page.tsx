@@ -98,7 +98,7 @@ export default function Home() {
       console.log("API Response Data:", data);
 
       const assistantContent =
-        data.content || data.response || "جوابی از سمت ایجنت نیومد!";
+        data.content || data.response || "جوابی از سمت api نیومد!";
 
       localStorage.setItem(
         `chat_${sessionId}`,

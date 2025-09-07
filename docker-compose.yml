@@ -10,19 +10,6 @@ services:
       - NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8040
     networks:
       - shared-net
-    depends_on:
-      - datax-backend
-
-  datax-backend:
-    image: heidarym78/datax-backend:latest
-    container_name: datax-backend
-    restart: always
-    ports:
-      - "8040:8040"
-    env_file:
-      - .env.datax
-    networks:
-      - shared-net
 
 networks:
   shared-net:
