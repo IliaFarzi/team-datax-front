@@ -91,15 +91,15 @@ function CardDemo() {
 
       Cookies.set("user_id", userId, {
         expires: 7,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        secure: false,
+        sameSite: "Lax",
       });
 
       if (result.token) {
         Cookies.set("access_token", result.token, {
           expires: 7,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
+          secure: false,
+          sameSite: "Lax",
         });
       } else {
         throw new Error("توکن در پاسخ سرور یافت نشد");
@@ -108,8 +108,8 @@ function CardDemo() {
       if (result.session_id) {
         Cookies.set("session_id", result.session_id, {
           expires: 7,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
+          secure: false,
+          sameSite: "Lax",
         });
       }
 
@@ -121,13 +121,6 @@ function CardDemo() {
         });
       }
 
-      if (result.user?.name || result.name) {
-        Cookies.set("user_name", result.user?.name || result.name, {
-          expires: 7,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
-        });
-      }
       console.log("Redirecting to /");
       router.push("/");
     } catch (error: unknown) {
