@@ -313,13 +313,13 @@ export function AppSidebar() {
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
+                      <Button className="bg-[#FAFAFA] text-[#18181B] w-[45%] md:w-[50%] hover:bg-gray-100">
                         انصراف
                       </Button>
                     </DialogClose>
                     <Button
                       type="submit"
-                      className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
+                      className="bg-[#DC2626] hover:bg-[#DC2626] w-[45%] md:w-[50%]"
                     >
                       خروج
                     </Button>

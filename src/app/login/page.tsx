@@ -58,6 +58,7 @@ function CardDemo() {
             email: data.email,
             password: data.password,
           }),
+          credentials: "include",
         }
       );
 
@@ -88,7 +89,6 @@ function CardDemo() {
         throw new Error("شناسه کاربر در پاسخ سرور یافت نشد");
       }
 
-      // ذخیره توکن و اطلاعات کاربر در کوکی‌ها
       Cookies.set("user_id", userId, {
         expires: 7,
         secure: process.env.NODE_ENV === "production",
@@ -128,7 +128,7 @@ function CardDemo() {
           sameSite: "Strict",
         });
       }
-
+      console.log("Redirecting to /");
       router.push("/");
     } catch (error: unknown) {
       const errorMsg =

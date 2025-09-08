@@ -75,6 +75,7 @@ const CheckEmail = () => {
       if (result.email) Cookies.set("user_email", result.email, { expires: 7 });
       if (result.name) Cookies.set("user_name", result.name, { expires: 7 });
 
+      
       router.push("/"); 
     } catch (err: unknown) {
       if (err instanceof Error) {
