@@ -352,7 +352,7 @@ export default function ChatPage() {
                 <div className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-200 text-xs font-medium">
                   {msg.role === "user" ? (
                     <Image
-                      src="/images/user.png"
+                      src="/public/images/user.png"
                       height={36}
                       width={36}
                       alt="userImage"
@@ -360,7 +360,7 @@ export default function ChatPage() {
                     />
                   ) : (
                     <Image
-                      src="/images/datax.png"
+                      src="/public/images/datax.png"
                       height={36}
                       width={36}
                       alt="dataxImage"

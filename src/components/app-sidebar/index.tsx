@@ -65,7 +65,8 @@ export function AppSidebar() {
     const token = Cookies.get("access_token");
     const email = Cookies.get("user_email");
     setUserEmail(email || "t.hosseinpour2347@gmail.com");
-    const picture = Cookies.get("user_picture") || "/images/defaultProfile.png";
+    const picture =
+      Cookies.get("user_picture") || "/public/images/defaultProfile.png";
     if (token && email) {
       setUserPicture(picture);
     }
