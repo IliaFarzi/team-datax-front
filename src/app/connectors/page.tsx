@@ -22,7 +22,7 @@ const connectors: Connector[] = [
     nameFA: "گوگل شیت",
     type: "Integration",
     typeFA: "جدول‌های گوگل شیت خود را تحلیل کنید.",
-    icon: "/images/googleSheet.png",
+    icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAhCAYAAACvBDmYAAAAAXNSR0IArs4c6QAAAYxJREFUWEdjZMABTJYHFv5nYGxnZGRkx6WG+uL/DvxnZGw6G75uP7rZjNgsM1kRuJ+BgcmB+g4hzsT/jP+d0B2L4VCVSZ7sAmJcP4gzkjaq/v3/f/Bc5DqUgMJwqPHywBJGRqZuYpxgLKbNYCSqDVd67vVVhrOvrhKjlaCaMxFrUdyG4VCT5UENDIyM9QRNYmBgSNUOY0jTCYMrnXVlFcPsq6uI0UpQzahDQUE0GqIMDAyjaZRgbiGgYPhmplgNf4Y8/VhKA4igfvSMSHKIjjoULYwpDlFbKRMGD3lbrFGnzC/LoMwvB5e7+/ERw92PjwlGMzYF+56cYNj7+DhciuSox2fraBXKwMAwGqKjdT00k4zW9WSVUUiaRjPTaGYazUyjvVC0cmRY9uv1RNQZ9EU04F69+OYGw6U3NyktQsH6CZajBksDDFiYmc9TxTZyDfnP8O1M5FpuZO3YR/OWBx1jYGS0JNceSvX9Z2AoPhuxto8Ih4Y4/Gf4387IyGBBqaWk6/934EzEekd0fQBul0Ax/Nn2agAAAABJRU5ErkJggg==",
     isNew: true,
   },
 ];
@@ -156,8 +156,8 @@ function ConnectorsContent() {
                   <Image
                     src={connector.icon}
                     alt={connector.nameFA}
-                    width={40}
-                    height={40}
+                    width={50}
+                    height={50}
                     className={`${isConnected ? "mb-8" : ""}`}
                   />
                   <div>
