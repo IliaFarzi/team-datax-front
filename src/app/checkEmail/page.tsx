@@ -42,8 +42,8 @@ const CheckEmail = () => {
         return;
       }
 
-      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL); 
-      console.log("Token:", token); 
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+      console.log("Token:", token);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify`,
@@ -54,11 +54,11 @@ const CheckEmail = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ code }),
-          credentials: "include", 
+          credentials: "include",
         }
       );
 
-      console.log("Response status:", response.status); 
+      console.log("Response status:", response.status);
 
       const result = await response.json();
       console.log("Verify response full:", result);
@@ -75,8 +75,7 @@ const CheckEmail = () => {
       if (result.email) Cookies.set("user_email", result.email, { expires: 7 });
       if (result.name) Cookies.set("user_name", result.name, { expires: 7 });
 
-      
-      router.push("/"); 
+      router.push("/chat");
     } catch (err: unknown) {
       if (err instanceof Error) {
         console.error("Verify error:", err);

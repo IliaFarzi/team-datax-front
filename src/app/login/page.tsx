@@ -122,7 +122,7 @@ function CardDemo() {
       }
 
       console.log("Redirecting to /");
-      router.push("/");
+      router.push("/chat");
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ورود ناموفق بود";
