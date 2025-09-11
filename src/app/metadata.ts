@@ -1,34 +1,9 @@
 import type { Metadata } from "next";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import localFont from "next/font/local";
-import "./globals.css";
-import ClientLayout from "./ClientLayout";
-
-const yekanFont = localFont({
-  src: [
-    {
-      path: "../../public/fonts/IRANYekanX-Regular.woff2",
-      weight: "400",
-    },
-    {
-      path: "../../public/fonts/IRANYekanX-Medium.woff2",
-      weight: "500",
-    },
-    {
-      path: "../../public/fonts/IRANYekanX-DemiBold.woff2",
-      weight: "600",
-    },
-    {
-      path: "../../public/fonts/IRANYekanX-Bold.woff2",
-      weight: "700",
-    },
-  ],
-});
 
 export const metadata: Metadata = {
   title: "PureLanding - Beautiful Shadcn UI Landing Page",
   description:
-    "A beautiful landing page built with Shadcn UI, Next.js 15, Tailwind CSS, and Shadcn UI Blocks.",
+    "AKid-friendly landing page built with Shadcn UI, Next.js 15, Tailwind CSS, and Shadcn UI Blocks.",
   keywords: [
     "PureLanding",
     "PureLanding Landing Page",
@@ -109,24 +84,3 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
 };
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html
-      lang="fa"
-      dir="rtl"
-      className={yekanFont.className}
-      suppressHydrationWarning
-    >
-      <body className="antialiased">
-        <TooltipProvider>
-          <ClientLayout>{children}</ClientLayout>
-        </TooltipProvider>
-      </body>
-    </html>
-  );
-}

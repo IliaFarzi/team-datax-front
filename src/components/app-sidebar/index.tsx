@@ -8,7 +8,6 @@ import {
   Trash,
   Plus,
 } from "lucide-react";
-import Image from "next/image";
 import Cookies from "js-cookie";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import {
@@ -40,9 +39,6 @@ interface ChatItem {
 
 export function AppSidebar() {
   const [chatList, setChatList] = useState<ChatItem[]>([]);
-  const [userPicture, setUserPicture] = useState<string>(
-    "/images/defaultProfile.png"
-  );
   const [editChatIndex, setEditChatIndex] = useState<number | null>(null);
   const [editChatTitle, setEditChatTitle] = useState<string>("");
   const [userEmail, setUserEmail] = useState("");
@@ -62,14 +58,8 @@ export function AppSidebar() {
   }, []);
 
   useEffect(() => {
-    const token = Cookies.get("access_token");
     const email = Cookies.get("user_email");
     setUserEmail(email || "t.hosseinpour2347@gmail.com");
-    const picture = Cookies.get("user_picture") || "/images/defaultProfile.png";
-    if (token && email) {
-      setUserPicture(picture);
-    }
-
     loadChatList();
 
     window.addEventListener("chatListUpdated", loadChatList);
@@ -147,7 +137,7 @@ export function AppSidebar() {
             </div>
             <Accordion type="single" collapsible>
               <AccordionItem value="item-1" className="m-2">
-                <Link href="/">
+                <Link href="/chat">
                   <Button
                     variant="outline"
                     className="bg-transparent w-full h-9"
@@ -343,8 +333,8 @@ export function AppSidebar() {
                       fill="#18181B"
                     />
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
                       d="M18 11.3332C16.6193 11.3332 15.5 12.4525 15.5 13.8332C15.5 15.2139 16.6193 16.3332 18 16.3332C19.3807 16.3332 20.5 15.2139 20.5 13.8332C20.5 12.4525 19.3807 11.3332 18 11.3332ZM13.8333 13.8332C13.8333 11.532 15.6988 9.6665 18 9.6665C20.3012 9.6665 22.1667 11.532 22.1667 13.8332C22.1667 16.1344 20.3012 17.9999 18 17.9999C15.6988 17.9999 13.8333 16.1344 13.8333 13.8332ZM12.5537 20.887C13.3351 20.1056 14.3949 19.6666 15.5 19.6666H20.5C21.6051 19.6666 22.6649 20.1056 23.4463 20.887C24.2277 21.6684 24.6667 22.7282 24.6667 23.8333V25.5C24.6667 25.9602 24.2936 26.3333 23.8334 26.3333C23.3731 26.3333 23 25.9602 23 25.5V23.8333C23 23.1703 22.7366 22.5344 22.2678 22.0655C21.7989 21.5967 21.1631 21.3333 20.5 21.3333H15.5C14.8369 21.3333 14.201 21.5967 13.7322 22.0655C13.2633 22.5344 12.9999 23.1703 12.9999 23.8333V25.5C12.9999 25.9602 12.6268 26.3333 12.1666 26.3333C11.7064 26.3333 11.3333 25.9602 11.3333 25.5V23.8333C11.3333 22.7282 11.7722 21.6684 12.5537 20.887Z"
                       fill="white"
                     />

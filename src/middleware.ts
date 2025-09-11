@@ -8,6 +8,7 @@ const publicPaths = [
   "/resetPassword",
   "/not-found",
   "/api/auth",
+  "/",
 ];
 
 export function middleware(request: NextRequest) {
