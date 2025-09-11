@@ -36,7 +36,7 @@ export default function CTABanner() {
         </div>
         <div className="relative z-0 mt-14 flex flex-col sm:flex-row gap-4">
           <Button size="lg">
-            دانلود رایگان کتابچه <ArrowUpLeft className="!h-5 !w-5" />
+            دانلود رایگان کتابچه <ArrowUpLeft className="!h-5 !w-5"/>
           </Button>
         </div>
       </div>
