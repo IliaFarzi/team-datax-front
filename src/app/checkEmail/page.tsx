@@ -136,9 +136,13 @@ const CheckEmail = () => {
           </InputOTP>
 
           <div className="flex gap-6 mt-3 text-[14px]">
-            <h3 className="cursor-pointer">ارسال مجدد کد</h3>
+            <h3 className="cursor-pointer text-[#1668E3] underline">
+              ارسال مجدد کد
+            </h3>
             <Link href={"/signup"}>
-              <h3 className="cursor-pointer">ویرایش ایمیل</h3>
+              <h3 className="cursor-pointer text-[#1668E3] underline">
+                ویرایش ایمیل
+              </h3>
             </Link>
           </div>
           {errorMessage && (
@@ -149,7 +153,7 @@ const CheckEmail = () => {
         <CardFooter className="flex-col gap-1">
           <Button
             onClick={onSubmit}
-            className="w-[340px] h-10 text-base font-medium"
+            className="w-[340px] h-10 text-base font-medium rounded-md"
           >
             اعتبارسنجی
           </Button>

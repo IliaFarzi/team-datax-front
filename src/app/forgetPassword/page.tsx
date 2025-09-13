@@ -164,7 +164,7 @@ function CardDemo() {
             <CardFooter className="flex-col gap-1">
               <Button
                 type="submit"
-                className="w-[340px] mt-6 h-10 text-base font-medium"
+                className="w-[340px] mt-6 h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "در حال پردازش..." : "دریافت لینک تغییر رمز"}

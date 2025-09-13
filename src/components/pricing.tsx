@@ -58,7 +58,6 @@ const Pricing = () => {
         onValueChange={setSelectedBillingPeriod}
         className="mt-8"
       >
-        
         ماهانه - سالانه (۲۰٪ تخفیف)
       </Tabs>
       <div className="mt-12 max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-8">
@@ -66,11 +65,11 @@ const Pricing = () => {
           <div
             key={plan.name}
             className={cn("relative border rounded-xl p-6 bg-background/50", {
-              "border-[2px] border-primary bg-background py-10": plan.isPopular,
+              "border-[2px] bg-background py-10": plan.isPopular,
             })}
           >
             {plan.isPopular && (
-              <Badge className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2">
+              <Badge className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 border border-black">
                 محبوب ترین
               </Badge>
             )}

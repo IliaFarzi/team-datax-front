@@ -159,7 +159,9 @@ function CardDemo() {
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
               <span>از قبل حساب دارید؟</span>
-              <Link href={"/login"}>وارد شوید</Link>
+              <div className="text-[#1668E3] underline">
+                <Link href={"/login"}>وارد شوید</Link>
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -297,7 +299,7 @@ function CardDemo() {
             <CardFooter className="flex-col gap-2 mt-4">
               <Button
                 type="submit"
-                className="w-[340px] mt-6 h-10 text-base font-medium"
+                className="w-[340px] mt-6 h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "در حال ثبت..." : "ثبت‌نام"}
@@ -305,8 +307,10 @@ function CardDemo() {
             </CardFooter>
           </form>
         </CardContent>
-        <span className="text-[11px] text-center text-[#71717A] font-medium mt-15">
-          ثبت نام شما در دیتاکس به معنی پذیرش تمامی قوانین و مقررات آن می‌باشد.
+        <span className="text-[11px] text-center text-[#71717A] font-medium ">
+          ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
+          <span className="text-[#1668E3] underline">قوانین و مقررات</span> آن
+          می‌باشد.
         </span>
         {errorMessage && (
           <div className="text-red-500 text-sm mt-4 text-center">

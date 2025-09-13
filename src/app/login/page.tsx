@@ -153,12 +153,14 @@ function CardDemo() {
                 fill="#010101"
               />
             </svg>
-            <CardTitle className="font-semibold text-[20px]">
+            <CardTitle className="font-semibold text-[20px] ">
               ورود به دیتاکس
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
               <span>حساب کاربری ندارید؟</span>
-              <Link href={"/signup"}>ثبت‌نام کنید</Link>
+              <span className="text-[#1668E3] underline">
+                <Link href={"/signup"}>ثبت‌نام کنید</Link>
+              </span>
             </div>
           </div>
         </CardHeader>
@@ -189,14 +191,13 @@ function CardDemo() {
                 )}
               </div>
 
-              {/* رمز عبور */}
               <div className="grid gap-1 relative">
                 <div className="flex justify-between">
                   <Label htmlFor="password">
                     رمز عبور <span className="text-red-500">*</span>
                   </Label>
                   <Link href={"/forgetPassword"}>
-                    <span className="text-[14px] text-[#09090B]">
+                    <span className="text-[14px]  text-[#1668E3] underline">
                       رمز عبورتان را فراموش کردید؟
                     </span>
                   </Link>
@@ -232,7 +233,7 @@ function CardDemo() {
             <CardFooter className="flex-col gap-1 mt-4">
               <Button
                 type="submit"
-                className="w-[340px] h-10 text-base font-medium"
+                className="w-[340px] h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "در حال ورود..." : "ورود"}
@@ -241,8 +242,10 @@ function CardDemo() {
           </form>
         </CardContent>
 
-        <span className="text-[11.5px] text-center text-[#71717A] font-medium mt-16">
-          ورود شما به دیتاکس به معنی پذیرش تمامی قوانین و مقررات آن می‌باشد.
+        <span className="text-[11.5px] text-center text-[#71717A] font-medium ">
+          ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
+          <span className="text-[#1668E3] underline">قوانین و مقررات</span> آن
+          می‌باشد.
         </span>
 
         {errorMessage && (
