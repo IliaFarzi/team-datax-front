@@ -166,7 +166,6 @@ function CardDemo() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
-              {/* name */}
               <div className="grid gap-2">
                 <Label htmlFor="name" className="text-[14px]">
                   نام و نام خانوادگی <span className="text-red-500">*</span>
@@ -186,7 +185,6 @@ function CardDemo() {
                 )}
               </div>
 
-              {/* email */}
               <div className="grid gap-2">
                 <Label htmlFor="email">
                   ایمیل <span className="text-red-500">*</span>
@@ -210,7 +208,6 @@ function CardDemo() {
                 )}
               </div>
 
-              {/* number */}
               <div className="grid gap-2">
                 <Label htmlFor="number">
                   شماره همراه <span className="text-red-500">*</span>
@@ -234,7 +231,6 @@ function CardDemo() {
                 )}
               </div>
 
-              {/* password */}
               <div className="grid gap-2">
                 <Label htmlFor="password">
                   رمز عبور <span className="text-red-500">*</span>

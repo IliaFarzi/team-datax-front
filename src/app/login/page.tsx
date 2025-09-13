@@ -167,7 +167,6 @@ function CardDemo() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
-              {/* ایمیل */}
               <div className="grid gap-2 relative">
                 <Label htmlFor="email">
                   ایمیل <span className="text-red-500">*</span>
