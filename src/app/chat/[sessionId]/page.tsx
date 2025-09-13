@@ -272,8 +272,10 @@ export default function ChatPage() {
   };
 
   const handleRefresh = (index: number, e: React.MouseEvent) => {
+    e.preventDefault();
     if (index > 0 && messages[index - 1].role === "user") {
-      handleSubmit(e as unknown as React.FormEvent, index);
+      const userMessage = messages[index - 1].content;
+      handleGetResponse(userMessage, index);
     }
   };
 
@@ -309,7 +311,7 @@ export default function ChatPage() {
             fill="#71717A"
           />
           <path
-            d="M17.0001 11.9998C16.7401 11.9998 16.4901 11.8998 16.2901 11.7098L10.2901 5.70982C9.90006 5.31982 9.90006 4.68982 10.2901 4.29982L12.5901 1.99982C13.2401 1.34982 14.0901 0.999824 15.0001 0.999824C15.9101 0.999824 16.7601 1.35982 17.4001 1.99982L20.0001 4.59982C21.3301 5.93982 21.3301 8.08982 20.0001 9.41982L17.7001 11.7198C17.5001 11.9198 17.2501 12.0098 16.9901 12.0098L17.0001 11.9998ZM12.4101 4.99982L17.0001 9.58982L18.5901 7.99982C19.1401 7.44982 19.1401 6.56982 18.5901 6.01982L15.9901 3.41982C15.7201 3.14982 15.3701 3.00982 15.0001 3.00982C14.6301 3.00982 14.2801 3.15982 14.0101 3.41982L12.4101 5.01982V4.99982Z"
+            d="M17.0001 11.9998C16.7401 11.9998 16.4901 11.8998 16.2901 11.7098L10.2901 5.70982C9.90006 5.31982 9.90006 4.68982 10.2901 4.29982L12.5901 1.99982C13.2401 1.34982 14.0901 0.999824 15.0001 0.999824C15.9101 0.999824 16.7601 1.35982 17.4001 1.99982L20.000	sb1 4.59982C21.3301 5.93982 21.3301 8.08982 20.0001 9.41982L17.7001 11.7198C17.5001 11.9198 17.2501 12.0098 16.9901 12.0098L17.0001 11.9998ZM12.4101 4.99982L17.0001 9.58982L18.5901 7.99982C19.1401 7.44982 19.1401 6.56982 18.5901 6.01982L15.9901 3.41982C15.7201 3.14982 15.3701 3.00982 15.0001 3.00982C14.6301 3.00982 14.2801 3.15982 14.0101 3.41982L12.4101 5.01982V4.99982Z"
             fill="#71717A"
           />
         </svg>
@@ -547,9 +549,10 @@ export default function ChatPage() {
               <button
                 type="button"
                 onClick={handleStopGeneration}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium bg-black text-white"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium bg-black text-white hover:bg-gray-800 transition-colors duration-200 shadow-md hover:shadow-lg"
+                aria-label="توقف پاسخ"
               >
-                <Square className="w-6 h-6" />
+                <Square className="w-5 h-5" />
               </button>
             ) : (
               <button
@@ -557,11 +560,11 @@ export default function ChatPage() {
                 disabled={!input.trim()}
                 className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
                   input.trim()
-                    ? "bg-black text-white"
+                    ? "bg-black text-white hover:bg-gray-800 transition-colors duration-200 shadow-md hover:shadow-lg"
                     : "bg-gray-400 text-white opacity-50 cursor-default"
                 }`}
               >
-                <ArrowUp className="w-6 h-6" />
+                <ArrowUp className="w-5 h-5" />
               </button>
             )}
           </div>
