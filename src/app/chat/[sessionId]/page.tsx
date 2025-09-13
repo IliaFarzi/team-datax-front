@@ -30,7 +30,6 @@ export default function ChatPage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editInput, setEditInput] = useState("");
-  const [loadingDots, setLoadingDots] = useState(".");
   const [user, setUser] = useState("شما");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -173,14 +172,6 @@ export default function ChatPage() {
   }, [messages]);
 
   useEffect(() => {
-    if (!isLoading) return;
-    const interval = setInterval(() => {
-      setLoadingDots((dots) => (dots.length < 3 ? dots + "." : "."));
-    }, 300);
-    return () => clearInterval(interval);
-  }, [isLoading]);
-
-  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
       inputRef.current.style.height = `${Math.min(
@@ -229,7 +220,6 @@ export default function ChatPage() {
       currentStreamInterval.current = null;
     }
     setIsLoading(false);
-    // پیام فعلی assistant رو finalize کنیم (هر چی تا حالا اومده ذخیره می‌شه)
     localStorage.setItem(`chat_${sessionId}`, JSON.stringify(messages));
   };
 
@@ -522,14 +512,6 @@ export default function ChatPage() {
             </div>
           ))}
 
-          {isLoading && (
-            <div className="flex flex-col text-right">
-              <div className="max-w-[90%] px-3 py-2 text-sm rounded-lg">
-                <p className="text-sm leading-6">در حال تایپ{loadingDots}</p>
-              </div>
-            </div>
-          )}
-
           <div ref={messagesEndRef} />
         </div>
 
@@ -565,7 +547,7 @@ export default function ChatPage() {
               <button
                 type="button"
                 onClick={handleStopGeneration}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium bg-[#009D7B] text-white"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium bg-black text-white"
               >
                 <Square className="w-6 h-6" />
               </button>
@@ -575,8 +557,8 @@ export default function ChatPage() {
                 disabled={!input.trim()}
                 className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
                   input.trim()
-                    ? "bg-[#18181B] text-white"
-                    : "bg-[#18181B] text-white opacity-50 cursor-default"
+                    ? "bg-black text-white"
+                    : "bg-gray-400 text-white opacity-50 cursor-default"
                 }`}
               >
                 <ArrowUp className="w-6 h-6" />
