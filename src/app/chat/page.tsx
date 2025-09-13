@@ -128,7 +128,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center">
+    <main className="h-full flex items-center justify-center">
       <div className="max-w-[832px] w-full px-4">
         <h1 className="font-bold text-[20px] text-center md:text-right">
           امروز می‌خواهید چه چیزی را تحلیل کنید؟
