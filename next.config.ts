@@ -5,21 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "julius.ai",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "r2.julius.ai",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "lh3.googleusercontent.com",
-        port: "",
+        protocol: "http",
+        hostname: "62.60.198.4",
+        port: "8040",
         pathname: "/**",
       },
     ],

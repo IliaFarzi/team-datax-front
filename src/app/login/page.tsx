@@ -91,16 +91,16 @@ function CardDemo() {
 
       Cookies.set("user_id", userId, {
         expires: 7,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        secure: false,
+        sameSite: "Lax",
         path: "/",
       });
 
       if (result.token) {
         Cookies.set("access_token", result.token, {
           expires: 7,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
+          secure: false,
+          sameSite: "Lax",
           path: "/",
         });
       } else {
@@ -110,8 +110,8 @@ function CardDemo() {
       if (result.session_id) {
         Cookies.set("session_id", result.session_id, {
           expires: 7,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
+          secure: false,
+          sameSite: "Lax",
           path: "/",
         });
       }
@@ -119,8 +119,8 @@ function CardDemo() {
       if (result.user?.email || result.email) {
         Cookies.set("user_email", result.user?.email || result.email, {
           expires: 7,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
+          secure: false,
+          sameSite: "Lax",
           path: "/",
         });
       }
