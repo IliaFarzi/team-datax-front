@@ -35,6 +35,7 @@ export default function ChatPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const editRef = useRef<HTMLTextAreaElement>(null);
   const currentStreamInterval = useRef<NodeJS.Timeout | null>(null);
+  const manuallyTriggeredRef = useRef(false);
 
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -82,14 +83,23 @@ export default function ChatPage() {
 
       setIsLoading(true);
 
-      let newMessages: Message[];
-      if (refreshIndex !== undefined) {
-        newMessages = [...messages.slice(0, refreshIndex)];
-      } else {
-        newMessages = messages;
-      }
+      let baseMessages: Message[] = [];
 
-      setMessages(newMessages);
+      setMessages((prev) => {
+        if (refreshIndex !== undefined) {
+          baseMessages = prev.slice(0, refreshIndex);
+          return baseMessages;
+        } else {
+          const last = prev[prev.length - 1];
+          if (last && last.role === "user" && last.content === trimmedInput) {
+            baseMessages = prev;
+            return prev;
+          } else {
+            baseMessages = [...prev, { role: "user", content: trimmedInput }];
+            return baseMessages;
+          }
+        }
+      });
 
       try {
         const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
@@ -117,11 +127,16 @@ export default function ChatPage() {
         let currentMessage = "";
         let wordIndex = 0;
 
+        if (currentStreamInterval.current) {
+          clearInterval(currentStreamInterval.current);
+          currentStreamInterval.current = null;
+        }
+
         currentStreamInterval.current = setInterval(() => {
           if (wordIndex < words.length) {
             currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
-            setMessages([
-              ...newMessages,
+            setMessages(() => [
+              ...baseMessages,
               { role: "assistant", content: currentMessage } as Message,
             ]);
             wordIndex++;
@@ -132,7 +147,7 @@ export default function ChatPage() {
             }
             setIsLoading(false);
             const finalMessages: Message[] = [
-              ...newMessages,
+              ...baseMessages,
               { role: "assistant", content: assistantContent } as Message,
             ];
             setMessages(finalMessages);
@@ -144,8 +159,8 @@ export default function ChatPage() {
         }, 100 + Math.random() * 50);
       } catch (error) {
         console.error("Error sending message:", error);
-        setMessages([
-          ...newMessages,
+        setMessages((prev) => [
+          ...prev,
           {
             role: "assistant",
             content: "خطا در دریافت پاسخ از سرور!",
@@ -154,10 +169,11 @@ export default function ChatPage() {
         setIsLoading(false);
       }
     },
-    [messages, sessionId, apiBaseUrl]
+    [sessionId, apiBaseUrl]
   );
 
   useEffect(() => {
+    if (manuallyTriggeredRef.current) return;
     if (
       messages.length > 0 &&
       messages[messages.length - 1].role === "user" &&
@@ -191,6 +207,7 @@ export default function ChatPage() {
     }
   }, [editInput]);
 
+  // handleSubmit اصلاح‌شده — فلگ manuallyTriggeredRef را می‌گذارد تا useEffect دوبار ارسال نکند
   const handleSubmit = async (e: React.FormEvent, refreshIndex?: number) => {
     e.preventDefault();
     const trimmedInput = input.trim();
@@ -208,10 +225,15 @@ export default function ChatPage() {
       ];
     }
 
+    manuallyTriggeredRef.current = true;
     setMessages(newMessages);
     setInput("");
 
-    await handleGetResponse(trimmedInput, refreshIndex);
+    try {
+      await handleGetResponse(trimmedInput, refreshIndex);
+    } finally {
+      manuallyTriggeredRef.current = false;
+    }
   };
 
   const handleStopGeneration = () => {
@@ -311,7 +333,7 @@ export default function ChatPage() {
             fill="#71717A"
           />
           <path
-            d="M17.0001 11.9998C16.7401 11.9998 16.4901 11.8998 16.2901 11.7098L10.2901 5.70982C9.90006 5.31982 9.90006 4.68982 10.2901 4.29982L12.5901 1.99982C13.2401 1.34982 14.0901 0.999824 15.0001 0.999824C15.9101 0.999824 16.7601 1.35982 17.4001 1.99982L20.000	sb1 4.59982C21.3301 5.93982 21.3301 8.08982 20.0001 9.41982L17.7001 11.7198C17.5001 11.9198 17.2501 12.0098 16.9901 12.0098L17.0001 11.9998ZM12.4101 4.99982L17.0001 9.58982L18.5901 7.99982C19.1401 7.44982 19.1401 6.56982 18.5901 6.01982L15.9901 3.41982C15.7201 3.14982 15.3701 3.00982 15.0001 3.00982C14.6301 3.00982 14.2801 3.15982 14.0101 3.41982L12.4101 5.01982V4.99982Z"
+            d="M17.0001 11.9998C16.7401 11.9998 16.4901 11.8998 16.2901 11.7098L10.2901 5.70982C9.90006 5.31982 9.90006 4.68982 10.2901 4.29982L12.5901 1.99982C13.2401 1.34982 14.0901 0.999824 15.0001 0.999824C15.9101 0.999824 16.7601 1.35982 17.4001 1.99982L20.0001 4.59982C21.3301 5.93982 21.3301 8.08982 20.0001 9.41982L17.7001 11.7198C17.5001 11.9198 17.2501 12.0098 16.9901 12.0098L17.0001 11.9998ZM12.4101 4.99982L17.0001 9.58982L18.5901 7.99982C19.1401 7.44982 19.1401 6.56982 18.5901 6.01982L15.9901 3.41982C15.7201 3.14982 15.3701 3.00982 15.0001 3.00982C14.6301 3.00982 14.2801 3.15982 14.0101 3.41982L12.4101 5.01982V4.99982Z"
             fill="#71717A"
           />
         </svg>
