@@ -12,14 +12,17 @@ const publicPaths = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("Middleware is running!");
-  console.log("Requested Path:", pathname);
+  console.log("Middleware is running for path:", pathname);
   console.log("Cookies:", request.cookies.getAll());
 
   if (
-    publicPaths.some((path) => pathname === path || pathname.startsWith(path))
+    publicPaths.some((path) =>
+      path === "/"
+        ? pathname === "/"
+        : pathname === path || pathname.startsWith(`${path}/`)
+    )
   ) {
-    console.log("Public path, allowing access");
+    console.log("Public path, allowing access:", pathname);
     return NextResponse.next();
   }
 
@@ -27,14 +30,14 @@ export function middleware(request: NextRequest) {
   console.log("Access token:", token);
 
   if (!token || token === "undefined" || token.trim() === "") {
-    console.log("No valid token, redirecting to /login");
+    console.log("No valid token found, redirecting to /login from:", pathname);
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  console.log("Valid token found, proceeding");
+  console.log("Valid token found, proceeding to:", pathname);
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/((?!_next|api|_next/static|_next/image|favicon.ico).*)"],
 };
