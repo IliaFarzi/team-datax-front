@@ -6,7 +6,6 @@ const publicPaths = [
   "/forgetPassword",
   "/checkEmail",
   "/resetPassword",
-  "/",
 ];
 
 export function middleware(request: NextRequest) {
@@ -16,11 +15,7 @@ export function middleware(request: NextRequest) {
   console.log("Cookies:", request.cookies.getAll());
 
   if (
-    publicPaths.some((path) =>
-      path === "/"
-        ? pathname === "/"
-        : pathname === path || pathname.startsWith(`${path}/`)
-    )
+    publicPaths.some((path) => pathname === path || pathname.startsWith(path))
   ) {
     console.log("Public path, allowing access:", pathname);
     return NextResponse.next();

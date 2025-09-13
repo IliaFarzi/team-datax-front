@@ -32,7 +32,7 @@ const plans = [
     name: "ویژه",
     price: "سفارشی",
     isRecommended: false,
-    description: "مناسب برای کسب‌وکارهای در حال رشد و متوسط",
+    description: "راه‌حل سفارشی برای سازمان‌های بزرگ",
     features: [
       { title: "بدون محدودیت پیام" },
       { title: "بدون محدودیت در نگه داری فایل‌ها" },
