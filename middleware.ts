@@ -6,18 +6,23 @@ const publicPaths = [
   "/forgetPassword",
   "/checkEmail",
   "/resetPassword",
+  "/api/auth",
+  "/",
 ];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   console.log("Middleware is running for path:", pathname);
-  console.log("Cookies:", request.cookies.getAll());
+  console.log("All Cookies:", request.cookies.getAll());
 
-  if (
-    publicPaths.some((path) => pathname === path || pathname.startsWith(path))
-  ) {
-    console.log("Public path, allowing access:", pathname);
+  const isPublicPath = publicPaths.some(
+    (path) => pathname === path || pathname.startsWith(path)
+  );
+  console.log("Is public path:", isPublicPath, "Path:", pathname);
+
+  if (isPublicPath) {
+    console.log("Allowing access to public path:", pathname);
     return NextResponse.next();
   }
 
@@ -26,7 +31,9 @@ export function middleware(request: NextRequest) {
 
   if (!token || token === "undefined" || token.trim() === "") {
     console.log("No valid token found, redirecting to /login from:", pathname);
-    return NextResponse.redirect(new URL("/login", request.url));
+    const redirectUrl = new URL("/login", request.url);
+    redirectUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
   console.log("Valid token found, proceeding to:", pathname);

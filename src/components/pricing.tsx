@@ -58,6 +58,7 @@ const Pricing = () => {
         onValueChange={setSelectedBillingPeriod}
         className="mt-8"
       >
+        
         ماهانه - سالانه (۲۰٪ تخفیف)
       </Tabs>
       <div className="mt-12 max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-8">
