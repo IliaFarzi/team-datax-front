@@ -1,49 +1,45 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "PureLanding - Beautiful Shadcn UI Landing Page",
+  title: "DataX – چت‌بات هوش مصنوعی برای آنالیز داده‌ها",
   description:
-    "AKid-friendly landing page built with Shadcn UI, Next.js 15, Tailwind CSS, and Shadcn UI Blocks.",
+    "DataX یک چت‌بات هوش مصنوعی است که با استفاده از یادگیری ماشین و پردازش زبان طبیعی، داده‌های شما را تحلیل می‌کند و بینش‌های ارزشمند ارائه می‌دهد.",
   keywords: [
-    "PureLanding",
-    "PureLanding Landing Page",
-    "PureLanding Landing Page Template",
-    "PureLanding Page",
-    "Shadcn UI Landing Page",
-    "Shadcn UI Blocks",
-    "Shadcn UI",
-    "Landing Page",
-    "Tailwind CSS Landing Page",
-    "Beautiful Shadcn UI Landing Page",
-    "Next.js 15 Landing Page",
-    "Simple Landing Page",
-    "Landing Page Template",
-    "Landing Page Design",
+    "DataX",
+    "چت‌بات هوش مصنوعی",
+    "آنالیز داده",
+    "هوش مصنوعی",
+    "دستیار هوشمند",
+    "تحلیل داده",
+    "پردازش زبان طبیعی",
+    "یادگیری ماشین",
+    "Business Intelligence",
+    "AI Chatbot for Data Analysis",
   ],
   openGraph: {
     type: "website",
-    siteName: "PureLanding",
+    siteName: "DataX",
     locale: "en_US",
-    url: "https://shadcn-landing-page.vercel.app",
-    title: "PureLanding - Beautiful Shadcn UI Landing Page",
+    url: "http://62.60.198.4:8050/",
+    title: "DataX AI Chatbot – Smart Data Analysis",
     description:
-      "A beautiful landing page built with Shadcn UI, Next.js 15, Tailwind CSS, and Shadcn UI Blocks.",
+      "یک چت‌بات هوش مصنوعی برای آنالیز داده‌ها و تصمیم‌گیری هوشمندانه.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "PureLanding Preview",
+        alt: "DataX AI Chatbot Preview",
       },
     ],
   },
   authors: [
     {
-      name: "Akash Moradiya",
-      url: "https://shadcnui-blocks.com",
+      name: "DataX Team",
+      url: "http://62.60.198.4:8050/p",
     },
   ],
-  creator: "Akash Moradiya",
+  creator: "DataX Team",
   icons: [
     {
       rel: "icon",

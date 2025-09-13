@@ -13,12 +13,11 @@ const publicPaths = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("Middleware is running for path:", pathname);
+  console.log("Middleware is running at:", new Date().toISOString());
+  console.log("Requested Path:", pathname);
   console.log("All Cookies:", request.cookies.getAll());
 
-  const isPublicPath = publicPaths.some(
-    (path) => pathname === path || pathname.startsWith(path)
-  );
+  const isPublicPath = publicPaths.includes(pathname);
   console.log("Is public path:", isPublicPath, "Path:", pathname);
 
   if (isPublicPath) {
@@ -29,7 +28,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   console.log("Access token:", token);
 
-  if (!token || token === "undefined" || token.trim() === "") {
+  if (!token || token.trim() === "" || token === "undefined") {
     console.log("No valid token found, redirecting to /login from:", pathname);
     const redirectUrl = new URL("/login", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
@@ -41,5 +40,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!_next|api|_next/static|_next/image|favicon.ico|site.webmanifest).*)",
+  ],
 };

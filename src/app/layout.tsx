@@ -6,78 +6,56 @@ import ClientLayout from "./ClientLayout";
 
 const yekanFont = localFont({
   src: [
-    {
-      path: "../../public/fonts/IRANYekanX-Regular.woff2",
-      weight: "400",
-    },
-    {
-      path: "../../public/fonts/IRANYekanX-Medium.woff2",
-      weight: "500",
-    },
-    {
-      path: "../../public/fonts/IRANYekanX-DemiBold.woff2",
-      weight: "600",
-    },
-    {
-      path: "../../public/fonts/IRANYekanX-Bold.woff2",
-      weight: "700",
-    },
+    { path: "../../public/fonts/IRANYekanX-Regular.woff2", weight: "400" },
+    { path: "../../public/fonts/IRANYekanX-Medium.woff2", weight: "500" },
+    { path: "../../public/fonts/IRANYekanX-DemiBold.woff2", weight: "600" },
+    { path: "../../public/fonts/IRANYekanX-Bold.woff2", weight: "700" },
   ],
 });
 
 export const metadata: Metadata = {
-  title: "PureLanding - Beautiful Shadcn UI Landing Page",
+  title: "DataX – چت‌بات هوش مصنوعی برای آنالیز داده‌ها",
   description:
-    "A beautiful landing page built with Shadcn UI, Next.js 15, Tailwind CSS, and Shadcn UI Blocks.",
+    "DataX یک چت‌بات هوش مصنوعی است که با استفاده از یادگیری ماشین و پردازش زبان طبیعی، داده‌های شما را تحلیل می‌کند و بینش‌های ارزشمند ارائه می‌دهد.",
   keywords: [
-    "PureLanding",
-    "PureLanding Landing Page",
-    "PureLanding Landing Page Template",
-    "PureLanding Page",
-    "Shadcn UI Landing Page",
-    "Shadcn UI Blocks",
-    "Shadcn UI",
-    "Landing Page",
-    "Tailwind CSS Landing Page",
-    "Beautiful Shadcn UI Landing Page",
-    "Next.js 15 Landing Page",
-    "Simple Landing Page",
-    "Landing Page Template",
-    "Landing Page Design",
+    "DataX",
+    "چت‌بات هوش مصنوعی",
+    "آنالیز داده",
+    "هوش مصنوعی",
+    "دستیار هوشمند",
+    "تحلیل داده",
+    "پردازش زبان طبیعی",
+    "یادگیری ماشین",
+    "Business Intelligence",
+    "AI Chatbot for Data Analysis",
   ],
   openGraph: {
     type: "website",
-    siteName: "PureLanding",
-    locale: "en_US",
-    url: "https://shadcn-landing-page.vercel.app",
-    title: "PureLanding - Beautiful Shadcn UI Landing Page",
+    siteName: "DataX",
+    locale: "fa_IR",
+    url: "https://datax-ai.vercel.app",
+    title: "DataX – چت‌بات هوش مصنوعی برای آنالیز داده‌ها",
     description:
-      "A beautiful landing page built with Shadcn UI, Next.js 15, Tailwind CSS, and Shadcn UI Blocks.",
+      "با DataX داده‌های خود را با کمک هوش مصنوعی تحلیل کنید و تصمیم‌های هوشمندانه‌تری بگیرید.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "PureLanding Preview",
+        alt: "DataX AI Chatbot Preview",
       },
     ],
   },
   authors: [
     {
-      name: "Akash Moradiya",
-      url: "https://shadcnui-blocks.com",
+      name: "DataX Team",
+      url: "https://datax-ai.vercel.app",
     },
   ],
-  creator: "Akash Moradiya",
+  creator: "DataX Team",
   icons: [
-    {
-      rel: "icon",
-      url: "/favicon.ico",
-    },
-    {
-      rel: "apple-touch-icon",
-      url: "/apple-touch-icon.png",
-    },
+    { rel: "icon", url: "/favicon.ico" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
     {
       rel: "icon",
       type: "image/png",
