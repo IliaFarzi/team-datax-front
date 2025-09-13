@@ -50,6 +50,7 @@ function CardDemo() {
   const onSubmit = async (data: RegisterRequest) => {
     setErrorMessage(null);
     try {
+      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`,
         {
@@ -61,6 +62,7 @@ function CardDemo() {
             phone: data.number,
             password: data.password,
           }),
+          credentials: "include",
         }
       );
 
@@ -76,7 +78,9 @@ function CardDemo() {
                   .map((err) => err.msg ?? err.message ?? "")
                   .join(", ")
               : errorDetail;
-        } catch {}
+        } catch (jsonError) {
+          console.error("JSON parse error:", jsonError);
+        }
         throw new Error(errorDetail);
       }
 
@@ -84,23 +88,44 @@ function CardDemo() {
       console.log("Signup response full:", result);
 
       if (result.user_id) {
-        Cookies.set("user_id", result.user_id, { expires: 1 });
+        Cookies.set("user_id", result.user_id, {
+          expires: 1,
+          secure: false,
+          sameSite: "Lax",
+          path: "/",
+        });
       } else {
         throw new Error("شناسه کاربر در پاسخ سرور یافت نشد");
       }
 
       if (result.token) {
-        Cookies.set("access_token", result.token, { expires: 1 });
+        Cookies.set("access_token", result.token, {
+          expires: 1,
+          secure: false,
+          sameSite: "Lax",
+          path: "/",
+        });
       } else {
         throw new Error("توکن در پاسخ سرور یافت نشد");
       }
 
-      Cookies.set("signup_email", data.email, { expires: 1 });
+      Cookies.set("signup_email", data.email, {
+        expires: 1,
+        secure: false,
+        sameSite: "Lax",
+        path: "/",
+      });
 
       if (result.name) {
-        Cookies.set("user_name", result.name, { expires: 100 });
+        Cookies.set("user_name", result.name, {
+          expires: 100,
+          secure: false,
+          sameSite: "Lax",
+          path: "/",
+        });
       }
 
+      console.log("Redirecting to /checkEmail");
       router.push("/checkEmail");
     } catch (error: unknown) {
       const errorMsg =

@@ -14,12 +14,11 @@ const publicPaths = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("Middleware triggered for:", pathname);
+  console.log("Middleware is running!");
+  console.log("Requested Path:", pathname);
   console.log("Cookies:", request.cookies.getAll());
 
-  if (
-    publicPaths.some((path) => pathname === path || pathname.startsWith(path))
-  ) {
+  if (publicPaths.includes(pathname)) {
     console.log("Public path, allowing access");
     return NextResponse.next();
   }
@@ -37,5 +36,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/:path*"], 
 };

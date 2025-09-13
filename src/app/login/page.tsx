@@ -91,15 +91,17 @@ function CardDemo() {
 
       Cookies.set("user_id", userId, {
         expires: 7,
-        secure: false,
-        sameSite: "Lax",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        path: "/",
       });
 
       if (result.token) {
         Cookies.set("access_token", result.token, {
           expires: 7,
-          secure: false,
-          sameSite: "Lax",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+          path: "/",
         });
       } else {
         throw new Error("توکن در پاسخ سرور یافت نشد");
@@ -108,8 +110,9 @@ function CardDemo() {
       if (result.session_id) {
         Cookies.set("session_id", result.session_id, {
           expires: 7,
-          secure: false,
-          sameSite: "Lax",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+          path: "/",
         });
       }
 
@@ -118,10 +121,11 @@ function CardDemo() {
           expires: 7,
           secure: process.env.NODE_ENV === "production",
           sameSite: "Strict",
+          path: "/",
         });
       }
 
-      console.log("Redirecting to /");
+      console.log("Redirecting to /chat");
       router.push("/chat");
     } catch (error: unknown) {
       const errorMsg =
@@ -175,7 +179,7 @@ function CardDemo() {
                   {...register("email", {
                     required: "ایمیل الزامی است",
                     pattern: {
-                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA.Z]{2,}$/,
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                       message: "ایمیل نامعتبر است",
                     },
                   })}
@@ -252,4 +256,5 @@ function CardDemo() {
     </div>
   );
 }
+
 export default CardDemo;
