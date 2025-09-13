@@ -8,8 +8,9 @@ import {
   Pencil,
   RefreshCw,
   Check,
+  Square,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
@@ -34,6 +35,7 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const editRef = useRef<HTMLTextAreaElement>(null);
+  const currentStreamInterval = useRef<NodeJS.Timeout | null>(null);
 
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -74,6 +76,98 @@ export default function ChatPage() {
     loadMessages();
   }, [sessionId, apiBaseUrl]);
 
+  const handleGetResponse = useCallback(
+    async (content: string, refreshIndex?: number) => {
+      const trimmedInput = content.trim();
+      if (!trimmedInput) return;
+
+      setIsLoading(true);
+
+      let newMessages: Message[];
+      if (refreshIndex !== undefined) {
+        newMessages = [...messages.slice(0, refreshIndex)];
+      } else {
+        newMessages = messages;
+      }
+
+      setMessages(newMessages);
+
+      try {
+        const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            session_id: sessionId,
+            content: trimmedInput,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        const assistantContent =
+          data.content ||
+          data.response ||
+          data.message ||
+          "جوابی از سمت ایجنت نیومد!";
+        const words = assistantContent.split(" ");
+        let currentMessage = "";
+        let wordIndex = 0;
+
+        currentStreamInterval.current = setInterval(() => {
+          if (wordIndex < words.length) {
+            currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
+            setMessages([
+              ...newMessages,
+              { role: "assistant", content: currentMessage } as Message,
+            ]);
+            wordIndex++;
+          } else {
+            if (currentStreamInterval.current) {
+              clearInterval(currentStreamInterval.current);
+              currentStreamInterval.current = null;
+            }
+            setIsLoading(false);
+            const finalMessages: Message[] = [
+              ...newMessages,
+              { role: "assistant", content: assistantContent } as Message,
+            ];
+            setMessages(finalMessages);
+            localStorage.setItem(
+              `chat_${sessionId}`,
+              JSON.stringify(finalMessages)
+            );
+          }
+        }, 100 + Math.random() * 50);
+      } catch (error) {
+        console.error("Error sending message:", error);
+        setMessages([
+          ...newMessages,
+          {
+            role: "assistant",
+            content: "خطا در دریافت پاسخ از سرور!",
+          } as Message,
+        ]);
+        setIsLoading(false);
+      }
+    },
+    [messages, sessionId, apiBaseUrl]
+  );
+
+  useEffect(() => {
+    if (
+      messages.length > 0 &&
+      messages[messages.length - 1].role === "user" &&
+      !isLoading
+    ) {
+      handleGetResponse(messages[messages.length - 1].content);
+    }
+  }, [messages, isLoading, handleGetResponse]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -108,10 +202,7 @@ export default function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent, refreshIndex?: number) => {
     e.preventDefault();
-    const trimmedInput =
-      refreshIndex !== undefined
-        ? messages[refreshIndex - 1].content
-        : input.trim();
+    const trimmedInput = input.trim();
     if (!trimmedInput) return;
 
     setIsLoading(true);
@@ -127,67 +218,19 @@ export default function ChatPage() {
     }
 
     setMessages(newMessages);
-    if (refreshIndex === undefined) setInput("");
+    setInput("");
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          session_id: sessionId,
-          content: trimmedInput,
-        }),
-      });
+    await handleGetResponse(trimmedInput, refreshIndex);
+  };
 
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      const assistantContent =
-        data.content ||
-        data.response ||
-        data.message ||
-        "جوابی از سمت ایجنت نیومد!";
-      const words = assistantContent.split(" ");
-      let currentMessage = "";
-      let wordIndex = 0;
-
-      const streamInterval = setInterval(() => {
-        if (wordIndex < words.length) {
-          currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
-          setMessages([
-            ...newMessages,
-            { role: "assistant", content: currentMessage } as Message,
-          ]);
-          wordIndex++;
-        } else {
-          clearInterval(streamInterval);
-          setIsLoading(false);
-          const finalMessages: Message[] = [
-            ...newMessages,
-            { role: "assistant", content: assistantContent } as Message,
-          ];
-          setMessages(finalMessages);
-          localStorage.setItem(
-            `chat_${sessionId}`,
-            JSON.stringify(finalMessages)
-          );
-        }
-      }, 100 + Math.random() * 50);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: "خطا در دریافت پاسخ از سرور!",
-        } as Message,
-      ]);
-      setIsLoading(false);
+  const handleStopGeneration = () => {
+    if (currentStreamInterval.current) {
+      clearInterval(currentStreamInterval.current);
+      currentStreamInterval.current = null;
     }
+    setIsLoading(false);
+    // پیام فعلی assistant رو finalize کنیم (هر چی تا حالا اومده ذخیره می‌شه)
+    localStorage.setItem(`chat_${sessionId}`, JSON.stringify(messages));
   };
 
   const handleCopy = async (text: string, index: number) => {
@@ -235,65 +278,7 @@ export default function ChatPage() {
     setEditingIndex(null);
     setEditInput("");
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          session_id: sessionId,
-          content: trimmedInput,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      const assistantContent =
-        data.content ||
-        data.response ||
-        data.message ||
-        "جوابی از سمت ایجنت نیومد!";
-      const words = assistantContent.split(" ");
-      let currentMessage = "";
-      let wordIndex = 0;
-
-      const streamInterval = setInterval(() => {
-        if (wordIndex < words.length) {
-          currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
-          setMessages([
-            ...newMessages,
-            { role: "assistant", content: currentMessage } as Message,
-          ]);
-          wordIndex++;
-        } else {
-          clearInterval(streamInterval);
-          setIsLoading(false);
-          const finalMessages: Message[] = [
-            ...newMessages,
-            { role: "assistant", content: assistantContent } as Message,
-          ];
-          setMessages(finalMessages);
-          localStorage.setItem(
-            `chat_${sessionId}`,
-            JSON.stringify(finalMessages)
-          );
-        }
-      }, 100 + Math.random() * 50);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: "خطا در دریافت پاسخ از سرور!",
-        } as Message,
-      ]);
-      setIsLoading(false);
-    }
+    await handleGetResponse(trimmedInput);
   };
 
   const handleRefresh = (index: number, e: React.MouseEvent) => {
@@ -304,7 +289,7 @@ export default function ChatPage() {
 
   return (
     <main className="min-h-screen w-full flex flex-col items-center justify-between bg-background">
-      <div className="h-12 w-full fixed  z-2 bg-white border-b md:hidden pr-12 ">
+      <div className="h-12 w-full fixed z-2 bg-white border-b md:hidden pr-12">
         <svg
           width="30"
           height="30"
@@ -339,7 +324,7 @@ export default function ChatPage() {
           />
         </svg>
       </div>
-      <div className="max-w-[832px] w-full px-4 py-8 flex flex-col flex-1 md:mt-0 mt-9 ">
+      <div className="max-w-[832px] w-full px-4 py-8 flex flex-col flex-1 md:mt-0 mt-9">
         <div className="flex-1 overflow-y-auto space-y-6 px-2 mb-8">
           {messages.length === 0 && (
             <p className="text-center text-gray-500">هیچ پیامی یافت نشد.</p>
@@ -414,13 +399,13 @@ export default function ChatPage() {
                       <Button
                         variant={"ghost"}
                         onClick={handleCancelEdit}
-                        className="px-3 py-1 text-sm h-8 w-15 "
+                        className="px-3 py-1 text-sm h-8 w-15"
                       >
                         انصراف
                       </Button>
                       <Button
                         onClick={() => handleConfirmEdit(index)}
-                        className="px-3 py-1 text-sm h-8 w-15 "
+                        className="px-3 py-1 text-sm h-8 w-15"
                       >
                         تایید
                       </Button>
@@ -549,7 +534,7 @@ export default function ChatPage() {
         </div>
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={!isLoading ? handleSubmit : (e) => e.preventDefault()}
           className="flex flex-col items-center fixed bottom-5 w-[92%] md:w-[800px] h-auto"
         >
           <div className="flex items-center w-full bg-white border border-[#E4E4E7] rounded-2xl px-3">
@@ -567,25 +552,36 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey && !isLoading) {
                   e.preventDefault();
                   handleSubmit(e as unknown as React.FormEvent);
                 }
               }}
               className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none overflow-auto max-h-[200px]"
+              disabled={isLoading}
             />
 
-            <button
-              type="submit"
-              disabled={!input.trim() || isLoading}
-              className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                input.trim() && !isLoading
-                  ? "bg-[#009D7B] text-white"
-                  : "bg-[#009d7bb4] text-white opacity-50 cursor-default"
-              }`}
-            >
-              <ArrowUp className="w-6 h-6" />
-            </button>
+            {isLoading ? (
+              <button
+                type="button"
+                onClick={handleStopGeneration}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium bg-[#009D7B] text-white"
+              >
+                <Square className="w-6 h-6" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
+                  input.trim()
+                    ? "bg-[#18181B] text-white"
+                    : "bg-[#18181B] text-white opacity-50 cursor-default"
+                }`}
+              >
+                <ArrowUp className="w-6 h-6" />
+              </button>
+            )}
           </div>
         </form>
       </div>

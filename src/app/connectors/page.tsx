@@ -176,7 +176,7 @@ function ConnectorsContent() {
                   </div>
                 </div>
 
-                <div className="self-end w-10 h-8 bg-primary  flex justify-center items-center rounded-lg ml-3">
+                <div className="self-end w-10 h-8 bg-black  flex justify-center items-center rounded-lg ml-3">
                   <ArrowLeft color="white" />
                 </div>
               </div>

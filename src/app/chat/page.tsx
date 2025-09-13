@@ -15,7 +15,6 @@ export default function Home() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -33,13 +32,6 @@ export default function Home() {
     const trimmedMessage = message.trim();
     if (!trimmedMessage) {
       setError("پیام نمی‌تواند خالی باشد!");
-      return;
-    }
-
-    if (!apiBaseUrl) {
-      setError("متغیر محیطی API_BASE_URL تنظیم نشده است!");
-      console.error("Environment variable NEXT_PUBLIC_API_BASE_URL is not set");
-      setIsLoading(false);
       return;
     }
 
@@ -63,57 +55,16 @@ export default function Home() {
 
       window.dispatchEvent(new Event("chatListUpdated"));
 
-      const requestBody = {
-        session_id: sessionId,
-        content: trimmedMessage,
-      };
-      console.log("Request to API:", {
-        url: `${apiBaseUrl}/Chat/send_message`,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: requestBody,
-      });
-
-      const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      console.log("API Response:", {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("API Response Data:", data);
-
-      const assistantContent =
-        data.content || data.response || "جوابی از سمت api نیومد!";
-
       localStorage.setItem(
         `chat_${sessionId}`,
-        JSON.stringify([
-          { role: "user", content: trimmedMessage },
-          { role: "assistant", content: assistantContent },
-        ])
+        JSON.stringify([{ role: "user", content: trimmedMessage }])
       );
 
       router.push(`/chat/${sessionId}`);
     } catch (err) {
-      setError("خطا در ارتباط با سرور: " + (err as Error).message);
+      setError("خطا در ایجاد چت: " + (err as Error).message);
       console.error("Error in handleSubmit:", err);
 
-      // در صورت خطا، چت را از لیست حذف کن
       const chatList: ChatItem[] = JSON.parse(
         localStorage.getItem("chatList") || "[]"
       );
@@ -167,8 +118,8 @@ export default function Home() {
                 disabled={isLoading || !message.trim()}
                 className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
                   message.trim() && !isLoading
-                    ? "bg-[#009D7B] text-white"
-                    : "bg-[#009d7bb4] text-white opacity-50 cursor-default"
+                    ? "bg-[#18181B] text-white"
+                    : "bg-[#18181B] text-white opacity-50 cursor-default"
                 }`}
               >
                 <ArrowUp className="w-6 h-6" />
