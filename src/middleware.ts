@@ -13,6 +13,7 @@ const publicPaths = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  console.log("hello world!!");
   console.log("Middleware is running at:", new Date().toISOString());
   console.log("Requested Path:", pathname);
   console.log("All Cookies:", request.cookies.getAll());

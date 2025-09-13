@@ -125,7 +125,6 @@ function CardDemo() {
         });
       }
 
-      console.log("Redirecting to /chat");
       router.push("/chat");
     } catch (error: unknown) {
       const errorMsg =
