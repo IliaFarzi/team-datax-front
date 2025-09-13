@@ -167,8 +167,8 @@ export default function Home() {
                 disabled={isLoading || !message.trim()}
                 className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
                   message.trim() && !isLoading
-                    ? "bg-[#18181B] text-white"
-                    : "bg-[#18181B] text-white opacity-50 cursor-default"
+                    ? "bg-[#009D7B] text-white"
+                    : "bg-[#009d7bb4] text-white opacity-50 cursor-default"
                 }`}
               >
                 <ArrowUp className="w-6 h-6" />

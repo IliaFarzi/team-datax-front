@@ -113,7 +113,7 @@ export function AppSidebar() {
   return (
     <Sidebar side="right">
       <SidebarContent>
-        <div className="flex flex-col justify-between h-full">
+        <div className="flex   flex-col justify-between h-full">
           <div className="">
             <div className="flex mt-5.5 mx-4">
               <svg
