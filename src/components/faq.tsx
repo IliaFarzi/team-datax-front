@@ -1,9 +1,9 @@
 import Question from "../../public/svg/Question";
-import Clock from "../../public/svg/clock";
 import Security from "../../public/svg/Security";
 import Box from "../../public/svg/Box";
 import Brain from "../../public/svg/Brain";
 import FileChartColumn from "../../public/svg/file-chart-column";
+import ClockF from "../../public/svg/ClockF";
 
 const faq = [
   {
@@ -13,7 +13,7 @@ const faq = [
       "دیتاکس با هوش مصنوعی شما را از داشبوردهای پیچیده بی‌نیاز می‌کند و به راحتی می‌توانید داده‌ها را تحلیل و گزارش‌های تصویری دریافت کنید.",
   },
   {
-    icon: Clock,
+    icon: ClockF,
     question: "چطور دیتاکس به تصمیم‌گیری سریع کمک می‌کند؟",
     answer:
       "با ارائه تحلیل لحظه‌ای، نمودار و جدول، دیتاکس داده‌ها را به بینش عملی تبدیل می‌کند تا سریع‌تر تصمیم بگیرید.",

@@ -6,7 +6,7 @@ import { AnimatedGridPattern } from "./ui/animated-grid-pattern";
 export default function CTABanner() {
   return (
     <div className="px-6">
-      <div className="dark:border relative overflow-hidden my-20 w-full dark bg-background text-foreground max-w-screen-lg mx-auto rounded-2xl py-10 md:py-16 px-6 md:px-14">
+      <div className=" relative overflow-hidden my-20 w-full dark bg-black text-foreground max-w-screen-lg mx-auto rounded-2xl py-10 md:py-16 px-6 md:px-14">
         <AnimatedGridPattern
           numSquares={30}
           maxOpacity={0.1}
@@ -26,17 +26,17 @@ export default function CTABanner() {
           )}
         />
         <div className="relative z-0 flex flex-col gap-3">
-          <h3 className="text-3xl md:text-4xl font-semibold">
+          <h3 className="text-3xl md:text-4xl font-semibold text-white">
             کتابچه راهکارهای هوش مصنوعی در تحلیل داده و BI
           </h3>
-          <p className="mt-2 text-base md:text-lg">
+          <p className="mt-2 text-base md:text-[14px] text-white">
             در این کتابچه با روش‌های ساده و عملی هوش مصنوعی برای تحلیل داده و BI
             آشنا می‌شوید و یاد می‌گیرید تصمیمات هوشمندانه و سریع بگیرید.
           </p>
         </div>
         <div className="relative z-0 mt-14 flex flex-col sm:flex-row gap-4">
-          <Button size="lg">
-            دانلود رایگان کتابچه <ArrowUpLeft className="!h-5 !w-5"/>
+          <Button size="lg" className="text-black bg-white">
+            دانلود رایگان کتابچه <ArrowUpLeft className="!h-5 !w-5" />
           </Button>
         </div>
       </div>

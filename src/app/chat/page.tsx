@@ -116,7 +116,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={isLoading || !message.trim()}
-                className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
+                className={`inline-flex items-center justify-center w-9 h-9 rounded-full   ${
                   message.trim() && !isLoading
                     ? "bg-[#18181B] text-white"
                     : "bg-[#18181B] text-white opacity-50 cursor-default"

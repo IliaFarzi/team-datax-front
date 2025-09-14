@@ -580,13 +580,13 @@ export default function ChatPage() {
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
+                className={`inline-flex items-center justify-center w-9 h-9 rounded-full ${
                   input.trim()
                     ? "bg-black text-white hover:bg-gray-800 transition-colors duration-200 shadow-md hover:shadow-lg"
                     : "bg-gray-400 text-white opacity-50 cursor-default"
                 }`}
               >
-                <ArrowUp className="w-5 h-5" />
+                <ArrowUp className="w-6 h-6" />
               </button>
             )}
           </div>

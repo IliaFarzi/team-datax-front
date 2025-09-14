@@ -21,9 +21,9 @@ const Navbar = () => {
               ورود
             </Button>
           </Link>
-          <Link href={"/"}>
+          <Link href={"/signup"}>
             <Button className="hidden md:inline-flex">
-              رایگان امتحان کنید
+              ثبت نام در لیست انتظار
             </Button>
           </Link>
 

@@ -253,8 +253,13 @@ function CardDemo() {
                     {...register("password", {
                       required: "رمز عبور الزامی است",
                       minLength: {
-                        value: 6,
-                        message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+                        value: 8,
+                        message: "رمز عبور باید حداقل ۸ کاراکتر باشد",
+                      },
+                      pattern: {
+                        value: /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                        message:
+                          "رمز عبور باید شامل حروف انگلیسی و حداقل یک عدد باشد",
                       },
                     })}
                   />

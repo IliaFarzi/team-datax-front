@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, VariantProps } from "class-variance-authority";
-import { Menu, PanelLeftIcon } from "lucide-react";
+import { Menu, PanelLeftIcon, X } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePathname } from "next/navigation";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -68,6 +69,7 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
+  const pathname = usePathname();
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -108,6 +110,13 @@ function SidebarProvider({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleSidebar]);
+
+  // Close the mobile sidebar automatically on route changes
+  React.useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [pathname, isMobile]);
 
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
@@ -152,7 +161,7 @@ function SidebarProvider({
 }
 
 function Sidebar({
-  side = "left",
+  side = "right",
   variant = "sidebar",
   collapsible = "offcanvas",
   className,
@@ -187,7 +196,10 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className={cn(
+            "bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden transition-transform duration-200 ease-in-out",
+            className
+          )}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -199,7 +211,18 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex h-full w-full flex-col">
+            <div className="flex justify-end p-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpenMobile(false)}
+              >
+                <X className="h-6 w-6" />
+              </Button>
+            </div>
+            {children}
+          </div>
         </SheetContent>
       </Sheet>
     );
@@ -273,7 +296,6 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon className="hidden md:block" />
       <Menu className="md:hidden" size={500} />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
