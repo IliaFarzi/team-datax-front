@@ -12,9 +12,11 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface LoginRequest {
   email: string;
@@ -32,9 +34,9 @@ type ApiErrorResponse = {
 };
 
 function CardDemo() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const {
     register,
@@ -43,8 +45,6 @@ function CardDemo() {
   } = useForm<LoginRequest>();
 
   const onSubmit = async (data: LoginRequest) => {
-    setErrorMessage(null);
-
     try {
       console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       const response = await fetch(
@@ -129,7 +129,11 @@ function CardDemo() {
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ورود ناموفق بود";
-      setErrorMessage(errorMsg);
+      toast({
+        variant: "destructive",
+        title: "خطا",
+        description: errorMsg,
+      });
       console.error("Login error:", errorMsg);
     }
   };
@@ -158,7 +162,7 @@ function CardDemo() {
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
               <span>حساب کاربری ندارید؟</span>
-              <span className="text-[#1668E3] underline">
+              <span className="text-[#1668E3] underline underline-offset-2">
                 <Link href={"/signup"}>ثبت‌نام کنید</Link>
               </span>
             </div>
@@ -167,12 +171,13 @@ function CardDemo() {
 
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 items-center justify-center">
               <div className="grid gap-2 relative">
                 <Label htmlFor="email">
                   ایمیل <span className="text-red-500">*</span>
                 </Label>
                 <Input
+                  className="w-[327px] md:w-[390px] "
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
@@ -197,13 +202,14 @@ function CardDemo() {
                     رمز عبور <span className="text-red-500">*</span>
                   </Label>
                   <Link href={"/forgetPassword"}>
-                    <span className="text-[14px]  text-[#1668E3] underline">
+                    <span className="text-[14px] text-[#1668E3] underline underline-offset-2">
                       رمز عبورتان را فراموش کردید؟
                     </span>
                   </Link>
                 </div>
                 <div className="relative">
                   <Input
+                    className="w-[327px] md:w-[390px] "
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
@@ -233,26 +239,27 @@ function CardDemo() {
             <CardFooter className="flex-col gap-1 mt-4">
               <Button
                 type="submit"
-                className="w-[340px] h-10 text-base font-medium rounded-md"
+                className="w-[327px] md:w-[390px] h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "در حال ورود..." : "ورود"}
+                {isSubmitting ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                ) : (
+                  "ورود"
+                )}
               </Button>
             </CardFooter>
           </form>
         </CardContent>
 
-        <span className="text-[11.5px] text-center text-[#71717A] font-medium ">
+        <span className="text-[11.5px] text-center text-[#71717A] font-medium mt-3">
           ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
-          <span className="text-[#1668E3] underline">قوانین و مقررات</span> آن
-          می‌باشد.
+          <span className="text-[#1668E3] underline underline-offset-2">
+            قوانین و مقررات
+          </span>{" "}
+          آن می‌باشد.
         </span>
-
-        {errorMessage && (
-          <div className="text-red-500 text-sm mt-4 text-center">
-            {errorMessage}
-          </div>
-        )}
+        <Toaster />
       </Card>
     </div>
   );

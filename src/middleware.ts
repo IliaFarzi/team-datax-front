@@ -8,6 +8,8 @@ const publicPaths = [
   "/resetPassword",
   "/api/auth",
   "/",
+  "/connectors",
+  "/chat"
 ];
 
 export function middleware(request: NextRequest) {

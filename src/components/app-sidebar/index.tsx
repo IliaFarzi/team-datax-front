@@ -7,6 +7,7 @@ import {
   Unplug,
   Trash,
   Plus,
+  EllipsisVertical,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
@@ -16,10 +17,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "../Button";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,12 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ChatItem {
   title: string;
@@ -44,6 +51,8 @@ export function AppSidebar() {
   const [userEmail, setUserEmail] = useState("");
   const router = useRouter();
   const { sessionId } = useParams();
+  const pathname = usePathname();
+  const editInputRef = useRef<HTMLInputElement>(null);
 
   const loadChatList = useCallback(() => {
     const storedChatList: ChatItem[] = JSON.parse(
@@ -110,10 +119,18 @@ export function AppSidebar() {
     setEditChatTitle("");
   }, []);
 
+  useEffect(() => {
+    if (editChatIndex !== null && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [editChatIndex]);
+
+  const isConnectorsActive = pathname === "/connectors";
+
   return (
     <Sidebar side="right">
       <SidebarContent>
-        <div className="flex   flex-col justify-between h-full">
+        <div className="flex flex-col justify-between h-full">
           <div className="">
             <div className="flex mt-5.5 mx-4">
               <svg
@@ -167,6 +184,7 @@ export function AppSidebar() {
                         {editChatIndex === index ? (
                           <div className="relative w-full">
                             <Input
+                              ref={editInputRef}
                               value={editChatTitle}
                               onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>
@@ -177,28 +195,11 @@ export function AppSidebar() {
                                 if (e.key === "Enter") handleSaveEdit(index);
                                 if (e.key === "Escape") handleCancelEdit();
                               }}
+                              onBlur={() => handleSaveEdit(index)}
                               placeholder="عنوان گفتگو"
                               className="text-[#71717A] mb-2"
                               autoFocus
                             />
-                            <div className="absolute left-[5px] top-[0px] flex gap-1">
-                              <Button
-                                variant="link"
-                                size="sm"
-                                onClick={() => handleSaveEdit(index)}
-                                className="text-[11px]"
-                              >
-                                تایید
-                              </Button>
-                              <Button
-                                variant="link"
-                                size="sm"
-                                onClick={handleCancelEdit}
-                                className="text-[11px]"
-                              >
-                                انصراف
-                              </Button>
-                            </div>
                           </div>
                         ) : (
                           <>
@@ -208,52 +209,67 @@ export function AppSidebar() {
                             >
                               {item.title}
                             </Link>
-                            <div className="flex gap-2">
-                              <FilePenIcon
-                                height={18}
-                                color="#71717A"
-                                onClick={() =>
-                                  handleEditChat(index, item.title)
-                                }
-                                className="cursor-pointer"
-                                aria-label="ویرایش گفتگو"
-                              />
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Trash
-                                    height={18}
-                                    color="#71717A"
-                                    className="cursor-pointer"
-                                    aria-label="حذف گفتگو"
-                                  />
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px]">
-                                  <DialogHeader>
-                                    <DialogTitle>حذف گفتگو</DialogTitle>
-                                    <DialogDescription>
-                                      آیا مطمئن هستید که می‌خواهید گفتگو{" "}
-                                      {item.title}
-                                      را حذف کنید؟
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  <DialogFooter>
-                                    <DialogClose asChild>
-                                      <Button className="bg-[#FAFAFA] text-[#18181B] w-[30%] hover:bg-gray-100">
-                                        انصراف
-                                      </Button>
-                                    </DialogClose>
-                                    <DialogClose asChild>
-                                      <Button
-                                        onClick={() => handleDeleteChat(index)}
-                                        className="bg-[#DC2626] hover:bg-[#DC2626] w-[30%]"
-                                      >
-                                        حذف
-                                      </Button>
-                                    </DialogClose>
-                                  </DialogFooter>
-                                </DialogContent>
-                              </Dialog>
-                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <EllipsisVertical
+                                  height={18}
+                                  color="#71717A"
+                                  className="cursor-pointer"
+                                  aria-label="گزینه‌ها"
+                                />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                className="w-[192px]"
+                                align="end"
+                              >
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleEditChat(index, item.title)
+                                  }
+                                  className="flex items-center justify-between cursor-pointer flex-row-reverse"
+                                >
+                                  ویرایش
+                                  <FilePenIcon height={18} color="#18181B" />
+                                </DropdownMenuItem>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <DropdownMenuItem
+                                      onSelect={(e) => e.preventDefault()}
+                                      className="flex items-center justify-between cursor-pointer flex-row-reverse"
+                                    >
+                                      حذف
+                                      <Trash height={18} color="#EF4444" />
+                                    </DropdownMenuItem>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[425px] md:w-500">
+                                    <DialogHeader>
+                                      <DialogTitle>حذف گفتگو</DialogTitle>
+                                      <DialogDescription>
+                                        آیا مطمئن هستید که می‌خواهید گفتگو{" "}
+                                        {item.title} را حذف کنید؟
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter>
+                                      <DialogClose asChild>
+                                        <Button className="bg-[#FAFAFA] text-[#18181B] w-[30%] md:w-[50%] hover:bg-gray-100">
+                                          انصراف
+                                        </Button>
+                                      </DialogClose>
+                                      <DialogClose asChild>
+                                        <Button
+                                          onClick={() =>
+                                            handleDeleteChat(index)
+                                          }
+                                          className="bg-[#DC2626] hover:bg-[#DC2626] w-[30%] md:w-[50%]"
+                                        >
+                                          حذف
+                                        </Button>
+                                      </DialogClose>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </>
                         )}
                       </div>
@@ -266,8 +282,17 @@ export function AppSidebar() {
 
           <div className="flex flex-col items-center px-3 w-full">
             <div className="flex h-px w-full" />
-            <div className="w-full text-[#71717A] flex items-center rounded-lg gap-3 h-9.5">
-              <Unplug height={18} />
+            <div
+              className={`w-full flex items-center rounded-lg gap-3 h-9.5 ${
+                isConnectorsActive
+                  ? "text-black bg-[#E4E4E7]"
+                  : "text-[#71717A]"
+              }`}
+            >
+              <Unplug
+                height={18}
+                color={isConnectorsActive ? "black" : "#71717A"}
+              />
               <Link href="/connectors">
                 <span>اتصالات داده</span>
               </Link>

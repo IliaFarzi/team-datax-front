@@ -79,9 +79,6 @@
 */
 
 @layer base {
-  input {
-    @apply border border-red-800;
-  }
 }
 * {
   @apply border-border outline-ring/50;

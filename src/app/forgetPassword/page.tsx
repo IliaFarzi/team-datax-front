@@ -10,9 +10,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface LoginRequest {
   email: string;
@@ -36,8 +37,8 @@ type ApiSuccessResponse = {
 };
 
 function CardDemo() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
+  const { toast } = useToast();
 
   const {
     register,
@@ -46,8 +47,6 @@ function CardDemo() {
   } = useForm<LoginRequest>();
 
   const onSubmit = async (data: LoginRequest) => {
-    setErrorMessage(null);
-
     try {
       console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       const response = await fetch(
@@ -95,13 +94,16 @@ function CardDemo() {
         throw new Error("توکن بازنشانی رمز در لینک یافت نشد");
       }
 
-      // Redirect to resetPassword page
       router.push("/resetPassword");
     } catch (error: unknown) {
       const errorMsg =
-        error instanceof Error ? error.message : "درخواست ناموفق بود";
-      setErrorMessage(errorMsg);
-      console.error("Forgot password error:", errorMsg);
+        error instanceof Error ? error.message : "بازنشانی رمز ناموفق بود";
+      toast({
+        variant: "destructive",
+        title: "خطا",
+        description: errorMsg,
+      });
+      console.error("Signup error:", errorMsg);
     }
   };
 
@@ -135,13 +137,13 @@ function CardDemo() {
 
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-4">
-              {/* ایمیل */}
+            <div className="flex flex-col gap-4 items-center">
               <div className="grid gap-2 relative">
                 <Label htmlFor="email">
                   ایمیل <span className="text-red-500">*</span>
                 </Label>
                 <Input
+                  className="w-[327px] md:w-[390px] "
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
@@ -164,7 +166,7 @@ function CardDemo() {
             <CardFooter className="flex-col gap-1">
               <Button
                 type="submit"
-                className="w-[340px] mt-6 h-10 text-base font-medium rounded-md"
+                className="w-[327px] md:w-[390px] mt-6 h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "در حال پردازش..." : "دریافت لینک تغییر رمز"}
@@ -172,12 +174,7 @@ function CardDemo() {
             </CardFooter>
           </form>
         </CardContent>
-
-        {errorMessage && (
-          <div className="text-red-500 text-sm mt-4 text-center">
-            {errorMessage}
-          </div>
-        )}
+        <Toaster />
       </Card>
     </div>
   );

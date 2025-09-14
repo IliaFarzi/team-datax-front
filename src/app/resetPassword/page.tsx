@@ -11,9 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface ResetPasswordRequest {
   password: string;
@@ -31,10 +33,10 @@ type ApiErrorResponse = {
 };
 
 function CardDemo() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const {
     register,
@@ -44,8 +46,6 @@ function CardDemo() {
   } = useForm<ResetPasswordRequest>();
 
   const onSubmit = async (data: ResetPasswordRequest) => {
-    setErrorMessage(null);
-
     try {
       const resetToken = Cookies.get("reset_token");
       if (!resetToken) {
@@ -96,8 +96,12 @@ function CardDemo() {
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "بازنشانی رمز ناموفق بود";
-      setErrorMessage(errorMsg);
-      console.error("Reset password error:", errorMsg);
+      toast({
+        variant: "destructive",
+        title: "خطا",
+        description: errorMsg,
+      });
+      console.error("Signup error:", errorMsg);
     }
   };
 
@@ -130,14 +134,14 @@ function CardDemo() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              {/* password */}
+            <div className="flex flex-col gap-6  items-center">
               <div className="grid gap-2">
                 <Label htmlFor="password">
                   رمز عبور <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
+                    className="w-[327px] md:w-[390px] "
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
@@ -163,13 +167,13 @@ function CardDemo() {
                 )}
               </div>
 
-              {/* confirm password */}
               <div className="grid gap-2">
                 <Label htmlFor="confirmPassword">
                   تکرار رمز عبور <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
+                    className="w-[327px] md:w-[390px] "
                     id="confirmPassword"
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword", {
@@ -198,20 +202,19 @@ function CardDemo() {
             <CardFooter className="flex-col gap-2 mt-4">
               <Button
                 type="submit"
-                className="w-[340px] mt-6 h-10 text-base font-medium rounded-md"
+                className="w-[327px] md:w-[390px] mt-6 h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "در حال پردازش..." : "تغییر رمز عبور"}
+                {isSubmitting ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                ) : (
+                  "تغییر رمز عبور"
+                )}
               </Button>
             </CardFooter>
           </form>
+          <Toaster />
         </CardContent>
-
-        {errorMessage && (
-          <div className="text-red-500 text-sm mt-4 text-center">
-            {errorMessage}
-          </div>
-        )}
       </Card>
     </div>
   );

@@ -12,9 +12,11 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface RegisterRequest {
   name: string;
@@ -35,10 +37,10 @@ type ApiErrorResponse = {
 };
 
 function CardDemo() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const {
     register,
@@ -48,7 +50,6 @@ function CardDemo() {
   } = useForm<RegisterRequest>();
 
   const onSubmit = async (data: RegisterRequest) => {
-    setErrorMessage(null);
     try {
       console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       const response = await fetch(
@@ -130,7 +131,11 @@ function CardDemo() {
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ثبت‌نام ناموفق بود";
-      setErrorMessage(errorMsg);
+      toast({
+        variant: "destructive",
+        title: "خطا",
+        description: errorMsg,
+      });
       console.error("Signup error:", errorMsg);
     }
   };
@@ -159,7 +164,7 @@ function CardDemo() {
             </CardTitle>
             <div className="flex gap-1 text-[14px]">
               <span>از قبل حساب دارید؟</span>
-              <div className="text-[#1668E3] underline">
+              <div className="text-[#1668E3] underline underline-offset-4">
                 <Link href={"/login"}>وارد شوید</Link>
               </div>
             </div>
@@ -167,8 +172,8 @@ function CardDemo() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
+            <div className="flex flex-col gap-6 items-center justify-center">
+              <div className="grid  gap-2">
                 <Label htmlFor="name" className="text-[14px]">
                   نام و نام خانوادگی <span className="text-red-500">*</span>
                 </Label>
@@ -176,6 +181,7 @@ function CardDemo() {
                   id="name"
                   type="text"
                   placeholder="مثلا مانی جلیلی"
+                  className="w-[327px] md:w-[390px] "
                   {...register("name", {
                     required: "نام و نام خانوادگی الزامی است",
                   })}
@@ -195,6 +201,7 @@ function CardDemo() {
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
+                  className="w-[327px] md:w-[390px]"
                   {...register("email", {
                     required: "ایمیل الزامی است",
                     pattern: {
@@ -218,6 +225,7 @@ function CardDemo() {
                   id="number"
                   type="tel"
                   placeholder="مثلا ۰۹۱۲۳۴۵۶۷۸۹"
+                  className="w-[327px] md:w-[390px] "
                   {...register("number", {
                     required: "شماره همراه الزامی است",
                     pattern: {
@@ -239,6 +247,7 @@ function CardDemo() {
                 </Label>
                 <div className="relative">
                   <Input
+                    className="w-[327px] md:w-[390px] "
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
@@ -264,13 +273,13 @@ function CardDemo() {
                 )}
               </div>
 
-              {/* confirm password */}
               <div className="grid gap-2">
                 <Label htmlFor="confirmPassword">
                   تکرار رمز عبور <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
+                    className="w-[327px] md:w-[390px] "
                     id="confirmPassword"
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword", {
@@ -299,24 +308,26 @@ function CardDemo() {
             <CardFooter className="flex-col gap-2 mt-4">
               <Button
                 type="submit"
-                className="w-[340px] mt-6 h-10 text-base font-medium rounded-md"
+                className="w-[327px] md:w-[390px] mt-6 h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "در حال ثبت..." : "ثبت‌نام"}
+                {isSubmitting ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                ) : (
+                  "ثبت‌نام"
+                )}
               </Button>
             </CardFooter>
           </form>
         </CardContent>
-        <span className="text-[11px] text-center text-[#71717A] font-medium ">
+        <span className="text-[11px] text-center text-[#71717A] font-medium mt-3">
           ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
-          <span className="text-[#1668E3] underline">قوانین و مقررات</span> آن
-          می‌باشد.
+          <span className="text-[#1668E3] underline underline-offset-4">
+            قوانین و مقررات
+          </span>{" "}
+          آن می‌باشد.
         </span>
-        {errorMessage && (
-          <div className="text-red-500 text-sm mt-4 text-center">
-            {errorMessage}
-          </div>
-        )}
+        <Toaster />
       </Card>
     </div>
   );
