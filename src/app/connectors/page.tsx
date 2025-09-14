@@ -18,7 +18,7 @@ type Connector = {
 const connectors: Connector[] = [
   {
     id: "google-sheets",
-    name: "Google Sheets",
+    name: "Google SGDets",
     nameFA: "گوگل شیت",
     type: "Integration",
     typeFA: "جدول‌های گوگل شیت خود را تحلیل کنید.",
@@ -127,7 +127,7 @@ function ConnectorsContent() {
   };
 
   return (
-    <div className="w-auto mx-auto">
+    <div className="w-auto mx-auto h-full">
       <div className="space-y-4 md:mr-26">
         {errorMessage && (
           <div className="text-red-500 text-center mb-4">
@@ -144,16 +144,16 @@ function ConnectorsContent() {
         )}
         <h2 className="text-xl font-semibold tracking-tight">افزودن اتصالات</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[calc(100vh-160px)] overflow-hidden">
           {connectors.map((connector) => (
             <button
               key={connector.id}
               onClick={handleConnect}
-              className="text-right bg-white max-w-[312px] border border-slate-200 rounded-xl overflow-hidden p-0"
+              className="text-right bg-white max-w-[338px] h-[108px] border border-slate-200 rounded-xl overflow-hidden px-4 py-3"
               type="button"
             >
-              <div className="pr-3 pb-3 justify-between h-[108px] flex">
-                <div className="flex items-center gap-3">
+              <div className=" justify-between h-[108px] flex">
+                <div className="flex items-start gap-3">
                   <Image
                     src={connector.icon}
                     alt={connector.nameFA}
@@ -175,8 +175,7 @@ function ConnectorsContent() {
                     )}
                   </div>
                 </div>
-
-                <div className="self-end w-10 h-8 bg-black  flex justify-center items-center rounded-lg ml-3">
+                <div className="self-center w-10 h-8 bg-black flex justify-center items-center mt-4 rounded-lg ml-3">
                   <ArrowLeft color="white" />
                 </div>
               </div>
@@ -190,20 +189,22 @@ function ConnectorsContent() {
 
 export default function Connectors() {
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto px-6 py-6">
-        <div className="border-b border-slate-200 pb-1 mb-6">
-          <h1 className="text-[24px] flex justify-end md:justify-start font-semibold">
+    <div className="h-screen overflow-hidden bg-white flex">
+      <div className="mx-auto px-4 py-4 flex-1 flex flex-col">
+        <div className="border-b border-slate-200 pb-1 mb-4 shrink-0">
+          <h1 className="text-[24px] mt-2 flex justify-end md:justify-start font-semibold">
             اتصالات داده
           </h1>
-          <h2 className="hidden md:block text-[#71717A] text-[14px]">
+          <h2 className="hidden md:block mt-2 mb-5 text-[#71717A] ">
             دیتاکس را به نرم‌افزارها و اطلاعات‌تان متصل کنید
           </h2>
         </div>
 
-        <Suspense fallback={<div>در حال بارگذاری...</div>}>
-          <ConnectorsContent />
-        </Suspense>
+        <div className="flex-1 max-h-full overflow-hidden">
+          <Suspense fallback={<div>در حال بارگذاری...</div>}>
+            <ConnectorsContent />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

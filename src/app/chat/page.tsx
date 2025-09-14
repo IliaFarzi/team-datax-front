@@ -22,7 +22,7 @@ export default function Home() {
       inputRef.current.style.height = "auto";
       inputRef.current.style.height = `${Math.min(
         inputRef.current.scrollHeight,
-        150
+        120
       )}px`;
     }
   }, [message]);
@@ -79,7 +79,7 @@ export default function Home() {
   };
 
   return (
-    <main className="h-full flex items-center justify-center">
+    <main className="h-screen flex items-center justify-center overflow-hidden">
       <div className="max-w-[832px] w-full px-4">
         <h1 className="font-bold text-[20px] text-center md:text-right">
           امروز می‌خواهید چه چیزی را تحلیل کنید؟
@@ -110,13 +110,13 @@ export default function Home() {
                     handleSubmit(e as unknown as React.FormEvent);
                   }
                 }}
-                className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none overflow-auto max-h-[200px]"
+                className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none max-h-[120px] overflow-hidden"
               />
 
               <button
                 type="submit"
                 disabled={isLoading || !message.trim()}
-                className={`inline-flex items-center justify-center w-9 h-9 rounded-full   ${
+                className={`inline-flex items-center justify-center w-9 h-9 rounded-full ${
                   message.trim() && !isLoading
                     ? "bg-[#18181B] text-white"
                     : "bg-[#18181B] text-white opacity-50 cursor-default"

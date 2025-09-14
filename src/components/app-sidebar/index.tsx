@@ -92,7 +92,10 @@ export function AppSidebar() {
     },
     [chatList, sessionId, router]
   );
-
+  const logoutAccount = () => {
+    router.push("/login");
+    Cookies.remove("access_token");
+  };
   const handleEditChat = useCallback((index: number, title: string) => {
     setEditChatIndex(index);
     setEditChatTitle(title);
@@ -128,11 +131,11 @@ export function AppSidebar() {
   const isConnectorsActive = pathname === "/connectors";
 
   return (
-    <Sidebar side="right">
-      <SidebarContent>
+    <Sidebar side="right" className="h-screen overflow-hidden">
+      <SidebarContent className="overflow-hidden">
         <div className="flex flex-col justify-between h-full">
-          <div className="">
-            <div className="flex mt-5.5 mx-4">
+          <div className="flex-1 max-h-full overflow-hidden">
+            <div className="flex mt-5 mx-4">
               <svg
                 width="52"
                 height="52"
@@ -147,7 +150,7 @@ export function AppSidebar() {
                   fill="#010101"
                 />
               </svg>
-              <div className="">
+              <div>
                 <h2 className="text-lg font-bold">دیتاکس</h2>
                 <span className="text-[#71717A]">ورژن ۱.۰.۰</span>
               </div>
@@ -170,7 +173,7 @@ export function AppSidebar() {
                   </span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="flex flex-col mr-2 gap-3 border-r border-[#E4E4E7] pr-5.5">
+                  <div className="flex flex-col mr-2 gap-3 border-r border-[#E4E4E7] pr-5">
                     {chatList.length === 0 && (
                       <p className="text-[#71717A] text-center">
                         هیچ گفتگویی موجود نیست.
@@ -280,8 +283,8 @@ export function AppSidebar() {
             </Accordion>
           </div>
 
-          <div className="flex flex-col items-center px-3 w-full">
-            <div className="flex h-px w-full" />
+          <div className="flex flex-col items-center px-3 ">
+            <div className="flex  w-full bg-[#E4E4E7] mb-2" />
             <div
               className={`w-full flex items-center rounded-lg gap-3 h-9.5 ${
                 isConnectorsActive
@@ -333,6 +336,7 @@ export function AppSidebar() {
                       </Button>
                     </DialogClose>
                     <Button
+                      onClick={logoutAccount}
                       type="submit"
                       className="bg-[#DC2626] hover:bg-[#DC2626] w-[45%] md:w-[50%]"
                     >
@@ -343,7 +347,7 @@ export function AppSidebar() {
               </Dialog>
             </div>
 
-            <div className="flex flex-col h-9 items-center gap-2 mt-[14px] w-full">
+            <div className="flex flex-col h-9 items-center gap-2 mt-2 w-full">
               <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center gap-2 w-full">
                   <svg
@@ -366,7 +370,7 @@ export function AppSidebar() {
                   </svg>
 
                   <div className="flex flex-col">
-                    <div className="flex items-center gap-0.5 mt-1">
+                    <div className="flex items-center gap-0.5">
                       <div className="flex items-center text-xs gap-0.5">
                         <div className="text-[#3F3F46] font-medium">
                           {userEmail}
@@ -377,8 +381,6 @@ export function AppSidebar() {
                 </div>
               </div>
             </div>
-
-            <div className="flex mt-3 w-full" />
           </div>
         </div>
       </SidebarContent>
