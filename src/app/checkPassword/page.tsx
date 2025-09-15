@@ -30,7 +30,7 @@ const CheckEmail = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedEmail = Cookies.get("signup_email");
+    const savedEmail = Cookies.get("user_email");
     if (savedEmail) {
       setEmail(savedEmail);
     } else {
