@@ -70,8 +70,9 @@ const Footer = () => {
             <Button
               className="bg-white text-black cursor-pointer"
               variant={"ghost"}
+              asChild
             >
-              تماس با پشتیبانی و فروش
+              <a href="tel:+989123456789">تماس با پشتیبانی و فروش</a>
             </Button>
           </div>
         </div>
@@ -85,7 +86,7 @@ const Footer = () => {
             <Link href="#" target="_blank">
               <Telegram />
             </Link>
-            <Link href="#" target="_blank">
+            <Link href="mailto:t.hosseinpour2347@gmail.com" target="_blank">
               <Google />
             </Link>
             <Link href="#" target="_blank">

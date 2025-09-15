@@ -10,7 +10,7 @@ import SheetData from "@/components/sheetData";
 
 export default function Home() {
   return (
-    <>
+    <div>
       <Navbar />
       <main className="pt-16 xs:pt-20 sm:pt-24">
         <Hero />
@@ -22,6 +22,6 @@ export default function Home() {
         {/* <Testimonials /> */}
         <Footer />
       </main>
-    </>
+    </div>
   );
 }

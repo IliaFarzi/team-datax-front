@@ -50,7 +50,6 @@ export function AppSidebar() {
   const [editChatTitle, setEditChatTitle] = useState<string>("");
   const [userEmail, setUserEmail] = useState("");
   const router = useRouter();
-  const { sessionId } = useParams();
   const pathname = usePathname();
   const editInputRef = useRef<HTMLInputElement>(null);
 
@@ -68,7 +67,7 @@ export function AppSidebar() {
 
   useEffect(() => {
     const email = Cookies.get("user_email");
-    setUserEmail(email || "t.hosseinpour2347@gmail.com");
+    setUserEmail(email || "");
     loadChatList();
 
     window.addEventListener("chatListUpdated", loadChatList);
@@ -85,16 +84,13 @@ export function AppSidebar() {
       localStorage.setItem("chatList", JSON.stringify(updatedList));
       setChatList(updatedList);
       window.dispatchEvent(new Event("chatListUpdated"));
-
-      if (sessionIdToDelete === sessionId) {
-        router.push("/");
-      }
     },
-    [chatList, sessionId, router]
+    [chatList]
   );
   const logoutAccount = () => {
     router.push("/login");
     Cookies.remove("access_token");
+    Cookies.remove("user_email");
   };
   const handleEditChat = useCallback((index: number, title: string) => {
     setEditChatIndex(index);

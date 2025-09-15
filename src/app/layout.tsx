@@ -100,7 +100,7 @@ export default function RootLayout({
       className={yekanFont.className}
       suppressHydrationWarning
     >
-      <body className="h-screen overflow-hidden">
+      <body className="h-screen ">
         <TooltipProvider>
           <ClientLayout>{children}</ClientLayout>
         </TooltipProvider>

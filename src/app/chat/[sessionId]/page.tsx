@@ -283,14 +283,75 @@ export default function ChatPage() {
 
     setIsLoading(true);
 
-    const newMessages: Message[] = [...messages.slice(0, index)];
-    newMessages.push({ role: "user", content: trimmedInput });
+    try {
+      console.log("Sending to /edit_message:", {
+        session_id: sessionId,
+        message_index: index,
+        new_content: trimmedInput,
+      });
+      const response = await fetch(`${apiBaseUrl}/edit_message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          message_index: index,
+          new_content: trimmedInput,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
 
-    setMessages(newMessages);
-    setEditingIndex(null);
-    setEditInput("");
+      const data = await response.json();
+      const newMessages = data.messages || [];
+      setMessages(newMessages);
+      localStorage.setItem(`chat_${sessionId}`, JSON.stringify(newMessages));
 
-    await handleGetResponse(trimmedInput);
+      if (
+        newMessages.length > 0 &&
+        newMessages[newMessages.length - 1].role === "assistant"
+      ) {
+        const assistantContent = newMessages[newMessages.length - 1].content;
+        const words = assistantContent.split(" ");
+        let currentMessage = "";
+        let wordIndex = 0;
+        const baseMessages = newMessages.slice(0, -1);
+
+        if (currentStreamInterval.current) {
+          clearInterval(currentStreamInterval.current);
+          currentStreamInterval.current = null;
+        }
+
+        currentStreamInterval.current = setInterval(() => {
+          if (wordIndex < words.length) {
+            currentMessage += (wordIndex > 0 ? " " : "") + words[wordIndex];
+            setMessages([
+              ...baseMessages,
+              { role: "assistant", content: currentMessage },
+            ]);
+            wordIndex++;
+          } else {
+            if (currentStreamInterval.current) {
+              clearInterval(currentStreamInterval.current);
+              currentStreamInterval.current = null;
+            }
+            setMessages(newMessages);
+          }
+        }, 100 + Math.random() * 50);
+      }
+    } catch (error) {
+      console.error("Error editing message:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "خطا در ویرایش پیام و دریافت پاسخ!" },
+      ]);
+    } finally {
+      setIsLoading(false);
+      setEditingIndex(null);
+      setEditInput("");
+    }
   };
 
   const handleRefresh = (index: number, e: React.MouseEvent) => {
