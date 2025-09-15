@@ -2,12 +2,19 @@
 
 import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+  const [isOpen, setIsOpen] = React.useState(false);
+  return (
+    <SheetPrimitive.Root
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      data-slot="sheet"
+      {...props}
+    />
+  );
 }
 
 function SheetTrigger({
@@ -47,18 +54,20 @@ function SheetOverlay({
 function SheetContent({
   className,
   children,
-  side = "right",
+  side = "center",
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  side?: "top" | "right" | "bottom" | "left";
+  side?: "top" | "right" | "bottom" | "left" | "center";
 }) {
   return (
     <SheetPortal>
       <SheetOverlay />
-      <SheetPrimitive.Title
+      <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          side === "center" &&
+            "data-[state=closed]:fade-out data-[state=open]:fade-in top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 max-w-md h-auto p-6 rounded-lg border",
           side === "right" &&
             "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
           side === "left" &&
@@ -73,10 +82,9 @@ function SheetContent({
       >
         {children}
         <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
-          <XIcon className="size-4" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
-      </SheetPrimitive.Title>
+      </SheetPrimitive.Content>
     </SheetPortal>
   );
 }
