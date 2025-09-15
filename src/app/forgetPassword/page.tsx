@@ -94,7 +94,7 @@ function CardDemo() {
         throw new Error("توکن بازنشانی رمز در لینک یافت نشد");
       }
 
-      router.push("/resetPassword");
+      router.push("/checkPassword");
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "بازنشانی رمز ناموفق بود";

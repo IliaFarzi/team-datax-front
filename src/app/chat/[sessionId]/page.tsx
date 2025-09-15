@@ -638,7 +638,7 @@ export default function ChatPage() {
                 <Square className="w-5 h-5" />
               </button>
             ) : (
-              <button
+              <Button
                 type="submit"
                 disabled={!input.trim()}
                 className={`inline-flex items-center justify-center w-9 h-9 rounded-full ${
@@ -648,7 +648,7 @@ export default function ChatPage() {
                 }`}
               >
                 <ArrowUp className="w-6 h-6" />
-              </button>
+              </Button>
             )}
           </div>
         </form>

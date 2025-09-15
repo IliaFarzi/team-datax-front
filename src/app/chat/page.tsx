@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { CirclePlus, ArrowUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import { Button } from "@/components/Button";
 
 interface ChatItem {
   title: string;
@@ -113,7 +114,7 @@ export default function Home() {
                 className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none max-h-[120px] overflow-hidden"
               />
 
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading || !message.trim()}
                 className={`inline-flex items-center justify-center w-9 h-9 rounded-full ${
@@ -123,7 +124,7 @@ export default function Home() {
                 }`}
               >
                 <ArrowUp className="w-6 h-6" />
-              </button>
+              </Button>
             </div>
             {error && (
               <p className="text-red-500 text-sm mt-2 text-right">{error}</p>

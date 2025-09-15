@@ -35,6 +35,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     "/checkEmail",
     "/forgetPassword",
     "/",
+    "/checkPassword",
   ];
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
