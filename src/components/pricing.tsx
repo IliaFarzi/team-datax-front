@@ -8,14 +8,34 @@ import { cn } from "@/lib/utils";
 import { CircleCheck } from "lucide-react";
 import { useState } from "react";
 
-const plans = [
+// تعریف نوع برای ویژگی‌ها
+interface Feature {
+  title: string;
+  titleY?: string; // titleY اختیاری است
+}
+
+interface Plan {
+  name: string;
+  price: string;
+  year: string;
+  isPopular?: boolean;
+  isRecommended?: boolean;
+  description: string;
+  features: Feature[];
+  buttonText: string;
+}
+
+const plans: Plan[] = [
   {
     name: "شروع‌کننده",
     price: "۱‍.۸۰۰.۰۰۰ تومان ",
     year: "۱۷.۲۸۰.۰۰۰تومان ",
     isPopular: true,
     description: "مناسب برای کسب‌وکارهای کوچک و شروع‌کننده",
-    features: [{ title: "تا ۲۵۰ پیام" }, { title: "۷ روز ذخیره سازی فایل‌ها" }],
+    features: [
+      { title: "تا ۲۵۰ پیام", titleY: "تا ۳۰۰۰ پیام" },
+      { title: "۷ روز ذخیره سازی فایل‌ها" },
+    ],
     buttonText: "ثبت نام",
   },
   {
@@ -25,30 +45,29 @@ const plans = [
     isRecommended: false,
     description: "مناسب برای کسب‌وکارهای در حال رشد و متوسط",
     features: [
-      { title: "تا ۱۰۰۰ پیام" },
+      { title: "تا ۱۰۰۰ پیام", titleY: "تا ۱۲۰۰۰ پیام" },
       { title: "۱۰ روز ذخیره سازی فایل‌ها" },
     ],
-
     buttonText: "ثبت نام",
   },
   {
     name: "ویژه",
     price: "سفارشی ",
-    year: "سفارشی  ",
-
+    year: "سفارشی ",
     isRecommended: false,
     description: "راه‌حل سفارشی برای سازمان‌های بزرگ",
     features: [
       { title: "بدون محدودیت پیام" },
       { title: "بدون محدودیت در نگه داری فایل‌ها" },
     ],
-
     buttonText: "تماس با فروش",
   },
 ];
 
 const Pricing = () => {
-  const [selectedBillingPeriod, setSelectedBillingPeriod] = useState("monthly");
+  const [selectedBillingPeriod, setSelectedBillingPeriod] = useState<
+    "monthly" | "yearly"
+  >("monthly");
 
   return (
     <div
@@ -60,24 +79,25 @@ const Pricing = () => {
       </h1>
       <Tabs
         value={selectedBillingPeriod}
-        onValueChange={setSelectedBillingPeriod}
+        onValueChange={(value) =>
+          setSelectedBillingPeriod(value as "monthly" | "yearly")
+        }
         className="mt-8"
       >
         <TabsList className="h-11 " dir="rtl">
           <TabsTrigger
             value="monthly"
-            className="py-1.5 text-[18px] cursor-pointer font-bold"
+            className="py-1.5 text-[18px] cursor-pointer font-semibold"
           >
             ماهانه
           </TabsTrigger>
-          <span className="text-[18px]">-</span>
           <TabsTrigger
             value="yearly"
-            className="py-1.5 text-[18px] cursor-pointer font-bold"
+            className="py-1.5 text-[18px] cursor-pointer font-semibold "
           >
             سالانه
           </TabsTrigger>
-          <span dir="rtl" className="text-[#585858] text-[18px] font-black">
+          <span dir="rtl" className="text-[#585858] text-[18px] font-semibold">
             ( ۲۰ درصد تخفیف)
           </span>
         </TabsList>
@@ -94,8 +114,8 @@ const Pricing = () => {
             )}
           >
             {plan.isPopular && (
-              <Badge className="absolute  top-0 right-1/2 translate-x-1/2 -translate-y-1/2">
-                محبوب ترین
+              <Badge className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2">
+                محبوب‌ترین
               </Badge>
             )}
             <h3 className="text-lg font-medium">{plan.name}</h3>
@@ -108,7 +128,6 @@ const Pricing = () => {
             <p className="mt-4 font-medium text-muted-foreground">
               {plan.description}
             </p>
-
             <Button
               variant={plan.isPopular ? "default" : "outline"}
               size="lg"
@@ -121,7 +140,9 @@ const Pricing = () => {
               {plan.features.map((feature) => (
                 <li key={feature.title} className="flex items-start gap-1.5">
                   <CircleCheck className="h-4 w-4 mt-1 text-green-600" />
-                  {feature.title}
+                  {selectedBillingPeriod === "monthly" || !feature.titleY
+                    ? feature.title
+                    : feature.titleY}
                 </li>
               ))}
             </ul>

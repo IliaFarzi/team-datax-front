@@ -162,8 +162,8 @@ const CheckEmail = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm border-none">
-        <CardHeader className="w-[327px] md:w-[390px]">
+      <Card className="w-full max-w-none md:max-w-md border-none">
+        <CardHeader>
           <div className="flex flex-col items-center justify-center">
             <svg
               width="52"
@@ -183,7 +183,7 @@ const CheckEmail = () => {
               اعتبارسنجی ایمیل
             </CardTitle>
           </div>
-          <p className="text-[14px] text-center w-[327px] md:w-[390px] mb-5">
+          <p className="text-[14px] text-center w-full md:w-[390px] mb-5">
             کد ۶ رقمی ارسال شده به ایمیل{" "}
             <span dir="ltr" className="inline-block">
               {email ?? "m@example.com"}
@@ -228,10 +228,10 @@ const CheckEmail = () => {
           </div>
         </CardContent>
 
-        <CardFooter className="flex-col gap-1">
+        <CardFooter className="flex-col gap-1 mt-4 sm:mx-12">
           <Button
             onClick={onSubmit}
-            className="w-[327px] md:w-[390px] h-10 text-base font-medium rounded-md"
+            className="w-full md:w-[390px] h-10 text-base font-medium rounded-md"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

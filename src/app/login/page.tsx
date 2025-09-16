@@ -140,7 +140,7 @@ function CardDemo() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm border-none">
+      <Card className="w-full max-w-none md:max-w-md border-none">
         <CardHeader>
           <div className="flex flex-col items-center justify-center">
             <svg
@@ -170,14 +170,14 @@ function CardDemo() {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className="md:m-0 mx-5">
             <div className="flex flex-col gap-6 items-center justify-center">
-              <div className="grid gap-2 relative">
+              <div className="grid gap-2 relative w-full ">
                 <Label htmlFor="email">
                   ایمیل <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  className="w-[327px] md:w-[390px] "
+                  className="w-full  md:w-[390px]"
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
@@ -196,20 +196,20 @@ function CardDemo() {
                 )}
               </div>
 
-              <div className="grid gap-1 relative">
+              <div className="grid gap-1 relative w-full ">
                 <div className="flex justify-between">
                   <Label htmlFor="password">
                     رمز عبور <span className="text-red-500">*</span>
                   </Label>
                   <Link href={"/forgetPassword"}>
-                    <span className="text-[14px] text-[#1668E3] underline underline-offset-2">
+                    <span className="text-[14px] ml-4 text-[#1668E3] underline underline-offset-2">
                       رمز عبورتان را فراموش کردید؟
                     </span>
                   </Link>
                 </div>
                 <div className="relative">
                   <Input
-                    className="w-[327px] md:w-[390px] "
+                    className="w-full  md:w-[390px]"
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
@@ -222,7 +222,7 @@ function CardDemo() {
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 left-2 flex items-center text-gray-500"
+                    className="absolute inset-y-0 left-2 md:left-5 flex items-center text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -239,7 +239,7 @@ function CardDemo() {
             <CardFooter className="flex-col gap-1 mt-4">
               <Button
                 type="submit"
-                className="w-[327px] md:w-[390px] h-10 text-base font-medium rounded-md"
+                className="w-full  md:w-[390px] h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -252,7 +252,7 @@ function CardDemo() {
           </form>
         </CardContent>
 
-        <span className="text-[11.5px] text-center text-[#71717A] font-medium mt-3">
+        <span className="text-[11.5px] text-center text-[#71717A] font-medium block px-6">
           ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
           <span className="text-[#1668E3] underline underline-offset-2">
             قوانین و مقررات

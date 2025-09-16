@@ -107,7 +107,7 @@ function CardDemo() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm shadow-none">
+      <Card className="w-full max-w-none md:max-w-md shadow-none">
         <CardHeader>
           <div className="flex flex-col items-center justify-center">
             <svg
@@ -134,14 +134,14 @@ function CardDemo() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6  items-center">
-              <div className="grid gap-2">
+            <div className="flex flex-col gap-6 items-center justify-center">
+              <div className="grid gap-2 relative w-full">
                 <Label htmlFor="password">
                   رمز عبور <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
-                    className="w-[327px] md:w-[390px] "
+                    className="w-full md:w-[390px]"
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
@@ -167,13 +167,13 @@ function CardDemo() {
                 )}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-1 relative w-full">
                 <Label htmlFor="confirmPassword">
                   تکرار رمز عبور <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
-                    className="w-[327px] md:w-[390px] "
+                    className="w-full md:w-[390px]"
                     id="confirmPassword"
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword", {
@@ -202,7 +202,7 @@ function CardDemo() {
             <CardFooter className="flex-col gap-2 mt-4">
               <Button
                 type="submit"
-                className="w-[327px] md:w-[390px] mt-6 h-10 text-base font-medium rounded-md"
+                className="w-full md:w-[390px] h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

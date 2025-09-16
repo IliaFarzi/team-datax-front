@@ -142,7 +142,7 @@ function CardDemo() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm shadow-none">
+      <Card className="w-full max-w-none md:max-w-md shadow-none">
         <CardHeader>
           <div className="flex flex-col items-center justify-center">
             <svg
@@ -173,7 +173,7 @@ function CardDemo() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6 items-center justify-center">
-              <div className="grid  gap-2">
+              <div className="grid gap-2 relative w-full">
                 <Label htmlFor="name" className="text-[14px]">
                   نام و نام خانوادگی <span className="text-red-500">*</span>
                 </Label>
@@ -181,7 +181,7 @@ function CardDemo() {
                   id="name"
                   type="text"
                   placeholder="مثلا مانی جلیلی"
-                  className="w-[327px] md:w-[390px] "
+                  className="w-full md:w-[390px]"
                   {...register("name", {
                     required: "نام و نام خانوادگی الزامی است",
                   })}
@@ -193,7 +193,7 @@ function CardDemo() {
                 )}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-1 relative w-full">
                 <Label htmlFor="email">
                   ایمیل <span className="text-red-500">*</span>
                 </Label>
@@ -201,7 +201,7 @@ function CardDemo() {
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
-                  className="w-[327px] md:w-[390px]"
+                  className="w-full md:w-[390px]"
                   {...register("email", {
                     required: "ایمیل الزامی است",
                     pattern: {
@@ -217,7 +217,7 @@ function CardDemo() {
                 )}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-1 relative w-full">
                 <Label htmlFor="number">
                   شماره همراه <span className="text-red-500">*</span>
                 </Label>
@@ -225,7 +225,7 @@ function CardDemo() {
                   id="number"
                   type="tel"
                   placeholder="مثلا ۰۹۱۲۳۴۵۶۷۸۹"
-                  className="w-[327px] md:w-[390px] "
+                  className="w-full md:w-[390px]"
                   {...register("number", {
                     required: "شماره همراه الزامی است",
                     pattern: {
@@ -241,13 +241,13 @@ function CardDemo() {
                 )}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-1 relative w-full">
                 <Label htmlFor="password">
                   رمز عبور <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
-                    className="w-[327px] md:w-[390px] "
+                    className="w-full md:w-[390px]"
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
@@ -266,7 +266,7 @@ function CardDemo() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 left-2 flex items-center text-gray-500"
+                    className="absolute inset-y-0 left-2 md:left-5 flex items-center text-gray-500"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -278,13 +278,13 @@ function CardDemo() {
                 )}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-1 relative w-full">
                 <Label htmlFor="confirmPassword">
                   تکرار رمز عبور <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
-                    className="w-[327px] md:w-[390px] "
+                    className="w-full md:w-[390px]"
                     id="confirmPassword"
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword", {
@@ -297,7 +297,7 @@ function CardDemo() {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute inset-y-0 left-2 flex items-center text-gray-500"
+                    className="absolute inset-y-0 left-2 md:left-5 flex items-center text-gray-500"
                   >
                     {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -313,7 +313,7 @@ function CardDemo() {
             <CardFooter className="flex-col gap-2 mt-4">
               <Button
                 type="submit"
-                className="w-[327px] md:w-[390px] mt-6 h-10 text-base font-medium rounded-md"
+                className="w-full md:w-[390px] h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -325,7 +325,7 @@ function CardDemo() {
             </CardFooter>
           </form>
         </CardContent>
-        <span className="text-[11px] text-center text-[#71717A] font-medium mt-3">
+        <span className="text-[11px] text-center text-[#71717A] font-medium ">
           ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
           <span className="text-[#1668E3] underline underline-offset-4">
             قوانین و مقررات

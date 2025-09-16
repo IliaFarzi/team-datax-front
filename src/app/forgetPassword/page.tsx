@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { Loader2 } from "lucide-react";
 
 interface LoginRequest {
   email: string;
@@ -109,7 +110,7 @@ function CardDemo() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm border-none">
+      <Card className="w-full max-w-none md:max-w-md border-none">
         <CardHeader>
           <div className="flex flex-col items-center justify-center">
             <svg
@@ -137,13 +138,13 @@ function CardDemo() {
 
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-4 items-center">
-              <div className="grid gap-2 relative">
+            <div className="flex flex-col gap-6 items-center justify-center">
+              <div className="grid gap-2 relative w-full">
                 <Label htmlFor="email">
                   ایمیل <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  className="w-[327px] md:w-[390px] "
+                  className="w-full md:w-[390px]"
                   id="email"
                   type="email"
                   placeholder="example@domain.com"
@@ -163,13 +164,17 @@ function CardDemo() {
               </div>
             </div>
 
-            <CardFooter className="flex-col gap-1">
+            <CardFooter className="flex-col gap-1 mt-4">
               <Button
                 type="submit"
-                className="w-[327px] md:w-[390px] mt-6 h-10 text-base font-medium rounded-md"
+                className="w-full md:w-[390px] h-10 text-base font-medium rounded-md"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "در حال پردازش..." : "دریافت لینک تغییر رمز"}
+                {isSubmitting ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                ) : (
+                  "دریافت لینک تغییر رمز"
+                )}
               </Button>
             </CardFooter>
           </form>
