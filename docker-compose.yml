@@ -14,4 +14,4 @@ services:
 networks:
   shared-net:
     name: multi-team-dev-deployment_shared-net
-    external: true
+    driver: bridge
