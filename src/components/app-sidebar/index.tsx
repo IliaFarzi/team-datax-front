@@ -20,7 +20,7 @@ import {
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "../Button";
 import Link from "next/link";
-import { useRouter, useParams, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -163,7 +163,7 @@ export function AppSidebar() {
                   </Button>
                 </Link>
                 <AccordionTrigger>
-                  <span className="flex items-center gap-2 text-[#71717A]">
+                  <span className="flex items-center text-[16px] gap-2 text-[#71717A]">
                     <MessageSquare height={18} color="#71717A" />
                     گفتگوها
                   </span>
@@ -204,7 +204,7 @@ export function AppSidebar() {
                           <>
                             <Link
                               href={`/chat/${item.sessionId}`}
-                              className="text-[#71717A]"
+                              className="text-[#71717A] text-[16px]"
                             >
                               {item.title}
                             </Link>
@@ -250,7 +250,7 @@ export function AppSidebar() {
                                     </DialogHeader>
                                     <DialogFooter>
                                       <DialogClose asChild>
-                                        <Button className="bg-[#FAFAFA] text-[#18181B] w-[30%] md:w-[50%] hover:bg-gray-100">
+                                        <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
                                           انصراف
                                         </Button>
                                       </DialogClose>
@@ -259,7 +259,7 @@ export function AppSidebar() {
                                           onClick={() =>
                                             handleDeleteChat(index)
                                           }
-                                          className="bg-[#DC2626] hover:bg-[#DC2626] w-[30%] md:w-[50%]"
+                                          className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
                                         >
                                           حذف
                                         </Button>
@@ -327,14 +327,14 @@ export function AppSidebar() {
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button className="bg-[#FAFAFA] text-[#18181B] w-[45%] md:w-[50%] hover:bg-gray-100">
+                      <Button className="bg-[#FAFAFA] text-[#18181B]  w-[50%] hover:bg-gray-100">
                         انصراف
                       </Button>
                     </DialogClose>
                     <Button
                       onClick={logoutAccount}
                       type="submit"
-                      className="bg-[#DC2626] hover:bg-[#DC2626] w-[45%] md:w-[50%]"
+                      className="bg-[#DC2626] hover:bg-[#DC2626]  w-[50%]"
                     >
                       خروج
                     </Button>

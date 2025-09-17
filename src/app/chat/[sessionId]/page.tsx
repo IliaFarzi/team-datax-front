@@ -36,11 +36,19 @@ export default function ChatPage() {
   const editRef = useRef<HTMLTextAreaElement>(null);
   const currentStreamInterval = useRef<NodeJS.Timeout | null>(null);
   const manuallyTriggeredRef = useRef(false);
-
+  const [isMobile, setIsMobile] = useState(false);
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
     setUser(Cookies.get("user_name") || "شما");
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -619,7 +627,7 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey && !isLoading) {
+                if (!isMobile && e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmit(e as unknown as React.FormEvent);
                 }
