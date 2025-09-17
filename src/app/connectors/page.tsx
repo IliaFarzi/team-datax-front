@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useCallback, useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { Button } from "@/components/Button";
 
 type Connector = {
   id: string;
@@ -147,7 +146,7 @@ function ConnectorsContent() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[calc(100vh-160px)] overflow-hidden">
           {connectors.map((connector) => (
-            <Button
+            <button
               key={connector.id}
               onClick={handleConnect}
               className="text-right bg-white max-w-[338px] h-[108px] border border-slate-200 rounded-xl overflow-hidden px-4 py-3"
@@ -180,7 +179,7 @@ function ConnectorsContent() {
                   <ArrowLeft color="white" />
                 </div>
               </div>
-            </Button>
+            </button>
           ))}
         </div>
       </div>

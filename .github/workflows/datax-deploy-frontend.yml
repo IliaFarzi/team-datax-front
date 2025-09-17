@@ -24,6 +24,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           port: 32222
           key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.VPS_KEY_PASSPHRASE }}
           source: "docker-compose.yml"
           target: "/home/datax-frontend"
 
@@ -57,6 +58,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           port: 32222
           key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.VPS_KEY_PASSPHRASE }} #
           script: |
             cd /home/datax-frontend
 
@@ -95,10 +97,8 @@ jobs:
             docker rm -f datax-frontend || true
 
             # Remove old unused images
-            docker image  prune -af || true
+            docker image prune -af || true
 
             # Recreate services
             docker compose -f docker-compose.yml pull
             docker compose -f docker-compose.yml up -d
-
-            echo "✅ Deployment successful! Visit: http://62.60.198.4:8050"
