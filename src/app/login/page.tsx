@@ -202,7 +202,7 @@ function CardDemo() {
                     رمز عبور <span className="text-red-500">*</span>
                   </Label>
                   <Link href={"/forgetPassword"}>
-                    <span className="text-[14px] ml-4 text-[#1668E3] underline underline-offset-2">
+                    <span className="text-[12px] md:text-[14px] ml-4 text-[#1668E3] underline underline-offset-2">
                       رمز عبورتان را فراموش کردید؟
                     </span>
                   </Link>

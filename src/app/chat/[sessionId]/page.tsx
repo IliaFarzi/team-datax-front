@@ -16,6 +16,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import Cookies from "js-cookie";
 import { Button } from "@/components/Button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface Message {
   role: "user" | "assistant";
@@ -372,14 +373,15 @@ export default function ChatPage() {
 
   return (
     <main className="min-h-screen w-full flex flex-col items-center justify-between bg-background">
-      <div className="h-12 w-full fixed z-2 bg-white border-b md:hidden pr-12">
+      <div className="h-12 w-full fixed top-0 z-50 bg-white border-b md:hidden flex items-center  px-6">
+        <SidebarTrigger />
         <svg
-          width="30"
-          height="30"
+          width="22"
+          height="22"
           viewBox="0 0 22 22"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="border m-2 py-0.5 px-1.5 rounded-sm mb-2"
+          className="border rounded-sm py-0.5 px-1"
         >
           <path
             d="M18.0001 4.99982C17.7401 4.99982 17.4901 4.89982 17.2901 4.70982C16.9001 4.31982 16.9001 3.68982 17.2901 3.29982L20.2901 0.299824C20.6801 -0.0901758 21.3101 -0.0901758 21.7001 0.299824C22.0901 0.689824 22.0901 1.31982 21.7001 1.70982L18.7001 4.70982C18.5001 4.90982 18.2501 4.99982 17.9901 4.99982H18.0001Z"
@@ -407,7 +409,7 @@ export default function ChatPage() {
           />
         </svg>
       </div>
-      <div className="max-w-[832px] w-full px-4 py-8 flex flex-col flex-1 md:mt-0 mt-9">
+      <div className="max-w-[832px] w-full px-4 pt-4 pb-8 flex flex-col flex-1 ">
         <div className="flex-1 overflow-y-auto space-y-6 px-2 mb-8">
           {messages.length === 0 && (
             <p className="text-center text-gray-500">هیچ پیامی یافت نشد.</p>

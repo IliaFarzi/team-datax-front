@@ -51,7 +51,7 @@ function CardDemo() {
     try {
       console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/reset-password/request`,
         {
           method: "POST",
           headers: {

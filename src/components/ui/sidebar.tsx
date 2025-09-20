@@ -214,7 +214,7 @@ function Sidebar({
           </SheetHeader>
           <div className="flex h-full w-full flex-col">
             <div className="flex justify-end p-2">
-              <div  onClick={() => setOpenMobile(false)}>
+              <div onClick={() => setOpenMobile(false)}>
                 <Close />
               </div>
             </div>
@@ -286,14 +286,16 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="link"
       size="icon"
-      className={cn("size-7 h-11 md:w-8 w-15 md:hidden  z-10", className)}
+      className={cn("size-10 h-11  md:hidden  z-10", className)}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
       {...props}
     >
-      <Menu className="md:hidden" size={500} />
+      <div className="border px-1 py-0.5 rounded-sm">
+        <Menu />
+      </div>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

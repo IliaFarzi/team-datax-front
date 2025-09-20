@@ -19,7 +19,11 @@ export function middleware(request: NextRequest) {
   console.log("Requested Path:", pathname);
   console.log("All Cookies:", request.cookies.getAll());
 
-  const isPublicPath = publicPaths.includes(pathname);
+  const isPublicPath =
+    publicPaths.includes(pathname) ||
+    pathname.startsWith("/chat") ||
+    pathname.startsWith("/connectors");
+
   console.log("Is public path:", isPublicPath, "Path:", pathname);
 
   if (isPublicPath) {
