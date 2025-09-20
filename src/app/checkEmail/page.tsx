@@ -85,7 +85,7 @@ const CheckEmail = () => {
         title: "موفقیت",
         description: "کد جدید به ایمیل شما ارسال شد",
       });
-      setResendTimer(120); // Reset timer
+      setResendTimer(120);
       setCanResend(false);
     } catch (err) {
       const errorMsg =
