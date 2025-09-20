@@ -216,7 +216,6 @@ export default function ChatPage() {
     }
   }, [editInput]);
 
-  // handleSubmit اصلاح‌شده — فلگ manuallyTriggeredRef را می‌گذارد تا useEffect دوبار ارسال نکند
   const handleSubmit = async (e: React.FormEvent, refreshIndex?: number) => {
     e.preventDefault();
     const trimmedInput = input.trim();
