@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 type Connector = {
   id: string;
@@ -184,7 +185,6 @@ function ConnectorsContent() {
         </div>
       </div>
     </div>
-    
   );
 }
 
@@ -193,9 +193,12 @@ export default function Connectors() {
     <div className="h-screen overflow-hidden bg-white flex">
       <div className="mx-auto px-4 py-4 flex-1 flex flex-col">
         <div className="border-b border-slate-200 pb-1 mb-4 shrink-0">
-          <h1 className="text-[24px] mt-2 flex justify-end md:justify-start font-semibold">
-            اتصالات داده
-          </h1>
+          <div className="flex justify-between">
+            <SidebarTrigger />
+            <h1 className="text-[24px] mt-2 flex justify-end md:justify-start font-semibold">
+              اتصالات داده
+            </h1>
+          </div>
           <h2 className="hidden md:block mt-2 mb-5 text-[#71717A] ">
             دیتاکس را به نرم‌افزارها و اطلاعات‌تان متصل کنید
           </h2>

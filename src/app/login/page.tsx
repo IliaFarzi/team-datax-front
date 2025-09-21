@@ -158,7 +158,7 @@ function CardDemo() {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="md:m-0 mx-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="md:m-0 ">
             <div className="flex flex-col gap-6 items-center justify-center">
               <div className="grid gap-2 relative w-full ">
                 <Label htmlFor="email">
@@ -240,7 +240,7 @@ function CardDemo() {
           </form>
         </CardContent>
 
-        <span className="text-[11.5px] text-center text-[#71717A] font-medium block px-6">
+        <span className="text-[11.5px] text-center text-[#71717A] font-medium block ">
           ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
           <span className="text-[#1668E3] underline underline-offset-2">
             قوانین و مقررات

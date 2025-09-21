@@ -305,8 +305,8 @@ export function AppSidebar() {
                   <DialogHeader>
                     <DialogTitle>اعتبار فعلی</DialogTitle>
                     <DialogDescription>
-                      <div>اعتبار فعلی شما ۱۲,۰۰۰,۰۰۰ تومان می‌باشد</div>
-                      <div>برای افزایش اعتبار با ۰۹۱۰۵۸۶۰۰۵۰ تماس بگیرید</div>
+                      <span>اعتبار فعلی شما ۱۲,۰۰۰,۰۰۰ تومان می‌باشد</span>
+                      <span>برای افزایش اعتبار با ۰۹۱۰۵۸۶۰۰۵۰ تماس بگیرید</span>
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>

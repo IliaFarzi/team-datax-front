@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 interface ClientLayoutProps {
@@ -43,7 +43,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     <SidebarProvider defaultOpen={!isSidebarCollapsed}>
       {shouldShowSidebar && <AppSidebar />}
       <main className="flex-1 transition-all duration-300 overflow-y-auto">
-        {shouldShowSidebar && <SidebarTrigger />}
+        {shouldShowSidebar }
         {children}
       </main>
     </SidebarProvider>

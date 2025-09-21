@@ -5,6 +5,7 @@ import { CirclePlus, ArrowUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/Button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface ChatItem {
   title: string;
@@ -93,6 +94,9 @@ export default function Home() {
 
   return (
     <main className="h-screen flex items-center justify-center overflow-hidden">
+      <div className="absolute top-0 right-0">
+        <SidebarTrigger />
+      </div>
       <div className="max-w-[832px] w-full px-4">
         <h1 className="font-bold text-[20px] text-center md:text-right">
           امروز می‌خواهید چه چیزی را تحلیل کنید؟
