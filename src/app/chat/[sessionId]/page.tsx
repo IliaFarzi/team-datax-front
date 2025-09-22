@@ -67,7 +67,7 @@ export default function ChatPage() {
 
       try {
         const response = await fetch(
-          `${apiBaseUrl}/Chat/get_history/${sessionId}`
+          `${apiBaseUrl}/chat/get_history/${sessionId}`
         );
         if (!response.ok) {
           throw new Error(`API request failed with status ${response.status}`);
@@ -111,7 +111,7 @@ export default function ChatPage() {
       });
 
       try {
-        const response = await fetch(`${apiBaseUrl}/Chat/send_message`, {
+        const response = await fetch(`${apiBaseUrl}/chat/send_message`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
