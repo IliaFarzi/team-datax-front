@@ -20,6 +20,36 @@ export default function Home() {
   const router = useRouter();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  const [credit, setCredit] = useState<number | null>(null);
+  const [isCreditZeroModalOpen, setIsCreditZeroModalOpen] = useState(false);
+
+  const readCredit = () => {
+    const raw = localStorage.getItem("userCredit");
+    if (raw === null) {
+      setCredit(null);
+      setIsCreditZeroModalOpen(false);
+      return;
+    }
+    const num = Number(raw);
+    if (!isNaN(num)) {
+      setCredit(num);
+      setIsCreditZeroModalOpen(num <= 0);
+    } else {
+      setCredit(null);
+      setIsCreditZeroModalOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    readCredit();
+    window.addEventListener("storage", readCredit);
+    window.addEventListener("creditUpdated", readCredit as EventListener);
+    return () => {
+      window.removeEventListener("storage", readCredit);
+      window.removeEventListener("creditUpdated", readCredit as EventListener);
+    };
+  }, []);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -44,6 +74,12 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedMessage = message.trim();
+
+    if (credit !== null && credit <= 0) {
+      setError("اعتبار شما به پایان رسیده و امکان ارسال پیام وجود ندارد.");
+      return;
+    }
+
     if (!trimmedMessage) {
       setError("پیام نمی‌تواند خالی باشد!");
       return;
@@ -127,14 +163,21 @@ export default function Home() {
                     handleSubmit(e as unknown as React.FormEvent);
                   }
                 }}
+                disabled={isLoading || (credit !== null && credit <= 0)}
                 className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none max-h-[120px] overflow-hidden"
               />
 
               <Button
                 type="submit"
-                disabled={isLoading || !message.trim()}
+                disabled={
+                  isLoading ||
+                  !message.trim() ||
+                  (credit !== null && credit <= 0)
+                }
                 className={`inline-flex items-center justify-center w-9 h-9 rounded-full ${
-                  message.trim() && !isLoading
+                  message.trim() &&
+                  !isLoading &&
+                  !(credit !== null && credit <= 0)
                     ? "bg-[#18181B] text-white"
                     : "bg-[#18181B] text-white opacity-50 cursor-default"
                 }`}
@@ -148,6 +191,27 @@ export default function Home() {
           </form>
         </div>
       </div>
+
+      {isCreditZeroModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative bg-white rounded-lg p-6 max-w-sm w-[90%] z-60 shadow-lg text-right">
+            <h3 className="text-lg font-semibold mb-2">اعتبار به پایان رسید</h3>
+            <p className="text-sm text-gray-700 mb-4">
+              اعتبار شما به پایان رسید. تا زمان شارژ مجدد امکان ارسال پیام وجود
+              ندارد.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setIsCreditZeroModalOpen(false)}
+                className="px-3 py-1 rounded bg-gray-100"
+              >
+                باشه
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -1,3 +1,4 @@
+// /src/app/chat/[sessionId]/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
@@ -39,6 +40,36 @@ export default function ChatPage() {
   const manuallyTriggeredRef = useRef(false);
   const [isMobile, setIsMobile] = useState(false);
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  const [credit, setCredit] = useState<number | null>(null);
+  const [isCreditZeroModalOpen, setIsCreditZeroModalOpen] = useState(false);
+
+  const readCredit = () => {
+    const raw = localStorage.getItem("userCredit");
+    if (raw === null) {
+      setCredit(null);
+      setIsCreditZeroModalOpen(false);
+      return;
+    }
+    const num = Number(raw);
+    if (!isNaN(num)) {
+      setCredit(num);
+      setIsCreditZeroModalOpen(num <= 0);
+    } else {
+      setCredit(null);
+      setIsCreditZeroModalOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    readCredit();
+    window.addEventListener("storage", readCredit);
+    window.addEventListener("creditUpdated", readCredit as EventListener);
+    return () => {
+      window.removeEventListener("storage", readCredit);
+      window.removeEventListener("creditUpdated", readCredit as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -218,6 +249,12 @@ export default function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent, refreshIndex?: number) => {
     e.preventDefault();
+
+    if (credit !== null && credit <= 0) {
+      console.warn("کاربر تلاش به ارسال پیام کرده اما اعتبار تمام شده.");
+      return;
+    }
+
     const trimmedInput = input.trim();
     if (!trimmedInput) return;
 
@@ -634,7 +671,7 @@ export default function ChatPage() {
                 }
               }}
               className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none overflow-auto max-h-[200px]"
-              disabled={isLoading}
+              disabled={isLoading || (credit !== null && credit <= 0)}
             />
 
             {isLoading ? (
@@ -649,9 +686,9 @@ export default function ChatPage() {
             ) : (
               <Button
                 type="submit"
-                disabled={!input.trim()}
+                disabled={!input.trim() || (credit !== null && credit <= 0)}
                 className={`inline-flex items-center justify-center w-9 h-9 rounded-full ${
-                  input.trim()
+                  input.trim() && !(credit !== null && credit <= 0)
                     ? "bg-black text-white hover:bg-gray-800 transition-colors duration-200 shadow-md hover:shadow-lg"
                     : "bg-gray-400 text-white opacity-50 cursor-default"
                 }`}
@@ -662,6 +699,27 @@ export default function ChatPage() {
           </div>
         </form>
       </div>
+
+      {isCreditZeroModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative bg-white rounded-lg p-6 max-w-sm w-[90%] z-60 shadow-lg text-right">
+            <h3 className="text-lg font-semibold mb-2">اعتبار به پایان رسید</h3>
+            <p className="text-sm text-gray-700 mb-4">
+              اعتبار شما به پایان رسیده است. تا زمان شارژ مجدد امکان ارسال پیام
+              وجود ندارد.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setIsCreditZeroModalOpen(false)}
+                className="px-3 py-1 rounded bg-gray-100"
+              >
+                باشه
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

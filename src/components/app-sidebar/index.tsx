@@ -53,6 +53,53 @@ export function AppSidebar() {
   const pathname = usePathname();
   const editInputRef = useRef<HTMLInputElement>(null);
 
+  const [credit, setCredit] = useState<number | null>(null);
+  const [isCreditZeroModalOpen, setIsCreditZeroModalOpen] = useState(false);
+
+  const maxCredit: number = 2000;
+  const remainderCredit: number = 500;
+  const readCredit = useCallback(() => {
+    const raw = localStorage.getItem("userCredit");
+    if (raw === null) {
+      setCredit(null);
+      setIsCreditZeroModalOpen(false);
+      return;
+    }
+    const num = Number(raw);
+    if (!isNaN(num)) {
+      setCredit(num);
+      setIsCreditZeroModalOpen(num <= 0);
+    } else {
+      setCredit(null);
+      setIsCreditZeroModalOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    readCredit();
+    window.addEventListener("storage", readCredit);
+    window.addEventListener("creditUpdated", readCredit as EventListener);
+    return () => {
+      window.removeEventListener("storage", readCredit);
+      window.removeEventListener("creditUpdated", readCredit as EventListener);
+    };
+  }, [readCredit]);
+
+  const creditInfo =
+    credit !== null
+      ? {
+          max: maxCredit,
+          percent: Math.max(0, Math.min(100, (credit / maxCredit) * 100)),
+        }
+      : {
+          current: readCredit,
+          max: maxCredit,
+          percent: Math.max(
+            0,
+            Math.min(100, (remainderCredit / maxCredit) * 100)
+          ),
+        };
+
   const loadChatList = useCallback(() => {
     const storedChatList: ChatItem[] = JSON.parse(
       localStorage.getItem("chatList") || "[]"
@@ -87,11 +134,13 @@ export function AppSidebar() {
     },
     [chatList]
   );
+
   const logoutAccount = () => {
     router.push("/login");
     Cookies.remove("access_token");
     Cookies.remove("user_email");
   };
+
   const handleEditChat = useCallback((index: number, title: string) => {
     setEditChatIndex(index);
     setEditChatTitle(title);
@@ -125,6 +174,15 @@ export function AppSidebar() {
   }, [editChatIndex]);
 
   const isConnectorsActive = pathname === "/connectors";
+
+  const formatUSD = (n: number | null) => {
+    if (n === null) return "-";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(n);
+  };
 
   return (
     <Sidebar side="right" className="h-screen overflow-hidden">
@@ -279,8 +337,8 @@ export function AppSidebar() {
             </Accordion>
           </div>
 
-          <div className="flex flex-col items-center px-3 ">
-            <div className="flex  w-full bg-[#E4E4E7] mb-2" />
+          <div className="flex flex-col items-center px-3">
+            <div className="flex w-full bg-[#E4E4E7] mb-2" />
             <div
               className={`w-full flex items-center rounded-lg gap-3 h-9.5 ${
                 isConnectorsActive
@@ -305,8 +363,32 @@ export function AppSidebar() {
                   <DialogHeader>
                     <DialogTitle>اعتبار فعلی</DialogTitle>
                     <DialogDescription>
-                      <span>اعتبار فعلی شما ۱۲,۰۰۰,۰۰۰ تومان می‌باشد</span>
-                      <span>برای افزایش اعتبار با ۰۹۱۰۵۸۶۰۰۵۰ تماس بگیرید</span>
+                      <div dir="ltr" className="flex flex-col gap-2">
+                        <span className="text-[14px] text-gray-500">
+                          برای افزایش اعتبار با تیم فروش ما در واتساپ یا تلگرام
+                          به شماره 09105860050 ارتباط بگیرید{" "}
+                        </span>
+
+                        <div className="w-full bg-gray-200 rounded-full h-4 mt-3 overflow-hidden relative">
+                          <p
+                            className="bg-[#09090B] h-4 rounded-l-full rounded-r-none transition-all"
+                            style={{
+                              width: `${creditInfo.percent}%`,
+                              minWidth: "4px",
+                            }}
+                          />
+                          {remainderCredit === 0 && (
+                            <span className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">
+                              اعتبار صفر است
+                            </span>
+                          )}
+                        </div>
+
+                        <span className="text-xs text-gray-500 mt-1">
+                          {formatUSD(remainderCredit)} /
+                          {formatUSD(creditInfo.max)}
+                        </span>
+                      </div>
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
@@ -327,14 +409,14 @@ export function AppSidebar() {
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button className="bg-[#FAFAFA] text-[#18181B]  w-[50%] hover:bg-gray-100">
+                      <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
                         انصراف
                       </Button>
                     </DialogClose>
                     <Button
                       onClick={logoutAccount}
                       type="submit"
-                      className="bg-[#DC2626] hover:bg-[#DC2626]  w-[50%]"
+                      className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
                     >
                       خروج
                     </Button>
@@ -364,7 +446,6 @@ export function AppSidebar() {
                       fill="white"
                     />
                   </svg>
-
                   <div className="flex flex-col">
                     <div className="flex items-center gap-0.5">
                       <div className="flex items-center text-xs gap-0.5">
