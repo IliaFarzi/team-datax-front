@@ -54,24 +54,19 @@ export function AppSidebar() {
   const editInputRef = useRef<HTMLInputElement>(null);
 
   const [credit, setCredit] = useState<number | null>(null);
-  const [isCreditZeroModalOpen, setIsCreditZeroModalOpen] = useState(false);
 
   const maxCredit: number = 2000;
-  const remainderCredit: number = 500;
   const readCredit = useCallback(() => {
     const raw = localStorage.getItem("userCredit");
     if (raw === null) {
       setCredit(null);
-      setIsCreditZeroModalOpen(false);
       return;
     }
     const num = Number(raw);
     if (!isNaN(num)) {
       setCredit(num);
-      setIsCreditZeroModalOpen(num <= 0);
     } else {
       setCredit(null);
-      setIsCreditZeroModalOpen(false);
     }
   }, []);
 
@@ -85,6 +80,8 @@ export function AppSidebar() {
     };
   }, [readCredit]);
 
+  const remainderCredit = credit ?? 500;
+
   const creditInfo =
     credit !== null
       ? {
@@ -92,7 +89,7 @@ export function AppSidebar() {
           percent: Math.max(0, Math.min(100, (credit / maxCredit) * 100)),
         }
       : {
-          current: readCredit,
+          current: remainderCredit,
           max: maxCredit,
           percent: Math.max(
             0,

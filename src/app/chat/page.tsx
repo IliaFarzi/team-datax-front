@@ -50,6 +50,8 @@ export default function Home() {
     };
   }, []);
 
+  const remainderCredit = credit ?? 500; 
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -75,7 +77,7 @@ export default function Home() {
     e.preventDefault();
     const trimmedMessage = message.trim();
 
-    if (credit !== null && credit <= 0) {
+    if (remainderCredit <= 0) {
       setError("اعتبار شما به پایان رسیده و امکان ارسال پیام وجود ندارد.");
       return;
     }
@@ -163,21 +165,15 @@ export default function Home() {
                     handleSubmit(e as unknown as React.FormEvent);
                   }
                 }}
-                disabled={isLoading || (credit !== null && credit <= 0)}
+                disabled={isLoading || remainderCredit <= 0}
                 className="flex items-center w-full min-h-9 px-2 py-4 text-sm border-none resize-none text-right outline-none max-h-[120px] overflow-hidden"
               />
 
               <Button
                 type="submit"
-                disabled={
-                  isLoading ||
-                  !message.trim() ||
-                  (credit !== null && credit <= 0)
-                }
+                disabled={isLoading || !message.trim() || remainderCredit <= 0}
                 className={`inline-flex items-center justify-center w-9 h-9 rounded-full ${
-                  message.trim() &&
-                  !isLoading &&
-                  !(credit !== null && credit <= 0)
+                  message.trim() && !isLoading && remainderCredit > 0
                     ? "bg-[#18181B] text-white"
                     : "bg-[#18181B] text-white opacity-50 cursor-default"
                 }`}
