@@ -190,8 +190,8 @@ function ConnectorsContent() {
 
 export default function Connectors() {
   return (
-    <div className="h-screen overflow-hidden bg-white flex">
-      <div className="mx-auto px-4 py-4 flex-1 flex flex-col">
+    <div className="h-screen flex">
+      <div className=" px-4 py-3 flex-1 flex flex-col">
         <div className="border-b border-slate-200 pb-1 mb-4 shrink-0">
           <div className="flex justify-between">
             <SidebarTrigger />
