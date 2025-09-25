@@ -9,7 +9,6 @@ const publicPaths = [
   "/api/auth",
   "/",
   "/checkPassword",
-  "/connectors"
 ];
 
 export function middleware(request: NextRequest) {
