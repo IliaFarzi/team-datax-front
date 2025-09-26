@@ -45,7 +45,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/datax-frontend:dev
           build-args: |
             PORT=8050
-            
+
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
@@ -60,7 +60,8 @@ jobs:
           key: ${{ secrets.Dev_VPS_PRIVATE_KEY }}
           script: |
             cd /home/datax-frontend-dev
-
+            echo "NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8040" > .env.datax-front
+            echo "NODE_ENV=development" >> .env.datax-front
             echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" > .env.datax-front
             echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env.datax-front
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.datax-front

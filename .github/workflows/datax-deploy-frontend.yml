@@ -62,6 +62,10 @@ jobs:
           script: |
             cd /home/datax-frontend
 
+            echo "NEXT_PUBLIC_API_BASE_URL=https://api.datax.com" > .env.datax-front
+            echo "NODE_ENV=production" >> .env.datax-front
+
+
             # Create .env.datax file with environment variables
             echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" > .env.datax-front
             echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env.datax-front
