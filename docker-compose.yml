@@ -13,5 +13,5 @@ services:
 
 networks:
   shared-net:
-    name: multi-team-dev-deployment_shared-net
+    name: multi-team-prod-deployment_shared-net
     driver: bridge

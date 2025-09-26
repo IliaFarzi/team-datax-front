@@ -234,4 +234,5 @@ const CheckEmail = () => {
     </div>
   );
 };
+
 export default CheckEmail;

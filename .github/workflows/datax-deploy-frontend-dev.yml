@@ -24,7 +24,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           port: 32222
           key: ${{ secrets.Dev_VPS_PRIVATE_KEY }}
-          source: "docker-compose.yml"
+          source: "docker-compose.dev.yml"
           target: "/home/datax-frontend-dev"
 
       - name: Set up Docker Buildx
@@ -60,6 +60,7 @@ jobs:
           script: |
             cd /home/datax-frontend-dev
 
+            # ساخت فایل env
             echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" > .env.datax-front
             echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env.datax-front
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.datax-front
@@ -90,7 +91,5 @@ jobs:
             echo "MAIL_SSL=${{ secrets.MAIL_SSL }}" >> .env.datax-front
 
             docker rm -f datax-frontend-dev || true
-
             docker image prune -af || true
-
-            docker compose -f docker-compose.yml up -d --force-recreate --remove-orphans
+            docker compose -f docker-compose.dev.yml up -d --force-recreate --remove-orphans
