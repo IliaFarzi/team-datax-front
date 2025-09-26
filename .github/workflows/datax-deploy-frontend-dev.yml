@@ -60,7 +60,6 @@ jobs:
           script: |
             cd /home/datax-frontend-dev
 
-            # Create .env.datax file with environment variables
             echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" > .env.datax-front
             echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env.datax-front
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.datax-front
@@ -81,7 +80,6 @@ jobs:
             echo "GOOGLE_AUTH_URI=${{ secrets.GOOGLE_AUTH_URI }}" >> .env.datax-front
             echo "GOOGLE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.GOOGLE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env.datax-front
             echo "GOOGLE_PROJECT_ID=${{ secrets.GOOGLE_PROJECT_ID }}" >> .env.datax-front
-            # New Mail Config
             echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env.datax-front
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env.datax-front
             echo "MAIL_FROM=${{ secrets.MAIL_FROM }}" >> .env.datax-front
@@ -91,12 +89,8 @@ jobs:
             echo "MAIL_TLS=${{ secrets.MAIL_TLS }}" >> .env.datax-front
             echo "MAIL_SSL=${{ secrets.MAIL_SSL }}" >> .env.datax-front
 
-            # Stop and remove old container if exists
             docker rm -f datax-frontend-dev || true
 
-            # Remove old unused images
             docker image prune -af || true
 
-            # Recreate services
-            docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml up -d
+            docker compose -f docker-compose.yml up -d --force-recreate --remove-orphans
