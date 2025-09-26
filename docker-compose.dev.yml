@@ -1,0 +1,17 @@
+services:
+  datax-frontend-dev:
+    image: amigolli/datax-frontend:dev
+    container_name: datax-frontend-dev
+    restart: always
+    ports:
+      - "8050:8050" 
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8041
+    networks:
+      - shared-net
+
+networks:
+  shared-net:
+    name: multi-team-dev-deployment_shared-net
+    driver: bridge

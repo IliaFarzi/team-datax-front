@@ -7,11 +7,11 @@ services:
       - "8050:8050"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8040
+      - NEXT_PUBLIC_API_BASE_URL=http://api.dataxai.ir
     networks:
       - shared-net
 
 networks:
   shared-net:
-    name: multi-team-dev-deployment_shared-net
+    name: multi-team-prod-deployment_shared-net
     driver: bridge

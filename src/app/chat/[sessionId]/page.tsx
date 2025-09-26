@@ -13,7 +13,6 @@ import {
 import { useEffect, useRef, useState, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github-dark.css";
 import Cookies from "js-cookie";
 import { Button } from "@/components/Button";
 import { SidebarTrigger } from "@/components/ui/sidebar";

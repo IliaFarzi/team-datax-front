@@ -24,7 +24,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           port: 32222
           key: ${{ secrets.Dev_VPS_PRIVATE_KEY }}
-          source: "docker-compose.yml"
+          source: "docker-compose.dev.yml"
           target: "/home/datax-frontend-dev"
 
       - name: Set up Docker Buildx
@@ -45,6 +45,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/datax-frontend:dev
           build-args: |
             PORT=8050
+
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
@@ -60,8 +61,9 @@ jobs:
           script: |
             cd /home/datax-frontend-dev
 
-            # Create .env.datax file with environment variables
-            echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" > .env.datax-front
+            echo "NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8040" > .env.datax-front
+            echo "NODE_ENV=development" >> .env.datax-front
+            echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" >> .env.datax-front
             echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env.datax-front
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.datax-front
             echo "DATAX_MONGO_URI=${{ secrets.DATAX_MONGO_URI }}" >> .env.datax-front
@@ -81,7 +83,6 @@ jobs:
             echo "GOOGLE_AUTH_URI=${{ secrets.GOOGLE_AUTH_URI }}" >> .env.datax-front
             echo "GOOGLE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.GOOGLE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env.datax-front
             echo "GOOGLE_PROJECT_ID=${{ secrets.GOOGLE_PROJECT_ID }}" >> .env.datax-front
-            # New Mail Config
             echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env.datax-front
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env.datax-front
             echo "MAIL_FROM=${{ secrets.MAIL_FROM }}" >> .env.datax-front
@@ -91,12 +92,14 @@ jobs:
             echo "MAIL_TLS=${{ secrets.MAIL_TLS }}" >> .env.datax-front
             echo "MAIL_SSL=${{ secrets.MAIL_SSL }}" >> .env.datax-front
 
-            # Stop and remove old container if exists
+            CONFLICT_CONTAINER=$(docker ps -q --filter "publish=8050")
+            if [ -n "$CONFLICT_CONTAINER" ]; then
+              echo "Stopping and removing container(s) using port 8050..."
+              docker rm -f $CONFLICT_CONTAINER || true
+            fi
+
             docker rm -f datax-frontend-dev || true
 
-            # Remove old unused images
             docker image prune -af || true
 
-            # Recreate services
-            docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml up -d
+            docker compose -f docker-compose.dev.yml up -d --force-recreate --remove-orphans
