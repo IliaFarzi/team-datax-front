@@ -45,6 +45,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/datax-frontend:dev
           build-args: |
             PORT=8050
+            
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
@@ -60,7 +61,6 @@ jobs:
           script: |
             cd /home/datax-frontend-dev
 
-            # ساخت فایل env
             echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" > .env.datax-front
             echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env.datax-front
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.datax-front
@@ -90,6 +90,14 @@ jobs:
             echo "MAIL_TLS=${{ secrets.MAIL_TLS }}" >> .env.datax-front
             echo "MAIL_SSL=${{ secrets.MAIL_SSL }}" >> .env.datax-front
 
+            CONFLICT_CONTAINER=$(docker ps -q --filter "publish=8050")
+            if [ -n "$CONFLICT_CONTAINER" ]; then
+              echo "Stopping and removing container(s) using port 8050..."
+              docker rm -f $CONFLICT_CONTAINER || true
+            fi
+
             docker rm -f datax-frontend-dev || true
+
             docker image prune -af || true
+
             docker compose -f docker-compose.dev.yml up -d --force-recreate --remove-orphans
