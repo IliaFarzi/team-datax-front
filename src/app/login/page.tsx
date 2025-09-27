@@ -244,7 +244,7 @@ function CardDemo() {
           ثبت نام شما در دیتاکس به معنی پذیرش تمامی{" "}
           <span className="text-[#1668E3] underline underline-offset-2">
             قوانین و مقررات
-          </span>
+          </span>{" "}
           آن می‌باشد.
         </span>
         <Toaster />

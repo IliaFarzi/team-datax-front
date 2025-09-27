@@ -54,7 +54,7 @@ function CardDemo() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/reset-password`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/reset-password/confirm`,
         {
           method: "POST",
           headers: {
