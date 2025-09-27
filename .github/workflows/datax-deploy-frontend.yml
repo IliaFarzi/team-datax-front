@@ -63,7 +63,7 @@ jobs:
             cd /home/datax-frontend
 
             echo "NEXT_PUBLIC_API_BASE_URL=https://api.datax.com" > .env.datax-front
-            echo "NODE_ENV=production" >> .env.datax-front
+            echo "NODE_ENV=production" >> .env.production.datax-front
 
 
             # Create .env.datax file with environment variables
