@@ -204,7 +204,7 @@ function CardDemo() {
                       required: "رمز عبور الزامی است",
                       minLength: {
                         value: 6,
-                        message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+                        message: " رمز عبور باید حداقل ۶ کاراکتر باشد",
                       },
                     })}
                   />

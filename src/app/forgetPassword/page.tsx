@@ -35,9 +35,9 @@ type ApiSuccessResponse = {
   message: string;
   email: string;
   user_id: string;
-  reset_link: string;
+  token: string;
+  reset_code?: string;
 };
-
 function CardDemo() {
   const router = useRouter();
   const { toast } = useToast();
@@ -86,14 +86,12 @@ function CardDemo() {
       const result: ApiSuccessResponse = await response.json();
       console.log("Forgot password response:", result);
 
-      const url = new URL(result.reset_link);
-      const resetToken = url.searchParams.get("token");
-      if (resetToken) {
-        Cookies.set("reset_token", resetToken, { expires: 1 });
+      if (result.token) {
+        Cookies.set("reset_token", result.token, { expires: 1 });
         Cookies.set("user_id", result.user_id, { expires: 1 });
         Cookies.set("user_email", result.email, { expires: 2 });
       } else {
-        throw new Error("توکن بازنشانی رمز در لینک یافت نشد");
+        throw new Error("توکن بازنشانی رمز یافت نشد");
       }
 
       router.push("/checkPassword");
