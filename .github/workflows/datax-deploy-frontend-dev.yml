@@ -17,6 +17,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Check existing .env files
+        run: |
+          ls -la
+          if [ -f .env ]; then cat .env; fi
+          if [ -f .env.local ]; then cat .env.local; fi
+          if [ -f .env.production ]; then cat .env.production; fi
+          if [ -f .env.development ]; then cat .env.development; fi
+
       - name: Create .env file for build
         run: |
           echo "NEXT_PUBLIC_API_BASE_URL=http://62.60.198.4:8040" > .env

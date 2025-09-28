@@ -4,7 +4,6 @@ COPY package.json package-lock.json ./
 RUN npm install -g npm@latest
 RUN npm ci --loglevel=verbose
 COPY . .
-ENV NEXT_PUBLIC_API_BASE_URL=https://api.dataxai.ir
 RUN npm run build
 
 FROM node:20-bullseye-slim AS runner
