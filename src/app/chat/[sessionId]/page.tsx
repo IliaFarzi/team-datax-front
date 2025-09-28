@@ -445,7 +445,7 @@ export default function ChatPage() {
           />
         </svg>
       </div>
-      <div className="max-w-[832px] w-full px-4 pt-4 pb-8 flex flex-col flex-1 ">
+      <div className="max-w-[832px] w-full px-4 pt-20 pb-8 flex flex-col flex-1 ">
         <div className="flex-1 overflow-y-auto space-y-6 px-2 mb-8">
           {messages.length === 0 && (
             <p className="text-center text-gray-500">هیچ پیامی یافت نشد.</p>
