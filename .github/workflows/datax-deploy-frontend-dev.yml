@@ -30,46 +30,50 @@ jobs:
         run: |
           rm -f .env .env.local .env.production .env.development .env.dev
 
-      - name: Create .env.development file for build
+      - name: Create .env file for build
         run: |
-          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_VPS_URL }}" > .env.development
-          echo "NODE_ENV=development" >> .env.development
-          echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" >> .env.development
-          echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env.development
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.development
-          echo "DATAX_MONGO_URI=${{ secrets.DATAX_MONGO_URI }}" >> .env.development
-          echo "DATAX_MONGO_COLLECTION_NAME=${{ secrets.DATAX_MONGO_COLLECTION_NAME }}" >> .env.development
-          echo "DATAX_MONGO_DB_NAME=${{ secrets.DATAX_MONGO_DB_NAME }}" >> .env.development
-          echo "FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env.development
-          echo "SESSION_SECRET_KEY=${{ secrets.SESSION_SECRET_KEY }}" >> .env.development
-          echo "DATAX_MINIO_ACCESS_KEY=${{ secrets.DATAX_MINIO_ACCESS_KEY }}" >> .env.development
-          echo "DATAX_MINIO_SECRET_KEY=${{ secrets.DATAX_MINIO_SECRET_KEY }}" >> .env.development
-          echo "DATAX_MINIO_ENDPOINT=${{ secrets.DATAX_MINIO_ENDPOINT }}" >> .env.development
-          echo "DATAX_MINIO_BUCKET_SHEETS=${{ secrets.DATAX_MINIO_BUCKET_SHEETS }}" >> .env.development
-          echo "DATAX_MINIO_BUCKET_UPLOADS=${{ secrets.DATAX_MINIO_BUCKET_UPLOADS }}" >> .env.development
-          echo "DATAX_MINIO_SECURE=${{ secrets.DATAX_MINIO_SECURE }}" >> .env.development
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env.development
-          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env.development
-          echo "GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}" >> .env.development
-          echo "GOOGLE_AUTH_URI=${{ secrets.GOOGLE_AUTH_URI }}" >> .env.development
-          echo "GOOGLE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.GOOGLE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env.development
-          echo "GOOGLE_PROJECT_ID=${{ secrets.GOOGLE_PROJECT_ID }}" >> .env.development
-          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env.development
-          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env.development
-          echo "MAIL_FROM=${{ secrets.MAIL_FROM }}" >> .env.development
-          echo "MAIL_PORT=${{ secrets.MAIL_PORT }}" >> .env.development
-          echo "MAIL_SERVER=${{ secrets.MAIL_SERVER }}" >> .env.development
-          echo "MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}" >> .env.development
-          echo "MAIL_TLS=${{ secrets.MAIL_TLS }}" >> .env.development
-          echo "MAIL_SSL=${{ secrets.MAIL_SSL }}" >> .env.development
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_VPS_URL }}" > .env
+          echo "NODE_ENV=development" >> .env
+          echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" >> .env
+          echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "DATAX_MONGO_URI=${{ secrets.DATAX_MONGO_URI }}" >> .env
+          echo "DATAX_MONGO_COLLECTION_NAME=${{ secrets.DATAX_MONGO_COLLECTION_NAME }}" >> .env
+          echo "DATAX_MONGO_DB_NAME=${{ secrets.DATAX_MONGO_DB_NAME }}" >> .env
+          echo "FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env
+          echo "SESSION_SECRET_KEY=${{ secrets.SESSION_SECRET_KEY }}" >> .env
+          echo "DATAX_MINIO_ACCESS_KEY=${{ secrets.DATAX_MINIO_ACCESS_KEY }}" >> .env
+          echo "DATAX_MINIO_SECRET_KEY=${{ secrets.DATAX_MINIO_SECRET_KEY }}" >> .env
+          echo "DATAX_MINIO_ENDPOINT=${{ secrets.DATAX_MINIO_ENDPOINT }}" >> .env
+          echo "DATAX_MINIO_BUCKET_SHEETS=${{ secrets.DATAX_MINIO_BUCKET_SHEETS }}" >> .env
+          echo "DATAX_MINIO_BUCKET_UPLOADS=${{ secrets.DATAX_MINIO_BUCKET_UPLOADS }}" >> .env
+          echo "DATAX_MINIO_SECURE=${{ secrets.DATAX_MINIO_SECURE }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}" >> .env
+          echo "GOOGLE_AUTH_URI=${{ secrets.GOOGLE_AUTH_URI }}" >> .env
+          echo "GOOGLE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.GOOGLE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env
+          echo "GOOGLE_PROJECT_ID=${{ secrets.GOOGLE_PROJECT_ID }}" >> .env
+          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+          echo "MAIL_FROM=${{ secrets.MAIL_FROM }}" >> .env
+          echo "MAIL_PORT=${{ secrets.MAIL_PORT }}" >> .env
+          echo "MAIL_SERVER=${{ secrets.MAIL_SERVER }}" >> .env
+          echo "MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}" >> .env
+          echo "MAIL_TLS=${{ secrets.MAIL_TLS }}" >> .env
+          echo "MAIL_SSL=${{ secrets.MAIL_SSL }}" >> .env
+
+      - name: Verify .env content
+        run: |
+          cat .env
 
       - name: Copy files to VPS
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DEV_VPS_HOST }}
+          host: ${{ secrets.Dev_VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           port: 32222
-          key: ${{ secrets.DEV_VPS_PRIVATE_KEY }}
+          key: ${{ secrets.Dev_VPS_PRIVATE_KEY }}
           source: "docker-compose.dev.yml"
           target: "/home/datax-frontend-dev"
 
@@ -91,6 +95,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/datax-frontend:dev
           build-args: |
             PORT=8050
+            NODE_ENV=development
           no-cache: true
 
   deploy:
@@ -101,12 +106,13 @@ jobs:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEV_VPS_HOST }}
+          host: ${{ secrets.Dev_VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           port: 32222
-          key: ${{ secrets.DEV_VPS_PRIVATE_KEY }}
+          key: ${{ secrets.Dev_VPS_PRIVATE_KEY }}
           script: |
             cd /home/datax-frontend-dev
+
             echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_VPS_URL }}" > .env.datax-front
             echo "NODE_ENV=development" >> .env.datax-front
             echo "OPENROUTER_API_BASE=${{ secrets.OPENROUTER_API_BASE }}" >> .env.datax-front
@@ -115,7 +121,7 @@ jobs:
             echo "DATAX_MONGO_URI=${{ secrets.DATAX_MONGO_URI }}" >> .env.datax-front
             echo "DATAX_MONGO_COLLECTION_NAME=${{ secrets.DATAX_MONGO_COLLECTION_NAME }}" >> .env.datax-front
             echo "DATAX_MONGO_DB_NAME=${{ secrets.DATAX_MONGO_DB_NAME }}" >> .env.datax-front
-            echo "FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env.datax-front
+            echo "FRONTEND_URL=${{ secrets.Dev_FRONTEND_URL }}" >> .env.datax-front
             echo "SESSION_SECRET_KEY=${{ secrets.SESSION_SECRET_KEY }}" >> .env.datax-front
             echo "DATAX_MINIO_ACCESS_KEY=${{ secrets.DATAX_MINIO_ACCESS_KEY }}" >> .env.datax-front
             echo "DATAX_MINIO_SECRET_KEY=${{ secrets.DATAX_MINIO_SECRET_KEY }}" >> .env.datax-front
@@ -145,5 +151,7 @@ jobs:
             fi
 
             docker rm -f datax-frontend-dev || true
+
             docker image prune -af || true
+
             docker compose -f docker-compose.dev.yml up -d --force-recreate --remove-orphans

@@ -39,7 +39,6 @@ export default function Home() {
       setIsCreditZeroModalOpen(false);
     }
   };
-  //test
   useEffect(() => {
     readCredit();
     window.addEventListener("storage", readCredit);

@@ -1,3 +1,5 @@
+ARG NODE_ENV=development
+
 FROM node:20-bullseye-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -8,7 +10,8 @@ RUN npm run build
 
 FROM node:20-bullseye-slim AS runner
 WORKDIR /app
-ENV NODE_ENV=development NEXT_TELEMETRY_DISABLED=1 PORT=8050
+ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV} NEXT_TELEMETRY_DISABLED=1 PORT=8050
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 RUN adduser --system --uid 1001 nextjs
