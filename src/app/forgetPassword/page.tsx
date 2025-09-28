@@ -87,7 +87,7 @@ function CardDemo() {
       console.log("Forgot password response:", result);
 
       if (result.token) {
-        Cookies.set("reset_token", result.token, { expires: 1 });
+        Cookies.set("access_token", result.token, { expires: 1 });
         Cookies.set("user_id", result.user_id, { expires: 1 });
         Cookies.set("user_email", result.email, { expires: 2 });
       } else {

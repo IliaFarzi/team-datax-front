@@ -48,7 +48,7 @@ function CardDemo() {
 
   const onSubmit = async (data: ResetPasswordRequest) => {
     try {
-      const resetToken = Cookies.get("reset_token");
+      const resetToken = Cookies.get("access_token");
       if (!resetToken) {
         throw new Error("توکن بازنشانی رمز یافت نشد");
       }
