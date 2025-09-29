@@ -133,7 +133,7 @@ function CardDemo() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
-                      required: "رمز عبور الزامی است",
+                      required: "لطفاً رمز عبور را وارد کنید.",
                       minLength: {
                         value: 6,
                         message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
@@ -165,7 +165,7 @@ function CardDemo() {
                     id="confirmPassword"
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword", {
-                      required: "تکرار رمز عبور الزامی است",
+                      required: "لطفاً تکرار رمز عبور را وارد کنید.",
                       validate: (value) =>
                         value === watch("password") ||
                         "رمز عبور و تکرار آن یکسان نیستند",

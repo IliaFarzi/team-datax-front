@@ -37,8 +37,8 @@ const CheckEmail = () => {
     } else {
       toast({
         variant: "destructive",
-        title: "خطا",
         description: "ایمیل یافت نشد، دوباره ثبت‌نام کنید",
+        duration: 3000,
       });
     }
     console.log("Saved email:", savedEmail);
@@ -83,8 +83,9 @@ const CheckEmail = () => {
       }
 
       toast({
-        title: "موفقیت",
+        variant: "success",
         description: "کد جدید به ایمیل شما ارسال شد",
+        duration: 3000,
       });
       setResendTimer(120);
       setCanResend(false);
@@ -93,8 +94,8 @@ const CheckEmail = () => {
         err instanceof Error ? err.message : "خطای ناشناخته در ارسال کد";
       toast({
         variant: "destructive",
-        title: "خطا",
         description: errorMsg,
+        duration: 3000,
       });
     } finally {
       setIsSubmitting(false);
@@ -146,6 +147,12 @@ const CheckEmail = () => {
       if (result.email) Cookies.set("user_email", result.email, { expires: 7 });
       if (result.name) Cookies.set("user_name", result.name, { expires: 7 });
 
+      toast({
+        variant: "success",
+        description: result.message || "ثبت نام با موفقیت انجام شد",
+        duration: 3000,
+      });
+
       router.push("/chat");
     } catch (err: unknown) {
       const errorMsg =
@@ -154,6 +161,7 @@ const CheckEmail = () => {
         variant: "destructive",
         title: "خطا",
         description: errorMsg,
+        duration: 3000,
       });
       console.error("Verify error:", errorMsg);
     } finally {
@@ -192,7 +200,6 @@ const CheckEmail = () => {
               <InputOTPSlot index={5} />
               <InputOTPSlot index={4} />
               <InputOTPSlot index={3} />
-
               <InputOTPSlot index={2} />
               <InputOTPSlot index={1} />
               <InputOTPSlot index={0} />

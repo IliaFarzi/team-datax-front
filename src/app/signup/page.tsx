@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
@@ -134,12 +134,22 @@ function CardDemo() {
         error instanceof Error ? error.message : "ثبت‌نام ناموفق بود";
       toast({
         variant: "destructive",
-        title: "خطا",
         description: errorMsg,
+        duration: 3000,
       });
       console.error("Signup error:", errorMsg);
     }
   };
+
+  useEffect(() => {
+    if (errors.confirmPassword && errors.confirmPassword.type === "validate") {
+      toast({
+        variant: "destructive",
+        description: "رمز عبور و تکرار آن یکسان نیستند",
+        duration: 3000,
+      });
+    }
+  }, [errors.confirmPassword, toast]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -171,7 +181,7 @@ function CardDemo() {
                   placeholder="مثلا مانی جلیلی"
                   className="w-full md:w-[390px]"
                   {...register("name", {
-                    required: "نام و نام خانوادگی الزامی است",
+                    required: "لطفاً نام و نام خانوادگی را وارد کنید.",
                   })}
                 />
                 {errors.name && (
@@ -191,9 +201,9 @@ function CardDemo() {
                   placeholder="example@domain.com"
                   className="w-full md:w-[390px]"
                   {...register("email", {
-                    required: "ایمیل الزامی است",
+                    required: "لطفاً ایمیل را وارد کنید.",
                     pattern: {
-                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA.Z]{2,}$/,
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                       message: "ایمیل نامعتبر است",
                     },
                   })}
@@ -215,7 +225,7 @@ function CardDemo() {
                   placeholder="مثلا ۰۹۱۲۳۴۵۶۷۸۹"
                   className="w-full md:w-[390px]"
                   {...register("number", {
-                    required: "شماره همراه الزامی است",
+                    required: "لطفاً شماره همراه را وارد کنید.",
                     pattern: {
                       value: /^(?:\+98|0)?9\d{9}$/,
                       message: "شماره همراه نامعتبر است",
@@ -239,7 +249,7 @@ function CardDemo() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     {...register("password", {
-                      required: "رمز عبور الزامی است",
+                      required: "لطفاً رمز عبور را وارد کنید.",
                       minLength: {
                         value: 8,
                         message: "،رمز عبور باید حداقل ۸ کاراکتر باشد ",
@@ -276,7 +286,7 @@ function CardDemo() {
                     id="confirmPassword"
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword", {
-                      required: "تکرار رمز عبور الزامی است",
+                      required: "لطفاً تکرار رمز عبور را وارد کنید.",
                       validate: (value) =>
                         value === watch("password") ||
                         "رمز عبور و تکرار آن یکسان نیستند",
@@ -290,11 +300,6 @@ function CardDemo() {
                     {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {errors.confirmPassword && (
-                  <span className="text-red-500 text-sm">
-                    {errors.confirmPassword.message}
-                  </span>
-                )}
               </div>
             </div>
 
