@@ -1,45 +1,46 @@
-# ========== Builder Stage ==========
-FROM node:20-bullseye-slim AS builder
-
-# Default args (can be overridden by --build-arg)
+# Declare build-time args
 ARG NODE_ENV
 ARG NEXT_PUBLIC_API_BASE_URL
 ARG FRONTEND_URL
 
-WORKDIR /app
+# ---------- Build stage ----------
+FROM node:20-bullseye-slim AS builder
 
-# Copy package files & install dependencies
+# Pass args as environment variables during build
+ENV NODE_ENV=${NODE_ENV} \
+    NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} \
+    FRONTEND_URL=${FRONTEND_URL}
+
+WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install -g npm@latest
 RUN npm ci --loglevel=verbose
-
-# Copy source code
 COPY . .
 
-# Set envs for Next.js build
-ENV NODE_ENV=${NODE_ENV} NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} FRONTEND_URL=${FRONTEND_URL}
-
-# Build Next.js
+# Build Next.js app
 RUN npm run build
 
-# ========== Runner Stage ==========
+# ---------- Runner stage ----------
 FROM node:20-bullseye-slim AS runner
 
-WORKDIR /app
-
-# Runtime args
+# Pass the same build args to runtime
 ARG NODE_ENV
-ARG PORT
+ARG NEXT_PUBLIC_API_BASE_URL
+ARG FRONTEND_URL
 
-ENV NODE_ENV=${NODE_ENV} NEXT_TELEMETRY_DISABLED=1 PORT=${PORT}
+# Make all env vars available in the running container
+ENV NODE_ENV=${NODE_ENV} \
+    NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} \
+    FRONTEND_URL=${FRONTEND_URL} \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=8050
 
-# Copy only the standalone build output
+WORKDIR /app
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Create non-root user
 RUN adduser --system --uid 1001 nextjs
 USER nextjs
 
-EXPOSE ${PORT}
+EXPOSE 8050
 CMD ["node", "server.js"]
