@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { toast } from "@/hooks/use-toast";
 
 type Connector = {
   id: string;
@@ -47,6 +48,11 @@ function ConnectorsContent() {
 
     if (success) {
       setIsConnected(true);
+      toast({
+        variant: "success",
+        description: "حساب گوگل شیت شما با موفقیت متصل شد.",
+        duration: 3000,
+      });
       Cookies.set("google_sheets_connected", "true", {
         expires: 7,
         secure: false,
@@ -67,7 +73,11 @@ function ConnectorsContent() {
       console.log("Access token for request:", token);
 
       if (!token) {
-        setErrorMessage("برای اتصال، ابتدا وارد حساب کاربری خود شوید.");
+        toast({
+          variant: "destructive",
+          description: "برای اتصال، ابتدا وارد حساب کاربری خود شوید.",
+          duration: 3000,
+        });
         router.push("/login");
         return;
       }
@@ -108,9 +118,11 @@ function ConnectorsContent() {
       console.log("Redirecting to auth_url:", auth_url);
       window.location.href = auth_url;
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "خطا در شروع فرایند اتصال";
-      setErrorMessage(errorMsg);
+      toast({
+        variant: "destructive",
+        description: "اتصال به گوگل شیت ناموفق بود. دوباره تلاش کنید.",
+        duration: 3000,
+      });
       console.error("Failed to start connection flow:", err);
     }
   }, [router]);

@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
@@ -42,11 +42,19 @@ function CardDemo() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordRequest>();
 
   const onSubmit = async (data: ResetPasswordRequest) => {
+    if (data.password !== data.confirmPassword) {
+      toast({
+        variant: "destructive",
+        description: "رمز عبور و تکرار آن یکسان نیستند",
+        duration: 3000,
+      });
+      return;
+    }
+
     try {
       const resetToken = Cookies.get("access_token");
       if (!resetToken) {
@@ -94,12 +102,16 @@ function CardDemo() {
       console.log("Reset password response:", result);
 
       router.push("/");
+      toast({
+        variant: "success",
+        description: "رمز عبور جدید با موفقیت ثبت شد.",
+        duration: 3000,
+      });
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "بازنشانی رمز ناموفق بود";
       toast({
         variant: "destructive",
-        title: "خطا",
         description: errorMsg,
       });
       console.error("Signup error:", errorMsg);
@@ -166,9 +178,6 @@ function CardDemo() {
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword", {
                       required: "لطفاً تکرار رمز عبور را وارد کنید.",
-                      validate: (value) =>
-                        value === watch("password") ||
-                        "رمز عبور و تکرار آن یکسان نیستند",
                     })}
                   />
                   <button
