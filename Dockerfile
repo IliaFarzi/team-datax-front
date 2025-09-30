@@ -24,7 +24,7 @@ FROM node:20-bullseye-slim AS runner
 #          there is bug in building react app for production https://nextjs.org/docs/messages/no-document-import-in-page
 #ARG NODE_ENV=development
 
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1 PORT=8050
 
 WORKDIR /app
 
