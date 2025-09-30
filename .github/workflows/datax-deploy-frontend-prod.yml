@@ -49,7 +49,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             NODE_ENV=production
-            NEXT_PUBLIC_API_BASE_URL=${{ secrets.PROD_BACKEND_URL }}
+            BACKEND_URL=${{ secrets.PROD_BACKEND_URL }}
             FRONTEND_URL=${{ secrets.PROD_FRONTEND_URL }}
           no-cache: true
 
@@ -67,8 +67,6 @@ jobs:
           key: ${{ secrets.PROD_VPS_PRIVATE_KEY }}
           script: |
             cd /home/datax-frontend
-            export NEXT_PUBLIC_API_BASE_URL=${{ secrets.PROD_BACKEND_URL }}
-            export FRONTEND_URL=${{ secrets.PROD_FRONTEND_URL }}
 
             # Docker login
             echo "🔍 Logging in to Docker Hub..."
