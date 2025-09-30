@@ -55,6 +55,8 @@ jobs:
           build-args: |
             PORT=8050
             NODE_ENV=development
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_BACKEND_URL }}
+            FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}
           no-cache: true
 
   deploy:
@@ -71,17 +73,6 @@ jobs:
           key: ${{ secrets.DEV_VPS_PRIVATE_KEY }}
           script: |
             cd /home/datax-frontend-dev
-
-            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_BACKEND_URL }}" > .env.datax-front
-            echo "NODE_ENV=development" >> .env.datax-front
-            echo "FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env.datax-front
-
-            echo "✅ .env.datax written successfully"
-
-            # Load env file
-            set -o allexport
-            source .env.datax-front
-            set +o allexport
 
             # Docker login
             echo "🔍 Logging in to Docker Hub..."
