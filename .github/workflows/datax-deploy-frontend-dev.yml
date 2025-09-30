@@ -20,6 +20,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Verify SSH Args
+        run: |
+          echo "Host starts with: $(echo "${{ secrets.DEV_VPS_HOST }}" | head -c 20)..."
+          echo "Username starts with: $(echo "${{ secrets.DEV_VPS_USERNAME }}" | head -c 20)..."
+          echo "Key starts with: $(echo "${{ secrets.DEV_VPS_KEY }}" | head -c 20)..."
+
       - name: Copy files to VPS
         uses: appleboy/scp-action@master
         with:
