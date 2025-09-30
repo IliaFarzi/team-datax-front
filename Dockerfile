@@ -10,12 +10,10 @@ COPY . .
 # Build-time args
 ARG NODE_ENV
 ARG BACKEND_URL
-ARG FRONTEND_URL
 
 # Pass args to Next.js build
-ENV NEXT_PUBLIC_NODE_ENV=$NODE_ENV
+ENV NODE_ENV=$NODE_ENV
 ENV NEXT_PUBLIC_API_BASE_URL=$BACKEND_URL
-ENV NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL
 
 # Build Next.js app
 RUN npm run build
@@ -23,8 +21,11 @@ RUN npm run build
 # ---------- Runner stage ----------
 FROM node:20-bullseye-slim AS runner
 
-ENV NEXT_TELEMETRY_DISABLED=1 \
-    PORT=8050
+ARG NODE_ENV
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=8050
+ENV NODE_ENV=$NODE_ENV
 
 WORKDIR /app
 
