@@ -1,0 +1,16 @@
+services:
+  datax-frontend:
+    image: amigolli/datax-frontend-prod:latest
+    container_name: datax-frontend-prod
+    restart: always
+    ports:
+      - "8050:8050"
+    networks:
+      - shared-net
+    env_file:
+      - .env.datax
+
+networks:
+  shared-net:
+    name: datax_prod-net
+    external: true
