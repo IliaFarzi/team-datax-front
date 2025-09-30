@@ -1,16 +1,16 @@
-name: datax-deploy-frontend-dev
+name: datax-deploy-frontend-prod
 
 on:
   push:
     branches:
-      - dev
+      - main
     paths:
       - "src/**"
       - "public/**"
-      - ".github/workflows/datax-deploy-frontend-dev.yml"
+      - ".github/workflows/datax-deploy-frontend-prod.yml"
 
 env:
-  IMAGE_NAME: datax-frontend-dev
+  IMAGE_NAME: datax-frontend-prod
 
 jobs:
   build_and_push:
@@ -23,12 +23,12 @@ jobs:
       - name: Copy files to VPS
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DEV_VPS_HOST }}
-          username: ${{ secrets.DEV_VPS_USERNAME }}
+          host: ${{ secrets.PROD_VPS_HOST }}
+          username: ${{ secrets.PROD_VPS_USERNAME }}
           port: 32222
-          key: ${{ secrets.DEV_VPS_PRIVATE_KEY }}
-          source: "docker-compose-dev.yml"
-          target: "/home/datax-frontend-dev"
+          key: ${{ secrets.PROD_VPS_PRIVATE_KEY }}
+          source: "docker-compose-prod.yml"
+          target: "/home/datax-frontend"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -48,7 +48,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             PORT=8050
-            NODE_ENV=development
+            NODE_ENV=production
           no-cache: true
 
   deploy:
@@ -59,16 +59,16 @@ jobs:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEV_VPS_HOST }}
-          username: ${{ secrets.DEV_VPS_USERNAME }}
+          host: ${{ secrets.PROD_VPS_HOST }}
+          username: ${{ secrets.PROD_VPS_USERNAME }}
           port: 32222
-          key: ${{ secrets.DEV_VPS_PRIVATE_KEY }}
+          key: ${{ secrets.PROD_VPS_PRIVATE_KEY }}
           script: |
-            cd /home/datax-frontend-dev
+            cd /home/datax-frontend
 
-            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_BACKEND_URL }}" > .env.datax-front
-            echo "NODE_ENV=development" >> .env.datax-front
-            echo "FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env.datax-front
+            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.PROD_BACKEND_URL }}" > .env.datax-front
+            echo "NODE_ENV=production" >> .env.datax-front
+            echo "FRONTEND_URL=${{ secrets.PROD_FRONTEND_URL }}" >> .env.datax-front
 
             echo "✅ .env.datax written successfully"
 
@@ -83,13 +83,13 @@ jobs:
             echo "✅ Docker Hub login successful"
 
             # Ensure network exists
-            echo "🔍 Checking network multi-team-dev-deployment_shared-net..."
-            docker network inspect multi-team-dev-deployment_shared-net >/dev/null 2>&1 || { echo "WARNING: No network found"; }
+            echo "🔍 Checking network datax_prod-net..."
+            docker network inspect datax_prod-net >/dev/null 2>&1 || { echo "WARNING: No network found"; }
             echo "✅ Network exists or created"
 
             # Stop and remove old container
             echo "🔍 Stopping and removing old container..."
-            docker rm -f datax-frontend-dev || { echo "WARNING: No old container to remove"; }
+            docker rm -f datax-frontend-prod || { echo "WARNING: No old container to remove"; }
             echo "✅ Old container removed"
 
             dangling=$(docker images ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }} -f "dangling=true" -q)
@@ -100,18 +100,18 @@ jobs:
             
             # Pull image
             echo "🔍 Pulling Docker image..."
-            docker compose -f ./docker-compose-dev.yml pull || { echo "ERROR: Failed to pull image";  }
+            docker compose -f ./docker-compose-prod.yml pull || { echo "ERROR: Failed to pull image";  }
             echo "✅ Image pulled successfully"
 
             # Start container
             echo "🔍 Starting container..."
-            docker compose -f ./docker-compose-dev.yml up -d --no-build || { echo "ERROR: Failed to start container";  }
+            docker compose -f ./docker-compose-prod.yml up -d --no-build || { echo "ERROR: Failed to start container";  }
             echo "✅ Container started"
 
             # Wait & Check
             echo "🔍 Waiting for container to stabilize..."
             sleep 10
             echo "🔍 Checking container status..."
-            docker ps -a | grep datax-frontend-dev || { echo "ERROR: Container datax-frontend-dev not running";  }
+            docker ps -a | grep datax-frontend-prod || { echo "ERROR: Container datax-frontend-prod not running";  }
             echo "✅ Container is running"
-            echo "✅ Deployment successful! Visit: ${{ secrets.DEV_VPS_URL }}"
+            echo "✅ Deployment successful! Visit: ${{ secrets.PROD_VPS_URL }}"
