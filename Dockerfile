@@ -8,7 +8,8 @@ RUN npm ci --loglevel=verbose
 COPY . .
 
 # Build-time args
-ARG NODE_ENV
+#          there is bug in building react app for production https://nextjs.org/docs/messages/no-document-import-in-page
+ARG NODE_ENV=development
 ARG BACKEND_URL
 
 # Pass args to Next.js build
@@ -21,7 +22,8 @@ RUN npm run build
 # ---------- Runner stage ----------
 FROM node:20-bullseye-slim AS runner
 
-ARG NODE_ENV
+#          there is bug in building react app for production https://nextjs.org/docs/messages/no-document-import-in-page
+ARG NODE_ENV=development
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=8050

@@ -6,8 +6,8 @@ services:
       - "8050:8050"
     networks:
       - shared-net
-    environment:
-      - NODE_ENV=development
+#    environment:
+#      - NODE_ENV=development
 
 networks:
   shared-net:
