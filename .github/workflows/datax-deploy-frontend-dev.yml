@@ -9,6 +9,7 @@ on:
       - "public/**"
       - ".github/workflows/datax-deploy-frontend-dev.yml"
       - "docker-compose-dev.yml"
+      - "Dockerfile"
 
 env:
   IMAGE_NAME: datax-frontend-dev
