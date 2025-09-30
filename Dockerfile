@@ -13,7 +13,6 @@ COPY . .
 ARG BACKEND_URL
 
 # Pass args to Next.js build
-ENV NODE_ENV=development
 ENV NEXT_PUBLIC_API_BASE_URL=$BACKEND_URL
 
 # Build Next.js app
@@ -26,8 +25,6 @@ FROM node:20-bullseye-slim AS runner
 #ARG NODE_ENV=development
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=8050
-ENV NODE_ENV=development
 
 WORKDIR /app
 
