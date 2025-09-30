@@ -22,8 +22,8 @@ jobs:
 
       - name: Verify SSH Args
         run: |
-          echo "Host starts with: $(echo "${{ secrets.DEV_VPS_HOST }}" | head -c 20)..."
-          echo "Username starts with: $(echo "${{ secrets.DEV_VPS_USERNAME }}" | head -c 20)..."
+          echo "Host starts with: $(echo "${{ secrets.DEV_VPS_HOST }}" | head -c 4)..."
+          echo "Username starts with: $(echo "${{ secrets.DEV_VPS_USERNAME }}" | head -c 2)..."
           echo "Key starts with: $(echo "${{ secrets.DEV_VPS_KEY }}" | head -c 20)..."
 
       - name: Copy files to VPS
