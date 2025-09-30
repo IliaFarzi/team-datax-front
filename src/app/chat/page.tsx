@@ -39,7 +39,6 @@ export default function Home() {
       setIsCreditZeroModalOpen(false);
     }
   };
-
   useEffect(() => {
     readCredit();
     window.addEventListener("storage", readCredit);
@@ -50,7 +49,7 @@ export default function Home() {
     };
   }, []);
 
-  const remainderCredit = credit ?? 500; 
+  const remainderCredit = credit ?? 500;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -129,6 +128,7 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+  //test
 
   return (
     <main className="h-screen flex items-center justify-center overflow-hidden">

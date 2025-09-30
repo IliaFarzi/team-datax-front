@@ -135,10 +135,10 @@ function CardDemo() {
                   type="email"
                   placeholder="example@domain.com"
                   {...register("email", {
-                    required: "ایمیل الزامی است",
+                    required: "لطفاً ایمیل را وارد کنید.",
                     pattern: {
                       value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                      message: "ایمیل نامعتبر است",
+                      message: "فرمت ایمیل معتبر نیست.",
                     },
                   })}
                 />

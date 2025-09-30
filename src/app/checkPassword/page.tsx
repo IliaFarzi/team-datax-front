@@ -225,7 +225,7 @@ const CheckEmail = () => {
             {isSubmitting ? (
               <Loader2 className="h-5 w-5 animate-spin text-white" />
             ) : (
-              "اعتبارسنجی"
+              "اعتبارسنجی" 
             )}
           </Button>
         </CardFooter>

@@ -126,14 +126,20 @@ function CardDemo() {
         });
       }
 
+      toast({
+        variant: "success",
+        description: result.message || "ورود شما با موفقیت انجام شد.",
+        duration: 3000,
+      });
+
       router.push("/chat");
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ورود ناموفق بود";
       toast({
         variant: "destructive",
-        title: "خطا",
         description: errorMsg,
+        duration: 3000,
       });
       console.error("Login error:", errorMsg);
     }

@@ -38,6 +38,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "@/hooks/use-toast";
 
 interface ChatItem {
   title: string;
@@ -136,6 +137,11 @@ export function AppSidebar() {
     router.push("/login");
     Cookies.remove("access_token");
     Cookies.remove("user_email");
+    toast({
+      variant: "success",
+      description: "شما با موفقیت از حساب کاربری خارج شدید.",
+      duration: 3000,
+    });
   };
 
   const handleEditChat = useCallback((index: number, title: string) => {

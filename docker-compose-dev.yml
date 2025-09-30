@@ -1,0 +1,15 @@
+services:
+  datax-frontend-dev:
+    image: amigolli/datax-frontend-dev:latest
+    container_name: datax-frontend-dev
+    ports:
+      - "8050:8050"
+    networks:
+      - shared-net
+#    environment:
+#      - NODE_ENV=development
+
+networks:
+  shared-net:
+    name: multi-team-dev-deployment_shared-net
+    external: true
