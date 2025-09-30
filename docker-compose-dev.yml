@@ -7,8 +7,9 @@ services:
       - "8050:8050"
     networks:
       - shared-net
-    env_file:
-      - .env.datax-front
+    environment:
+      NODE_ENV: development
+      PORT: 8050
 
 networks:
   shared-net:
