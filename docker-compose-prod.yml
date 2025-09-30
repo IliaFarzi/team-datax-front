@@ -2,7 +2,6 @@ services:
   datax-frontend:
     image: amigolli/datax-frontend-prod:latest
     container_name: datax-frontend-prod
-    restart: always
     ports:
       - "8050:8050"
     networks:
