@@ -53,7 +53,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
-            PORT=8050
             NODE_ENV=development
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_BACKEND_URL }}
             FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}

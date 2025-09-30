@@ -2,7 +2,7 @@
 FROM node:20-bullseye-slim AS builder
 
 # Default args (can be overridden by --build-arg)
-ARG NODE_ENV=development
+ARG NODE_ENV
 ARG NEXT_PUBLIC_API_BASE_URL
 ARG FRONTEND_URL
 
@@ -17,9 +17,7 @@ RUN npm ci --loglevel=verbose
 COPY . .
 
 # Set envs for Next.js build
-ENV NODE_ENV=${NODE_ENV} \
-    NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} \
-    FRONTEND_URL=${FRONTEND_URL}
+ENV NODE_ENV=${NODE_ENV} NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} FRONTEND_URL=${FRONTEND_URL}
 
 # Build Next.js
 RUN npm run build
@@ -30,12 +28,10 @@ FROM node:20-bullseye-slim AS runner
 WORKDIR /app
 
 # Runtime args
-ARG NODE_ENV=development
-ARG PORT=8050
+ARG NODE_ENV
+ARG PORT
 
-ENV NODE_ENV=${NODE_ENV} \
-    NEXT_TELEMETRY_DISABLED=1 \
-    PORT=${PORT}
+ENV NODE_ENV=${NODE_ENV} NEXT_TELEMETRY_DISABLED=1 PORT=${PORT}
 
 # Copy only the standalone build output
 COPY --from=builder /app/.next/standalone ./
