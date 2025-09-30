@@ -61,8 +61,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             BACKEND_URL=${{ secrets.DEV_BACKEND_URL }}
-            FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}
-            NODE_ENV=development
+#            NODE_ENV=development
           no-cache: true
 
   deploy:

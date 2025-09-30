@@ -48,10 +48,10 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+#          there is bug in building react app for production https://nextjs.org/docs/messages/no-document-import-in-page
           build-args: |
-            NODE_ENV=production
+#            NODE_ENV=development
             BACKEND_URL=${{ secrets.PROD_BACKEND_URL }}
-            FRONTEND_URL=${{ secrets.PROD_FRONTEND_URL }}
           no-cache: true
 
   deploy:
