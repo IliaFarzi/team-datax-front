@@ -32,7 +32,6 @@ WORKDIR /app
 # Copy standalone output + static assets + public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
 
 RUN adduser --system --uid 1001 nextjs
 USER nextjs
