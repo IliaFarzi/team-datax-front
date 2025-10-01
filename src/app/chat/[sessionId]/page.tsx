@@ -147,6 +147,7 @@ export default function ChatPage() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({
             session_id: sessionId,
             content: trimmedInput,
@@ -339,6 +340,7 @@ export default function ChatPage() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           session_id: sessionId,
           message_index: index,
