@@ -159,7 +159,6 @@ const CheckEmail = () => {
         err instanceof Error ? err.message : "خطای ناشناخته در اعتبارسنجی کد";
       toast({
         variant: "destructive",
-        title: "خطا",
         description: errorMsg,
         duration: 3000,
       });
