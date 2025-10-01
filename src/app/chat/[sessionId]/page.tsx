@@ -83,6 +83,10 @@ export default function ChatPage() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const getToken = () => {
+    return Cookies.get("access_token");
+  };
+
   useEffect(() => {
     const loadMessages = async () => {
       const storedMessages = localStorage.getItem(`chat_${sessionId}`);
@@ -142,12 +146,17 @@ export default function ChatPage() {
       });
 
       try {
+        const token = getToken();
+        if (!token) {
+          throw new Error("No auth token found. Please log in again.");
+        }
+
         const response = await fetch(`${apiBaseUrl}/chat/send_message`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          credentials: "include",
           body: JSON.stringify({
             session_id: sessionId,
             content: trimmedInput,
@@ -204,7 +213,7 @@ export default function ChatPage() {
           ...prev,
           {
             role: "assistant",
-            content: "خطا در دریافت پاسخ از سرور!",
+            content: "خطا در دریافت پاسخ از سرور! (احتمالاً مشکل احراز هویت)",
           } as Message,
         ]);
         setIsLoading(false);
@@ -330,6 +339,11 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
+      const token = getToken();
+      if (!token) {
+        throw new Error("No auth token found. Please log in again.");
+      }
+
       console.log("Sending to /edit_message:", {
         session_id: sessionId,
         message_index: index,
@@ -339,8 +353,8 @@ export default function ChatPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
         body: JSON.stringify({
           session_id: sessionId,
           message_index: index,
@@ -392,7 +406,11 @@ export default function ChatPage() {
       console.error("Error editing message:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "خطا در ویرایش پیام و دریافت پاسخ!" },
+        {
+          role: "assistant",
+          content:
+            "خطا در ویرایش پیام و دریافت پاسخ! (احتمالاً مشکل احراز هویت)",
+        },
       ]);
     } finally {
       setIsLoading(false);
