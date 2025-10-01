@@ -100,7 +100,6 @@ function CardDemo() {
         error instanceof Error ? error.message : "بازنشانی رمز ناموفق بود";
       toast({
         variant: "destructive",
-        title: "خطا",
         description: errorMsg,
       });
       console.error("Signup error:", errorMsg);
