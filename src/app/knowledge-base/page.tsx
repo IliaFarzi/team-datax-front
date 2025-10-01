@@ -57,7 +57,6 @@ function ConnectorsContent() {
     }
 
     try {
-      console.log("Fetching uploaded files...");
       const response = await fetch(`${API_BASE}/files/`, {
         method: "GET",
         headers: {
@@ -65,23 +64,18 @@ function ConnectorsContent() {
           "Content-Type": "application/json",
         },
       });
-      console.log("History response status:", response.status);
-      console.log("History response ok:", response.ok);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("History data:", data);
-        const mappedFiles = (data.files || []).map((f: RawFile) => ({
+        const rawFiles = Array.isArray(data) ? data : data.files || [];
+        const mappedFiles = rawFiles.map((f: RawFile) => ({
           id: f._id,
           name: f.filename,
           type: f.filename.split(".").pop()?.toLowerCase() || "",
           bucket: f.bucket,
         }));
-        console.log("Mapped files:", mappedFiles);
         setUploadedFiles(mappedFiles);
       } else {
-        const errorData = await response.text();
-        console.error("History error response:", errorData);
         toast({
           variant: "destructive",
           description: "خطا در بارگیری تاریخچه فایل‌ها",
@@ -89,7 +83,6 @@ function ConnectorsContent() {
         setUploadedFiles([]);
       }
     } catch (error) {
-      console.error("Error fetching uploaded files:", error);
       toast({
         variant: "destructive",
         description: "خطا در بارگیری تاریخچه فایل‌ها",
@@ -116,8 +109,6 @@ function ConnectorsContent() {
     const file = e.target.files?.[0] || null;
     if (!file) return;
 
-    console.log("File selected:", file.name);
-
     setSelectedFile(file);
     setIsUploading(true);
 
@@ -133,7 +124,6 @@ function ConnectorsContent() {
       const formData = new FormData();
       formData.append("file", file);
 
-      console.log("Uploading file...");
       const response = await fetch(`${API_BASE}/files/upload/`, {
         method: "POST",
         headers: {
@@ -142,12 +132,7 @@ function ConnectorsContent() {
         body: formData,
       });
 
-      console.log("Upload response status:", response.status);
-      console.log("Upload response ok:", response.ok);
-
       if (response.ok) {
-        const uploadData = await response.json();
-        console.log("Upload success data:", uploadData);
         toast({
           variant: "success",
           description: `فایل ${file.name} با موفقیت آپلود شد.`,
@@ -160,7 +145,6 @@ function ConnectorsContent() {
         const error = await response
           .json()
           .catch(() => ({ message: "خطا در آپلود فایل" }));
-        console.error("Upload error response:", error);
         if (response.status === 422) {
           toast({
             variant: "destructive",
@@ -174,7 +158,6 @@ function ConnectorsContent() {
         }
       }
     } catch (error) {
-      console.error("Upload error:", error);
       toast({
         variant: "destructive",
         description: "خطا در آپلود فایل",
@@ -208,7 +191,6 @@ function ConnectorsContent() {
     const downloadUrl = `${API_BASE}/files/download/${encodeURIComponent(
       file.id
     )}`;
-    console.log("Download URL:", downloadUrl);
     window.open(downloadUrl, "_blank");
   };
 
@@ -217,7 +199,6 @@ function ConnectorsContent() {
     if (!file.id || !token) return;
 
     try {
-      console.log("Deleting file:", file.id);
       const response = await fetch(`${API_BASE}/files/${file.id}`, {
         method: "DELETE",
         headers: {
@@ -225,9 +206,6 @@ function ConnectorsContent() {
           "Content-Type": "application/json",
         },
       });
-
-      console.log("Delete response status:", response.status);
-      console.log("Delete response ok:", response.ok);
 
       if (response.ok) {
         toast({
@@ -237,15 +215,12 @@ function ConnectorsContent() {
         });
         fetchUploadedFiles();
       } else {
-        const errorData = await response.text();
-        console.error("Delete error response:", errorData);
         toast({
           variant: "destructive",
           description: "خطا در حذف فایل",
         });
       }
     } catch (error) {
-      console.error("Delete error:", error);
       toast({
         variant: "destructive",
         description: "خطا در حذف فایل",
