@@ -9,8 +9,6 @@ const publicPaths = [
   "/api/auth",
   "/",
   "/checkPassword",
-  "/chat",
-  "/connectors",
 ];
 
 export function middleware(request: NextRequest) {
@@ -20,11 +18,7 @@ export function middleware(request: NextRequest) {
   console.log("Middleware is running at:", new Date().toISOString());
   console.log("Requested Path:", pathname);
   console.log("All Cookies:", request.cookies.getAll());
-
-  // بررسی مسیرهای عمومی
-  const isPublicPath =
-    publicPaths.includes(pathname) || pathname.startsWith("/knowledge-base");
-
+  const isPublicPath = publicPaths.includes(pathname);
   console.log("Is public path:", isPublicPath, "Path:", pathname);
 
   if (isPublicPath) {
