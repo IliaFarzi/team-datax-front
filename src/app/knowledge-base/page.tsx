@@ -27,8 +27,13 @@ type UploadedFile = {
   id: string;
   name: string;
   type: string;
-  size?: number;
-  uploadDate?: string;
+  bucket?: string;
+};
+
+type RawFile = {
+  _id: string;
+  filename: string;
+  bucket?: string;
 };
 
 function ConnectorsContent() {
@@ -51,7 +56,7 @@ function ConnectorsContent() {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/files/files/history`, {
+      const response = await fetch(`${API_BASE}/files/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -61,7 +66,13 @@ function ConnectorsContent() {
 
       if (response.ok) {
         const data = await response.json();
-        setUploadedFiles(data.files || []);
+        const mappedFiles = (data.files || []).map((f: RawFile) => ({
+          id: f._id,
+          name: f.filename,
+          type: f.filename.split(".").pop()?.toLowerCase() || "",
+          bucket: f.bucket,
+        }));
+        setUploadedFiles(mappedFiles);
       } else {
         toast({
           variant: "destructive",
@@ -181,7 +192,7 @@ function ConnectorsContent() {
     if (!file.id || !token) return;
 
     try {
-      const response = await fetch(`${API_BASE}/files/files/${file.id}`, {
+      const response = await fetch(`${API_BASE}/files/${file.id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
