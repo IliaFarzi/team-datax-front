@@ -27,8 +27,13 @@ type UploadedFile = {
   id: string;
   name: string;
   type: string;
-  size?: number;
-  uploadDate?: string;
+  bucket?: string;
+};
+
+type RawFile = {
+  _id: string;
+  filename: string;
+  bucket?: string;
 };
 
 function ConnectorsContent() {
@@ -36,6 +41,7 @@ function ConnectorsContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -51,7 +57,7 @@ function ConnectorsContent() {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/files/files/history`, {
+      const response = await fetch(`${API_BASE}/files/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -61,7 +67,14 @@ function ConnectorsContent() {
 
       if (response.ok) {
         const data = await response.json();
-        setUploadedFiles(data.files || []);
+        const rawFiles = Array.isArray(data) ? data : data.files || [];
+        const mappedFiles = rawFiles.map((f: RawFile) => ({
+          id: f._id,
+          name: f.filename,
+          type: f.filename.split(".").pop()?.toLowerCase() || "",
+          bucket: f.bucket,
+        }));
+        setUploadedFiles(mappedFiles);
       } else {
         toast({
           variant: "destructive",
@@ -70,7 +83,6 @@ function ConnectorsContent() {
         setUploadedFiles([]);
       }
     } catch (error) {
-      console.error("Error fetching uploaded files:", error);
       toast({
         variant: "destructive",
         description: "خطا در بارگیری تاریخچه فایل‌ها",
@@ -98,10 +110,13 @@ function ConnectorsContent() {
     if (!file) return;
 
     setSelectedFile(file);
+    setIsUploading(true);
 
     if (!token) {
       setErrorMessage("لطفاً وارد حساب کاربری خود شوید.");
       router.push("/login");
+      setSelectedFile(null);
+      setIsUploading(false);
       return;
     }
 
@@ -109,7 +124,7 @@ function ConnectorsContent() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(`${API_BASE}/upload/`, {
+      const response = await fetch(`${API_BASE}/files/upload/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -125,20 +140,30 @@ function ConnectorsContent() {
         });
         setSelectedFile(null);
         e.target.value = "";
-        fetchUploadedFiles();
+        await fetchUploadedFiles();
       } else {
-        const error = await response.json();
-        toast({
-          variant: "destructive",
-          description: error.message || "خطا در آپلود فایل",
-        });
+        const error = await response
+          .json()
+          .catch(() => ({ message: "خطا در آپلود فایل" }));
+        if (response.status === 422) {
+          toast({
+            variant: "destructive",
+            description: "فقط میتونی csv و xls  رو آپلود کنی",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            description: error.message || "خطا در آپلود فایل",
+          });
+        }
       }
     } catch (error) {
-      console.error("Upload error:", error);
       toast({
         variant: "destructive",
         description: "خطا در آپلود فایل",
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -154,7 +179,7 @@ function ConnectorsContent() {
     }
   };
 
-  const handleDownloadFile = (file: UploadedFile) => {
+  const handleDownloadFile = async (file: UploadedFile) => {
     if (!token) {
       toast({
         variant: "destructive",
@@ -163,10 +188,40 @@ function ConnectorsContent() {
       return;
     }
 
-    const downloadUrl = `${API_BASE}/files/files/download/${encodeURIComponent(
-      file.name
+    const downloadUrl = `${API_BASE}/files/download/${encodeURIComponent(
+      file.id
     )}`;
-    window.open(downloadUrl, "_blank");
+
+    try {
+      const response = await fetch(downloadUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } else {
+        toast({
+          variant: "destructive",
+          description: "خطا در دانلود فایل",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        description: "خطا در دانلود فایل",
+      });
+    }
   };
 
   const handleDeleteFile = async (index: number) => {
@@ -174,7 +229,7 @@ function ConnectorsContent() {
     if (!file.id || !token) return;
 
     try {
-      const response = await fetch(`${API_BASE}/files/files/${file.id}`, {
+      const response = await fetch(`${API_BASE}/files/${file.id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -196,7 +251,6 @@ function ConnectorsContent() {
         });
       }
     } catch (error) {
-      console.error("Delete error:", error);
       toast({
         variant: "destructive",
         description: "خطا در حذف فایل",
@@ -302,6 +356,8 @@ function ConnectorsContent() {
             <input
               ref={fileInputRef}
               type="file"
+              accept=".csv,.xls,.xlsx"
+              disabled={isUploading}
               className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
               onChange={handleFileChange}
             />
@@ -315,10 +371,10 @@ function ConnectorsContent() {
               </div>
 
               <p className=" text-[14px] font-medium">
-                برای انتخاب فایل کلیک کنید
+                {isUploading ? "در حال آپلود..." : "برای انتخاب فایل کلیک کنید"}
               </p>
 
-              {selectedFile && (
+              {selectedFile && !isUploading && (
                 <p className="text-xs text-gray-500 mt-1 truncate max-w-full px-4">
                   {selectedFile.name}
                 </p>
