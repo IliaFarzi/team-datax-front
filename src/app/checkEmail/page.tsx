@@ -147,6 +147,15 @@ const CheckEmail = () => {
       if (result.email) Cookies.set("user_email", result.email, { expires: 7 });
       if (result.name) Cookies.set("user_name", result.name, { expires: 7 });
 
+      if (result.user?.can_chat !== undefined) {
+        Cookies.set("can_chat", result.user.can_chat.toString(), {
+          expires: 7,
+          secure: false,
+          sameSite: "Lax",
+          path: "/",
+        });
+      }
+
       toast({
         variant: "success",
         description: result.message || "ثبت نام با موفقیت انجام شد",

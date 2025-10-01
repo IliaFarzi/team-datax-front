@@ -126,6 +126,15 @@ function CardDemo() {
         });
       }
 
+      if (result.user?.can_chat !== undefined) {
+        Cookies.set("can_chat", result.user.can_chat.toString(), {
+          expires: 7,
+          secure: false,
+          sameSite: "Lax",
+          path: "/",
+        });
+      }
+
       toast({
         variant: "success",
         description: result.message || "ورود شما با موفقیت انجام شد.",
