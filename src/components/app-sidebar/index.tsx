@@ -8,6 +8,7 @@ import {
   Trash,
   Plus,
   EllipsisVertical,
+  Database,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
@@ -176,7 +177,9 @@ export function AppSidebar() {
     }
   }, [editChatIndex]);
 
-  const isConnectorsActive = pathname === "/connectors";
+  const isConnectorsActive =
+    pathname === "/connectors" || pathname === "/connectors/*";
+  const isKnowledgeActive = pathname === "/knowledge-base";
 
   const formatUSD = (n: number | null) => {
     if (n === null) return "-";
@@ -188,7 +191,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar side="right" className="h-screen overflow-hidden">
+    <Sidebar side="right" className="h-screen w-[316px] overflow-hidden">
       <SidebarContent className="overflow-hidden">
         <div className="flex flex-col justify-between h-full">
           <div className="flex-1 max-h-full overflow-hidden">
@@ -342,6 +345,19 @@ export function AppSidebar() {
 
           <div className="flex flex-col items-center px-3">
             <div className="flex w-full bg-[#E4E4E7] mb-2" />
+            <div
+              className={`w-full flex items-center rounded-lg gap-3 h-9.5 ${
+                isKnowledgeActive ? "text-black bg-[#E4E4E7]" : "text-[#71717A]"
+              }`}
+            >
+              <Database
+                height={18}
+                color={isKnowledgeActive ? "black" : "#71717A"}
+              />
+              <Link href="/knowledge-base">
+                <span>منابع دانش</span>
+              </Link>
+            </div>
             <div
               className={`w-full flex items-center rounded-lg gap-3 h-9.5 ${
                 isConnectorsActive

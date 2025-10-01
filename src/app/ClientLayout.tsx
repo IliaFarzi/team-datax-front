@@ -42,8 +42,8 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <SidebarProvider defaultOpen={!isSidebarCollapsed}>
       {shouldShowSidebar && <AppSidebar />}
-      <main className="flex-1 transition-all duration-300 overflow-y-auto">
-        {shouldShowSidebar }
+      <main className="flex-1 md:mr-15 transition-all duration-300 overflow-y-auto">
+        {shouldShowSidebar}
         {children}
       </main>
     </SidebarProvider>
