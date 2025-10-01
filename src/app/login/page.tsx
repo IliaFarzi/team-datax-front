@@ -126,13 +126,26 @@ function CardDemo() {
         });
       }
 
+      if (result.user?.can_chat !== undefined) {
+        Cookies.set("can_chat", result.user.can_chat.toString(), {
+          expires: 7,
+          secure: false,
+          sameSite: "Lax",
+          path: "/",
+        });
+      }
+
       toast({
         variant: "success",
         description: result.message || "ورود شما با موفقیت انجام شد.",
         duration: 3000,
       });
 
-      router.push("/chat");
+      if (result.user?.can_chat) {
+        router.push("/chat");
+      } else {
+        router.push("/waiting-list");
+      }
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ورود ناموفق بود";
