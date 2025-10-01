@@ -14,7 +14,7 @@ interface Sheet {
   bucket: string;
   object_name: string;
   updated_at: string;
-  owner_id?: string;
+  user_id?: string;
 }
 
 export default function SheetsList() {

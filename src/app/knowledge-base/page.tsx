@@ -109,7 +109,7 @@ function ConnectorsContent() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(`${API_BASE}/upload/`, {
+      const response = await fetch(`${API_BASE}/files/upload/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -128,10 +128,17 @@ function ConnectorsContent() {
         fetchUploadedFiles();
       } else {
         const error = await response.json();
-        toast({
-          variant: "destructive",
-          description: error.message || "خطا در آپلود فایل",
-        });
+        if (response.status === 422) {
+          toast({
+            variant: "destructive",
+            description: "فقط میتونی csv و xls  رو آپلود کنی",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            description: error.message || "خطا در آپلود فایل",
+          });
+        }
       }
     } catch (error) {
       console.error("Upload error:", error);
@@ -163,8 +170,8 @@ function ConnectorsContent() {
       return;
     }
 
-    const downloadUrl = `${API_BASE}/files/files/download/${encodeURIComponent(
-      file.name
+    const downloadUrl = `${API_BASE}/files/download/${encodeURIComponent(
+      file.id
     )}`;
     window.open(downloadUrl, "_blank");
   };
@@ -302,6 +309,7 @@ function ConnectorsContent() {
             <input
               ref={fileInputRef}
               type="file"
+              accept=".csv,.xls,.xlsx"
               className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
               onChange={handleFileChange}
             />
