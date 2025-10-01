@@ -179,7 +179,7 @@ function ConnectorsContent() {
     }
   };
 
-  const handleDownloadFile = (file: UploadedFile) => {
+  const handleDownloadFile = async (file: UploadedFile) => {
     if (!token) {
       toast({
         variant: "destructive",
@@ -191,7 +191,37 @@ function ConnectorsContent() {
     const downloadUrl = `${API_BASE}/files/download/${encodeURIComponent(
       file.id
     )}`;
-    window.open(downloadUrl, "_blank");
+
+    try {
+      const response = await fetch(downloadUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } else {
+        toast({
+          variant: "destructive",
+          description: "خطا در دانلود فایل",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        description: "خطا در دانلود فایل",
+      });
+    }
   };
 
   const handleDeleteFile = async (index: number) => {
