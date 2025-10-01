@@ -132,7 +132,11 @@ function CardDemo() {
         duration: 3000,
       });
 
-      router.push("/chat");
+      if (result.user?.can_chat) {
+        router.push("/chat");
+      } else {
+        router.push("/waiting-list");
+      }
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error ? error.message : "ورود ناموفق بود";

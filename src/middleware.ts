@@ -9,6 +9,7 @@ const publicPaths = [
   "/api/auth",
   "/",
   "/checkPassword",
+  "/waiting-list",
 ];
 
 export function middleware(request: NextRequest) {
@@ -34,6 +35,15 @@ export function middleware(request: NextRequest) {
     const redirectUrl = new URL("/login", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  if (pathname === "/chat") {
+    const canChat = request.cookies.get("can_chat")?.value === "true";
+    console.log("Can chat:", canChat);
+    if (!canChat) {
+      console.log("User cannot chat, redirecting to /waiting-list");
+      return NextResponse.redirect(new URL("/waiting-list", request.url));
+    }
   }
 
   console.log("Valid token found, proceeding to:", pathname);

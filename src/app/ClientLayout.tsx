@@ -36,6 +36,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     "/forgetPassword",
     "/",
     "/checkPassword",
+    "/waiting-list",
   ];
   const shouldShowSidebar = !excludedRoutes.includes(pathname);
 
