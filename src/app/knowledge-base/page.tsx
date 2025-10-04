@@ -47,6 +47,7 @@ function ConnectorsContent() {
   const router = useRouter();
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+  console.log("Knowledge-base API_BASE:", API_BASE);
   const token = Cookies.get("access_token");
 
   const fetchUploadedFiles = useCallback(async () => {
@@ -433,7 +434,7 @@ function ConnectorsContent() {
                             </DialogHeader>
                             <DialogFooter>
                               <DialogClose asChild>
-                                <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] ">
+                                <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
                                   انصراف
                                 </Button>
                               </DialogClose>
