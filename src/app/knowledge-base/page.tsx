@@ -48,7 +48,25 @@ function ConnectorsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+  // const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const getApiBase = () => {
+    const raw = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+
+    if (typeof window !== "undefined") {
+      if (/^http:\/\//i.test(raw) && window.location.protocol === "https:") {
+        return raw.replace(/^http:\/\//i, "https://");
+      }
+
+      if (/^\/\//.test(raw)) {
+        return `${window.location.protocol}${raw}`;
+      }
+    }
+
+    return raw;
+  };
+
+  const API_BASE = getApiBase();
+
   const token = Cookies.get("access_token");
 
   const fetchUploadedFiles = useCallback(async () => {
