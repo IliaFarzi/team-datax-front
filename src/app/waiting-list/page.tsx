@@ -41,7 +41,7 @@ export default function Waiting() {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4 max-h-[80vh] overflow-y-auto animate-in fade-in zoom-in duration-200 ease-out">
-            <DialogTitle className="text-lg font-semibold text-center py-4 border-b">
+            <DialogTitle className="text-lg font-semibold text-center py-4">
               خروج از حساب
             </DialogTitle>
             <div className="p-6">
@@ -50,14 +50,14 @@ export default function Waiting() {
               </DialogDescription>
               <div className="flex gap-3 justify-center">
                 <DialogClose asChild>
-                  <Button className="bg-[#FAFAFA] text-[#18181B] px-6 py-2 hover:bg-gray-100 flex-1 max-w-xs rounded-md">
+                  <Button className="bg-[#FAFAFA] text-[#18181B] px-6 py-2 hover:bg-gray-100 flex-1 max-w-xs rounded-md cursor-pointer">
                     انصراف
                   </Button>
                 </DialogClose>
                 <Button
                   onClick={logoutAccount}
                   type="submit"
-                  className="bg-[#DC2626] hover:bg-[#DC2626] text-white px-6 py-2 flex-1 max-w-xs rounded-md"
+                  className="bg-[#DC2626] hover:bg-[#DC2626] text-white px-6 py-2 flex-1 max-w-xs rounded-md cursor-pointer"
                 >
                   خروج
                 </Button>
