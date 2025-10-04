@@ -18,7 +18,6 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import Logo from "../../../public/svg/Logo";
-
 interface LoginRequest {
   email: string;
   password: string;

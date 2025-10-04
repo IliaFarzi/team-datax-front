@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,7 +20,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -42,6 +42,8 @@ function ConnectorsContent() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState<UploadedFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -57,7 +59,7 @@ function ConnectorsContent() {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/files/`, {
+      const response = await fetch(`${API_BASE}/files`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -124,8 +126,9 @@ function ConnectorsContent() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const uploadUrl = `${API_BASE}/files/upload/`;
+      const uploadUrl = `${API_BASE}/upload/files`;
       console.log("Full upload URL:", uploadUrl);
+      console.log("Token:", token ? "Present" : "Missing");
       const response = await fetch(uploadUrl, {
         method: "POST",
         headers: {
@@ -133,6 +136,9 @@ function ConnectorsContent() {
         },
         body: formData,
       });
+
+      console.log("Upload response status:", response.status);
+      console.log("Upload response ok:", response.ok);
 
       if (response.ok) {
         toast({
@@ -147,6 +153,7 @@ function ConnectorsContent() {
         const error = await response
           .json()
           .catch(() => ({ message: "خطا در آپلود فایل" }));
+        console.error("Upload error:", error);
         if (response.status === 422) {
           toast({
             variant: "destructive",
@@ -160,6 +167,7 @@ function ConnectorsContent() {
         }
       }
     } catch (error) {
+      console.error("Upload catch error:", error);
       toast({
         variant: "destructive",
         description: "خطا در آپلود فایل",
@@ -190,7 +198,7 @@ function ConnectorsContent() {
       return;
     }
 
-    const downloadUrl = `${API_BASE}/files/download/${encodeURIComponent(
+    const downloadUrl = `${API_BASE}/download/files/${encodeURIComponent(
       file.id
     )}`;
 
@@ -228,10 +236,16 @@ function ConnectorsContent() {
 
   const handleDeleteFile = async (index: number) => {
     const file = uploadedFiles[index];
-    if (!file.id || !token) return;
+    if (!file.id || !token) {
+      toast({
+        variant: "destructive",
+        description: "لطفاً وارد حساب کاربری خود شوید.",
+      });
+      return;
+    }
 
     try {
-      const response = await fetch(`${API_BASE}/files/${file.id}`, {
+      const response = await fetch(`${API_BASE}/delete/files/${file.id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -240,26 +254,30 @@ function ConnectorsContent() {
       });
 
       if (response.ok) {
+        console.log(response);
         toast({
           variant: "success",
           description: `فایل ${file.name} حذف شد.`,
           duration: 3000,
         });
-        fetchUploadedFiles();
+        await fetchUploadedFiles();
       } else {
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: "خطا در حذف فایل" }));
         toast({
           variant: "destructive",
-          description: "خطا در حذف فایل",
+          description: errorData.message || "خطا در حذف فایل",
         });
       }
     } catch (error) {
+      console.error("Delete error:", error);
       toast({
         variant: "destructive",
         description: "خطا در حذف فایل",
       });
     }
   };
-
   const getFileIcon = (fileType: string) => {
     const extension = fileType.toLowerCase();
     if (extension === "pdf") {
@@ -387,7 +405,7 @@ function ConnectorsContent() {
           {uploadedFiles.length > 0 && (
             <div className="mt-6 border border-[#E4E4E7] rounded-md">
               <div className="">
-                {uploadedFiles.map((file, index) => (
+                {uploadedFiles.map((file) => (
                   <div
                     key={file.id}
                     className="flex items-center justify-between p-3 border-b last:border-b-0 border-[#E4E4E7] bg-white"
@@ -415,41 +433,16 @@ function ConnectorsContent() {
                           دانلود
                           <Download height={18} color="#18181B" />
                         </DropdownMenuItem>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <DropdownMenuItem
-                              onSelect={(e) => e.preventDefault()}
-                              className="flex items-center justify-between cursor-pointer flex-row-reverse"
-                            >
-                              حذف
-                              <Trash height={18} color="#EF4444" />
-                            </DropdownMenuItem>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px] md:w-500">
-                            <DialogHeader>
-                              <DialogTitle>حذف فایل</DialogTitle>
-                              <DialogDescription>
-                                آیا مطمئن هستید که می‌خواهید فایل {file.name} را
-                                حذف کنید؟
-                              </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100">
-                                  انصراف
-                                </Button>
-                              </DialogClose>
-                              <DialogClose asChild>
-                                <Button
-                                  onClick={() => handleDeleteFile(index)}
-                                  className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
-                                >
-                                  حذف
-                                </Button>
-                              </DialogClose>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setFileToDelete(file);
+                            setIsDeleteDialogOpen(true);
+                          }}
+                          className="flex items-center justify-between cursor-pointer flex-row-reverse"
+                        >
+                          حذف
+                          <Trash height={18} color="#EF4444" />
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -459,6 +452,49 @@ function ConnectorsContent() {
           )}
         </div>
       </div>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogTrigger asChild></DialogTrigger>
+        <DialogContent className="sm:max-w-[425px] md:w-500">
+          <DialogHeader>
+            <DialogTitle>حذف فایل</DialogTitle>
+            <DialogDescription>
+              آیا مطمئن هستید که می‌خواهید فایل {fileToDelete?.name} را حذف
+              کنید؟
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setFileToDelete(null);
+              }}
+              className="bg-[#FAFAFA] text-[#18181B] w-[50%] hover:bg-gray-100"
+            >
+              انصراف
+            </Button>
+            <Button
+              type="button"
+              onClick={async () => {
+                if (fileToDelete) {
+                  const index = uploadedFiles.findIndex(
+                    (f) => f.id === fileToDelete.id
+                  );
+                  if (index !== -1) {
+                    await handleDeleteFile(index);
+                  }
+                  setIsDeleteDialogOpen(false);
+                  setFileToDelete(null);
+                }
+              }}
+              className="bg-[#DC2626] hover:bg-[#DC2626] w-[50%]"
+            >
+              حذف
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -485,6 +521,7 @@ export default function Connectors() {
           </Suspense>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
