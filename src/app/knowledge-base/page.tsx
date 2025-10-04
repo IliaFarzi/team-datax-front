@@ -47,7 +47,6 @@ function ConnectorsContent() {
   const router = useRouter();
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
-  console.log("Knowledge-base API_BASE:", API_BASE);
   const token = Cookies.get("access_token");
 
   const fetchUploadedFiles = useCallback(async () => {
@@ -125,7 +124,9 @@ function ConnectorsContent() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(`${API_BASE}/files/upload/`, {
+      const uploadUrl = `${API_BASE}/files/upload/`;
+      console.log("Full upload URL:", uploadUrl);
+      const response = await fetch(uploadUrl, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
