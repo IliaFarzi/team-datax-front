@@ -103,6 +103,7 @@ function ConnectorsContent() {
         setUploadedFiles([]);
       }
     } catch (error) {
+      console.log(error);
       toast({
         variant: "destructive",
         description: "خطا در بارگیری تاریخچه فایل‌ها",
@@ -245,6 +246,7 @@ function ConnectorsContent() {
         });
       }
     } catch (error) {
+      console.log(error);
       toast({
         variant: "destructive",
         description: "خطا در دانلود فایل",
